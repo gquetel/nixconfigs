@@ -1,40 +1,41 @@
 let
-inputs = import ./npins;
-nixpkgs = inputs.nixpkgs;
-disko = import "${inputs.disko}/module.nix";
-colmenaModules = import "${inputs.colmena}/src/nix/hive/options.nix";
-pkgs = import inputs.nixpkgs {};
-in 
+  inputs = import ./npins;
+  nixpkgs = inputs.nixpkgs;
+  disko = import "${inputs.disko}/module.nix";
+  colmenaModules = import "${inputs.colmena}/src/nix/hive/options.nix";
+  pkgs = import inputs.nixpkgs { };
+in
 rec {
-    colmena = {
-          meta = {
-            nixpkgs = import inputs.nixpkgs { };
-            nodeSpecialArgs = builtins.mapAttrs (_: v: v._module.specialArgs) nixosConfigurations;
-            specialArgs.lib = pkgs.lib;
-          };
-        } // builtins.mapAttrs (_: v: { imports = v._module.args.modules; }) nixosConfigurations ;
+  colmena = {
+    meta = {
+      nixpkgs = import inputs.nixpkgs { };
+      nodeSpecialArgs = builtins.mapAttrs (_: v: v._module.specialArgs) nixosConfigurations;
+      specialArgs.lib = pkgs.lib;
+    };
+  } // builtins.mapAttrs (_: v: { imports = v._module.args.modules; }) nixosConfigurations;
 
-      nixosConfigurations =
-        builtins.mapAttrs
-          (
-            name: value:
-            import "${nixpkgs}/nixos/lib/eval-config.nix" {
-              lib = pkgs.lib;
-              system = "x86_64-linux";
-              specialArgs = {
-                inherit inputs;
-              };
-              modules = [
-                value
-                disko
-              ];
-              extraModules = [ colmenaModules.deploymentOptions ];
-            }
-          )
-          {
-            pegasus = import ./machines/pegasus { inherit pkgs; lib = pkgs.lib;};
+  nixosConfigurations =
+    builtins.mapAttrs
+      (
+        name: value:
+        import "${nixpkgs}/nixos/lib/eval-config.nix" {
+          lib = pkgs.lib;
+          system = "x86_64-linux";
+          specialArgs = {
+            inherit inputs;
           };
+          modules = [
+            value
+            disko
+          ];
+          extraModules = [ colmenaModules.deploymentOptions ];
+        }
+      )
+      {
+        pegasus = import ./machines/pegasus {
+          inherit pkgs;
+          lib = pkgs.lib;
+        };
+      };
 
-   
-    }
-   
+}
