@@ -29,6 +29,7 @@
   # };
 
   networking.useNetworkd = true;
+  networking.hostName = "pegasus"; 
   systemd.network.enable = true;
   systemd.network.networks."10-wan" = {
     matchConfig.Name = "eno1";
@@ -73,15 +74,46 @@
     ];
   };
 
+  # ----------------- Nginx -----------------
+
+  services.nginx.enable = true;
+  services.nginx.virtualHosts."movies.gquetel.fr" = {
+      addSSL = true;
+      enableACME = true;
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:8096";
+      };
+  };
+  
+  services.nginx.virtualHosts."gquetel.fr" = {
+      addSSL = true;
+      enableACME = true;
+      root = "/var/www/html/gquetel.fr";
+  };
+
+  security.acme = {
+    acceptTerms = true;
+    defaults.email = "gregor.quetel@gquetel.fr";
+  };
+  services.openssh.enable = true;
+
+  # ----------------- Movies -----------------
+  services.jellyfin.enable = false;
+
+  
+
   # environment.systemPackages = with pkgs; [
   #   vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   #   wget
   # ];
 
-  services.openssh.enable = true;
-
   # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [ 22 ];
+  networking.firewall.allowedTCPPorts = [ 22 80 443 8096 ];
+
+
+  # NE PAS TOUCHER LE TRUC EN BAS 
+
+
 
   # This option defines the first version of NixOS you have installed on this particular machine,
   # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
@@ -101,5 +133,4 @@
   #
   # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
   system.stateVersion = "25.05"; # Did you read the comment?
-
 }
