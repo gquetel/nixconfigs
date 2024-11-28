@@ -48,10 +48,10 @@
     linkConfig.RequiredForOnline = "routable";
   };
 
-  deployment.targetHost = "192.168.1.30";
+  deployment.targetHost = "gquetel.fr";
 
   users.users.gquetel = {
-    hashedPassword = "$y$j9T$fTLo4Avm.nDAUDLvmacbD.$DyBj10ce43y5bRl39Xph9PBliBBs.Q8n4FtkyUCCZ6A";
+    hashedPassword = "$y$j9T$/9PMk6pMAgVtX5KMZL96C0$0pgIQnSSBe3Yn7FDVsQIh.6FZVj1edXBnKVKSfWYeJ";
     isNormalUser = true;
     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
     openssh.authorizedKeys.keys = [
@@ -95,11 +95,20 @@
     acceptTerms = true;
     defaults.email = "gregor.quetel@gquetel.fr";
   };
+  
   services.openssh.enable = true;
-
+  services.openssh.settings.LogLevel = "VERBOSE"; # Required by fail2ban, should be set by default, but just in case. 
+  
   # ----------------- Movies -----------------
-  services.jellyfin.enable = false;
+  services.jellyfin.enable = true;
 
+ # ----------------- Fail2ban -----------------
+  services.fail2ban = {
+    enable = true;
+    maxretry = 5;
+    bantime = "24h"; 
+    bantime-increment.multipliers = "1 2 4 8 16 32 64";
+  };
   
 
   # environment.systemPackages = with pkgs; [
@@ -108,7 +117,7 @@
   # ];
 
   # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [ 22 80 443 8096 ];
+  networking.firewall.allowedTCPPorts = [ 22 80 443 ];
 
 
   # NE PAS TOUCHER LE TRUC EN BAS 
