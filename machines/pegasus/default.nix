@@ -90,6 +90,14 @@
     };
   };
 
+  services.nginx.virtualHosts."veste.gquetel.fr" = {
+    addSSL = true;
+    enableACME = true;
+    locations."/" = {
+      proxyPass = "http://127.0.0.1:9117";
+    };
+  };
+
   services.nginx.virtualHosts."gquetel.fr" = {
     addSSL = true;
     enableACME = true;
@@ -111,6 +119,12 @@
     group = "mediaserver";
   };
 
+  services.jackett = {
+    enable = true;
+    user = "mediaserver";
+    group = "mediaserver";
+  };
+
   # ----------------- Fail2ban -----------------
   services.fail2ban = {
     enable = true;
@@ -120,32 +134,29 @@
   };
 
   # ----------------- /etc -----------------
-  
+
   environment.etc = {
-    "fail2ban/filter.d/jellyfin.conf".text = 
-    ''[Definition]
-      failregex = ^.*Authentication request for .* has been denied \(IP: "?<ADDR>"?\)\.'';
-    
-    "fail2ban/jail.d/jellyfin.local".text = 
-    ''[jellyfin]
+    "fail2ban/filter.d/jellyfin.conf".text = ''
+      [Definition]
+            failregex = ^.*Authentication request for .* has been denied \(IP: "?<ADDR>"?\)\.'';
 
-      backend = auto
-      enabled = true
-      port = 80,443
-      protocol = tcp
-      filter = jellyfin
-      maxretry = 5
-      bantime = 36000
-      findtime = 3600
-      logpath = /var/lib/jellyfin/log/log_*''; 
+    "fail2ban/jail.d/jellyfin.local".text = ''
+      [jellyfin]
+
+            backend = auto
+            enabled = true
+            port = 80,443
+            protocol = tcp
+            filter = jellyfin
+            maxretry = 5
+            bantime = 36000
+            findtime = 3600
+            logpath = /var/lib/jellyfin/log/log_*'';
   };
-  
 
-  # environment.systemPackages = with pkgs; [
-  #   vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  #   wget
-  # ];
-
+  environment.systemPackages = with pkgs; [
+    wget
+  ];
 
   # NE PAS TOUCHER LE TRUC EN BAS
 
