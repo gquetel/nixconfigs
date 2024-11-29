@@ -43,6 +43,8 @@
     linkConfig.RequiredForOnline = "routable";
   };
 
+
+
   deployment.targetHost = "gquetel.fr";
 
   users.users.gquetel = {
@@ -51,6 +53,7 @@
     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
     openssh.authorizedKeys.keys = [
       "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCwAqvvbyI8a6qH3yVxh9Dz9QPUDwW235yGtBM9oUrkSLpnYVrVQXPCTuMf66xBOkvjZfMixkcxfYd/LmpcYI/EU6c2TJ+8s4PdjB/Poqc6sMDOf99rEIfAs6P5g1+TJc1Yh2uS7e+u7Lbx9wH0YBjirSlzhlj8ttJenzu4U3m6NcgAiT4QNke1K3oTYlLc+sDx4MQyZ5UG+YEa7uUan65Kw3LOgQghCFvkTXKgG9XPlzVUMcRL0m8wpraP4N4lHWvq+uD7TGH6gp/TA6r7ufu0/lKZZxkH5hbBKeAWhI/VmdCuS//UFqomVt+qi3Fflcg8Tw8QQgmzfCzxRGZ9NmvoTRmP9fZq7OmgPyBkL8Lm3KTH2WMpMHpDZK7NwgVJIPK3xfj2TCs1ldT9OkwWQaIdfwPxDqvdv2z52B31dAMj1bJCpR1Cj2+/Wx7xTh6v/oMTXhMx9DyZDwVzE0ejfw+tmEJHfBjQUJBxMfmIX5c0R2FkdtDpgbKD7kWNY11IcAk= gquetel@scylla"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO1dxKM7V5eeMJ38uGf520HF6Iw2Z8uyLYJwUGyqLLz5 gquetel@charybdis"   
     ];
     packages = with pkgs; [
       tree
@@ -63,6 +66,7 @@
     group = "root";
     openssh.authorizedKeys.keys = [
       "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCwAqvvbyI8a6qH3yVxh9Dz9QPUDwW235yGtBM9oUrkSLpnYVrVQXPCTuMf66xBOkvjZfMixkcxfYd/LmpcYI/EU6c2TJ+8s4PdjB/Poqc6sMDOf99rEIfAs6P5g1+TJc1Yh2uS7e+u7Lbx9wH0YBjirSlzhlj8ttJenzu4U3m6NcgAiT4QNke1K3oTYlLc+sDx4MQyZ5UG+YEa7uUan65Kw3LOgQghCFvkTXKgG9XPlzVUMcRL0m8wpraP4N4lHWvq+uD7TGH6gp/TA6r7ufu0/lKZZxkH5hbBKeAWhI/VmdCuS//UFqomVt+qi3Fflcg8Tw8QQgmzfCzxRGZ9NmvoTRmP9fZq7OmgPyBkL8Lm3KTH2WMpMHpDZK7NwgVJIPK3xfj2TCs1ldT9OkwWQaIdfwPxDqvdv2z52B31dAMj1bJCpR1Cj2+/Wx7xTh6v/oMTXhMx9DyZDwVzE0ejfw+tmEJHfBjQUJBxMfmIX5c0R2FkdtDpgbKD7kWNY11IcAk= gquetel@scylla"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO1dxKM7V5eeMJ38uGf520HF6Iw2Z8uyLYJwUGyqLLz5 gquetel@charybdis"   
     ];
   };
 
@@ -111,6 +115,20 @@
 
   services.openssh.enable = true;
   services.openssh.settings.LogLevel = "VERBOSE"; # Required by fail2ban, should be set by default, but just in case.
+  
+  # ----------------- DNSCRYPT ---------------
+  services.dnscrypt-proxy2 = {
+    enable = true;
+    settings = {
+      require_dnssec = true;
+      server_names = [
+        "fdnipv6"
+        "fdn"
+        "dnscry.pt-paris-ipv4"
+        "dnscry.pt-paris-ipv6"
+      ];
+    };
+  };
 
   # ----------------- Movies -----------------
   services.jellyfin = {
