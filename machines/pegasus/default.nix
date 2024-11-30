@@ -118,7 +118,16 @@
     };
   };
 
-  
+ services.nginx.virtualHosts."radarr.movies.gquetel.fr" = {
+    addSSL = true;
+    enableACME = true;
+    locations."/" = {
+      proxyPass = "http://127.0.0.1:7878";
+    };
+  };
+
+  # TODO: fixer pourquoi est-on renvoyés sur la page de deluge lorsque l'on essayer de se connecter  à 
+  # BLAH.movies.gquetel.fr 
 
   services.nginx.virtualHosts."gquetel.fr" = {
     addSSL = true;
@@ -158,6 +167,12 @@
     group = "mediaserver";
   };
 
+   services.radarr = {
+        enable = true;
+        user = "mediaserver";
+        group = "mediaserver";
+   };
+
   services.jellyfin = {
     enable = true;
     user = "mediaserver";
@@ -170,22 +185,27 @@
     group = "mediaserver";
   };
 
+  
+  systemd.tmpfiles.rules = [
+    "d /run/other-keys/ 755 mediaserver mediaserver -"
+  ];
+
+  # Deluge génère automatiquement un mdp au boot dans /run/other-keys/deluge.
+  # ATM, Il faut mettre à jour manuellement le profil de la connection dans delugeweb.
+  # TODO: Trouver comment ajouter de la persistance avec ce fichier (sorte de mécanisme de secrets).
+  # Je crois qu'un process veut append dedans dans tous les cas, mais on peut peut-être fournir un profil par défaut. 
   services.deluge = {
     enable = true;
-    # TODO, comment créer ce dossier automatiquement et chown mediaserver:mediaserver en déclaratif ?
-    # J'ai galeré pour setup ce fichier, mais il faut vérifier que /run/other-keys/ est bien accessible par mediaserver
-    # Et que /run/other-keys/deluge l'est aussi (aussi en écriture car delugeweb veut être capable de le faire).
     authFile = "/run/other-keys/deluge"; 
     user = "mediaserver";
     group = "mediaserver";
     declarative = true;
-    openFirewall = false; # Does not appear to be required ?
+    openFirewall = false; 
     web.enable = true;
      config = {
-          download_location = "/portemer/deluge/incomplete/";
-          torrentfiles_location = "/portemer/deluge/torrents/";
-          move_completed = "true";
-          move_completed_path = "/portemer/deluge/complete/";
+          download_location = "/portemer/deluge/";
+          enabled_plugins = [ "Label" ]; 
+          move_completed = "false";
           allow_remote = true;
         };
   };
@@ -221,6 +241,7 @@
 
   environment.systemPackages = with pkgs; [
     wget
+    htop
   ];
 
   # NE PAS TOUCHER LE TRUC EN BAS
