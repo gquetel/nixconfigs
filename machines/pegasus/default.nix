@@ -87,7 +87,7 @@
 
   services.nginx.enable = true;
   services.nginx.virtualHosts."movies.gquetel.fr" = {
-    addSSL = true;
+    forceSSL = true;
     enableACME = true;
     locations."/" = {
       proxyPass = "http://127.0.0.1:8096";
@@ -95,7 +95,7 @@
   };
 
   services.nginx.virtualHosts."deluge.movies.gquetel.fr" = {
-    addSSL = true;
+    forceSSL = true;
     enableACME = true;
     locations."/" = {
       proxyPass = "http://127.0.0.1:8112";
@@ -103,7 +103,7 @@
   }; 
 
   services.nginx.virtualHosts."veste.movies.gquetel.fr" = {
-    addSSL = true;
+    forceSSL = true;
     enableACME = true;
     locations."/" = {
       proxyPass = "http://127.0.0.1:9117";
@@ -111,7 +111,7 @@
   };
 
   services.nginx.virtualHosts."sonarr.movies.gquetel.fr" = {
-    addSSL = true;
+    forceSSL = true;
     enableACME = true;
     locations."/" = {
       proxyPass = "http://127.0.0.1:8989";
@@ -119,20 +119,26 @@
   };
 
  services.nginx.virtualHosts."radarr.movies.gquetel.fr" = {
-    addSSL = true;
+    forceSSL = true;
     enableACME = true;
     locations."/" = {
       proxyPass = "http://127.0.0.1:7878";
     };
   };
 
-  # TODO: fixer pourquoi est-on renvoyés sur la page de deluge lorsque l'on essayer de se connecter  à 
-  # BLAH.movies.gquetel.fr 
-
   services.nginx.virtualHosts."gquetel.fr" = {
-    addSSL = true;
+    forceSSL = true;
     enableACME = true;
     root = "/var/www/html/gquetel.fr";
+  };
+
+  # Reject all other invalid sub-subdomains.
+  # TODO: Is there a better way to do this ? 80 is sent to 404 and https is sent a SSL error.
+  services.nginx.virtualHosts."_" = {
+    rejectSSL = true; 
+    locations."/" = {
+      return = "404";
+    };
   };
 
   security.acme = {
@@ -159,7 +165,7 @@
 
   # ----------------- Movies -----------------
   # TODO, setup flaresolverr (check for working release, current on crashes like dis: https://github.com/FlareSolverr/FlareSolverr/issues/1119)
-  services.flaresolverr.enable = false ; # Bypass CloudFlare protection
+  services.flaresolverr.enable = false ; # Is broken RN
   
   services.sonarr = {
     enable = true ;
@@ -227,7 +233,6 @@
 
     "fail2ban/jail.d/jellyfin.local".text = ''
       [jellyfin]
-
             backend = auto
             enabled = true
             port = 80,443
