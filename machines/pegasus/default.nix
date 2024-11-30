@@ -94,7 +94,15 @@
     };
   };
 
-  services.nginx.virtualHosts."veste.gquetel.fr" = {
+  services.nginx.virtualHosts."deluge.movies.gquetel.fr" = {
+    addSSL = true;
+    enableACME = true;
+    locations."/" = {
+      proxyPass = "http://127.0.0.1:8112";
+    };
+  }; 
+
+  services.nginx.virtualHosts."veste.movies.gquetel.fr" = {
     addSSL = true;
     enableACME = true;
     locations."/" = {
@@ -131,6 +139,8 @@
   };
 
   # ----------------- Movies -----------------
+  # TODO, setup flaresolverr (check for working release, current on crashes like dis: https://github.com/FlareSolverr/FlareSolverr/issues/1119)
+  services.flaresolverr.enable = false ; # Bypass CloudFlare protection
   services.jellyfin = {
     enable = true;
     user = "mediaserver";
@@ -141,6 +151,26 @@
     enable = true;
     user = "mediaserver";
     group = "mediaserver";
+  };
+
+  services.deluge = {
+    enable = true;
+    # TODO, comment créer ce dossier automatiquement et chown mediaserver:mediaserver en déclaratif ?
+    # J'ai galeré pour setup ce fichier, mais il faut vérifier que /run/other-keys/ est bien accessible par mediaserver
+    # Et que /run/other-keys/deluge l'est aussi (aussi en écriture car delugeweb veut être capable de le faire).
+    authFile = "/run/other-keys/deluge"; 
+    user = "mediaserver";
+    group = "mediaserver";
+    declarative = true;
+    openFirewall = true;
+    web.enable = true;
+     config = {
+          download_location = "/portemer/deluge/incomplete/";
+          torrentfiles_location = "/portemer/deluge/torrents/";
+          move_completed = "true";
+          move_completed_path = "/portemer/deluge/complete/";
+          allow_remote = true;
+        };
   };
 
   # ----------------- Fail2ban -----------------
