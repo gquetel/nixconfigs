@@ -110,6 +110,16 @@
     };
   };
 
+  services.nginx.virtualHosts."sonarr.movies.gquetel.fr" = {
+    addSSL = true;
+    enableACME = true;
+    locations."/" = {
+      proxyPass = "http://127.0.0.1:8989";
+    };
+  };
+
+  
+
   services.nginx.virtualHosts."gquetel.fr" = {
     addSSL = true;
     enableACME = true;
@@ -141,6 +151,13 @@
   # ----------------- Movies -----------------
   # TODO, setup flaresolverr (check for working release, current on crashes like dis: https://github.com/FlareSolverr/FlareSolverr/issues/1119)
   services.flaresolverr.enable = false ; # Bypass CloudFlare protection
+  
+  services.sonarr = {
+    enable = true ;
+    user = "mediaserver";
+    group = "mediaserver";
+  };
+
   services.jellyfin = {
     enable = true;
     user = "mediaserver";
@@ -162,7 +179,7 @@
     user = "mediaserver";
     group = "mediaserver";
     declarative = true;
-    openFirewall = true;
+    openFirewall = false; # Does not appear to be required ?
     web.enable = true;
      config = {
           download_location = "/portemer/deluge/incomplete/";
