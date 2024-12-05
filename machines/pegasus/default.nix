@@ -189,6 +189,13 @@
     enable = true;
     user = "mediaserver";
     group = "mediaserver";
+    package = pkgs.jackett.overrideAttrs (
+      _: _: {
+        postInstall = ''
+          cp ${./ygg-api.yml} $out/lib/jackett/Definitions/ygg-api.yml
+        '';
+      }
+    );
   };
 
   
