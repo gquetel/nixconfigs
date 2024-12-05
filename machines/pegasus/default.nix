@@ -43,8 +43,6 @@
     linkConfig.RequiredForOnline = "routable";
   };
 
-
-
   deployment.targetHost = "gquetel.fr";
 
   users.users.gquetel = {
@@ -53,7 +51,7 @@
     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
     openssh.authorizedKeys.keys = [
       "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCwAqvvbyI8a6qH3yVxh9Dz9QPUDwW235yGtBM9oUrkSLpnYVrVQXPCTuMf66xBOkvjZfMixkcxfYd/LmpcYI/EU6c2TJ+8s4PdjB/Poqc6sMDOf99rEIfAs6P5g1+TJc1Yh2uS7e+u7Lbx9wH0YBjirSlzhlj8ttJenzu4U3m6NcgAiT4QNke1K3oTYlLc+sDx4MQyZ5UG+YEa7uUan65Kw3LOgQghCFvkTXKgG9XPlzVUMcRL0m8wpraP4N4lHWvq+uD7TGH6gp/TA6r7ufu0/lKZZxkH5hbBKeAWhI/VmdCuS//UFqomVt+qi3Fflcg8Tw8QQgmzfCzxRGZ9NmvoTRmP9fZq7OmgPyBkL8Lm3KTH2WMpMHpDZK7NwgVJIPK3xfj2TCs1ldT9OkwWQaIdfwPxDqvdv2z52B31dAMj1bJCpR1Cj2+/Wx7xTh6v/oMTXhMx9DyZDwVzE0ejfw+tmEJHfBjQUJBxMfmIX5c0R2FkdtDpgbKD7kWNY11IcAk= gquetel@scylla"
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO1dxKM7V5eeMJ38uGf520HF6Iw2Z8uyLYJwUGyqLLz5 gquetel@charybdis"   
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO1dxKM7V5eeMJ38uGf520HF6Iw2Z8uyLYJwUGyqLLz5 gquetel@charybdis"
     ];
     packages = with pkgs; [
       tree
@@ -66,7 +64,7 @@
     group = "root";
     openssh.authorizedKeys.keys = [
       "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCwAqvvbyI8a6qH3yVxh9Dz9QPUDwW235yGtBM9oUrkSLpnYVrVQXPCTuMf66xBOkvjZfMixkcxfYd/LmpcYI/EU6c2TJ+8s4PdjB/Poqc6sMDOf99rEIfAs6P5g1+TJc1Yh2uS7e+u7Lbx9wH0YBjirSlzhlj8ttJenzu4U3m6NcgAiT4QNke1K3oTYlLc+sDx4MQyZ5UG+YEa7uUan65Kw3LOgQghCFvkTXKgG9XPlzVUMcRL0m8wpraP4N4lHWvq+uD7TGH6gp/TA6r7ufu0/lKZZxkH5hbBKeAWhI/VmdCuS//UFqomVt+qi3Fflcg8Tw8QQgmzfCzxRGZ9NmvoTRmP9fZq7OmgPyBkL8Lm3KTH2WMpMHpDZK7NwgVJIPK3xfj2TCs1ldT9OkwWQaIdfwPxDqvdv2z52B31dAMj1bJCpR1Cj2+/Wx7xTh6v/oMTXhMx9DyZDwVzE0ejfw+tmEJHfBjQUJBxMfmIX5c0R2FkdtDpgbKD7kWNY11IcAk= gquetel@scylla"
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO1dxKM7V5eeMJ38uGf520HF6Iw2Z8uyLYJwUGyqLLz5 gquetel@charybdis"   
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO1dxKM7V5eeMJ38uGf520HF6Iw2Z8uyLYJwUGyqLLz5 gquetel@charybdis"
     ];
   };
 
@@ -100,7 +98,7 @@
     locations."/" = {
       proxyPass = "http://127.0.0.1:8112";
     };
-  }; 
+  };
 
   services.nginx.virtualHosts."veste.movies.gquetel.fr" = {
     forceSSL = true;
@@ -118,11 +116,19 @@
     };
   };
 
- services.nginx.virtualHosts."radarr.movies.gquetel.fr" = {
+  services.nginx.virtualHosts."radarr.movies.gquetel.fr" = {
     forceSSL = true;
     enableACME = true;
     locations."/" = {
       proxyPass = "http://127.0.0.1:7878";
+    };
+  };
+
+  services.nginx.virtualHosts."status.gquetel.fr" = {
+    forceSSL = true;
+    enableACME = true;
+    locations."/" = {
+      proxyPass = "http://127.0.0.1:3001";
     };
   };
 
@@ -135,7 +141,7 @@
   # Reject all other invalid sub-subdomains.
   # TODO: Is there a better way to do this ? 80 is sent to 404 and https is sent a SSL error.
   services.nginx.virtualHosts."_" = {
-    rejectSSL = true; 
+    rejectSSL = true;
     locations."/" = {
       return = "404";
     };
@@ -148,7 +154,7 @@
 
   services.openssh.enable = true;
   services.openssh.settings.LogLevel = "VERBOSE"; # Required by fail2ban, should be set by default, but just in case.
-  
+
   # ----------------- DNSCRYPT ---------------
   services.dnscrypt-proxy2 = {
     enable = true;
@@ -165,19 +171,19 @@
 
   # ----------------- Movies -----------------
   # TODO, setup flaresolverr (check for working release, current on crashes like dis: https://github.com/FlareSolverr/FlareSolverr/issues/1119)
-  services.flaresolverr.enable = false ; # Is broken RN
-  
+  services.flaresolverr.enable = false; # Is broken RN
+
   services.sonarr = {
-    enable = true ;
+    enable = true;
     user = "mediaserver";
     group = "mediaserver";
   };
 
-   services.radarr = {
-        enable = true;
-        user = "mediaserver";
-        group = "mediaserver";
-   };
+  services.radarr = {
+    enable = true;
+    user = "mediaserver";
+    group = "mediaserver";
+  };
 
   services.jellyfin = {
     enable = true;
@@ -198,7 +204,6 @@
     );
   };
 
-  
   systemd.tmpfiles.rules = [
     "d /run/other-keys/ 755 mediaserver mediaserver -"
   ];
@@ -206,21 +211,25 @@
   # Deluge génère automatiquement un mdp au boot dans /run/other-keys/deluge.
   # ATM, Il faut mettre à jour manuellement le profil de la connection dans delugeweb.
   # TODO: Trouver comment ajouter de la persistance avec ce fichier (sorte de mécanisme de secrets).
-  # Je crois qu'un process veut append dedans dans tous les cas, mais on peut peut-être fournir un profil par défaut. 
+  # Je crois qu'un process veut append dedans dans tous les cas, mais on peut peut-être fournir un profil par défaut.
   services.deluge = {
     enable = true;
-    authFile = "/run/other-keys/deluge"; 
+    authFile = "/run/other-keys/deluge";
     user = "mediaserver";
     group = "mediaserver";
     declarative = true;
-    openFirewall = false; 
+    openFirewall = false;
     web.enable = true;
-     config = {
-          download_location = "/portemer/deluge/";
-          enabled_plugins = [ "Label" ]; 
-          move_completed = "false";
-          allow_remote = true;
-        };
+    config = {
+      download_location = "/portemer/deluge/";
+      enabled_plugins = [ "Label" ];
+      move_completed = "false";
+      allow_remote = true;
+    };
+  };
+  # ----------------- Uptime Kuma -----------------
+  services.uptime-kuma = {
+    enable = true;
   };
 
   # ----------------- Fail2ban -----------------
