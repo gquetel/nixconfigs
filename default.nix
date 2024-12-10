@@ -32,6 +32,10 @@ rec {
         }
       )
       {
+        scylla = import ./machines/scylla {
+          inherit pkgs;
+        };
+
         pegasus = import ./machines/pegasus {
           inherit pkgs;
           lib = pkgs.lib;

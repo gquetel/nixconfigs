@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{config,  pkgs, ... }:
 
 {
   imports = [
@@ -40,6 +40,15 @@
     LC_PAPER = "fr_FR.UTF-8";
     LC_TELEPHONE = "fr_FR.UTF-8";
     LC_TIME = "fr_FR.UTF-8";
+  };
+
+  nixpkgs.config.allowUnfree = true;
+
+  deployment = { 
+    allowLocalDeployment = true;          
+    # Disable SSH deployment. This node will be skipped in a
+    # normal`colmena apply`
+    targetHost = null;
   };
 
   # Enable the X11 windowing system.
@@ -136,7 +145,6 @@
     '';
   };
   # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
