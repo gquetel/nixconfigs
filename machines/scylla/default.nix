@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ lib,pkgs, ... }:
+{ lib, pkgs, ... }:
 
 {
   imports = [
@@ -44,8 +44,8 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  deployment = { 
-    allowLocalDeployment = true;          
+  deployment = {
+    allowLocalDeployment = true;
     # Disable SSH deployment. This node will be skipped in a
     # normal`colmena apply`
     targetHost = null;
@@ -105,14 +105,21 @@
           ms-toolsai.jupyter
           github.copilot
           ms-python.python
+          ms-python.black-formatter
+          tomoki1207.pdf
           ms-vscode-remote.remote-ssh
+          # janisdd.vscode-edit-csv -> Not found
           visualstudioexptteam.vscodeintellicode
-          #arrterian.nix-env-selector
+          mechatroner.rainbow-csv
           ms-python.vscode-pylance
         ];
       })
+      black
       typst
-      python312
+      python311
+      python311Packages.notebook
+      python311Packages.jupyter
+      python311Packages.pelican
       zotero
       drawio
       git
@@ -124,6 +131,7 @@
       htop
       signal-desktop
       colmena
+      typstfmt
       openvpn
       libgcc
     ];
@@ -162,6 +170,20 @@
   #   enable = true;
   #   enableSSHSupport = true;
   # };
+
+  # ----------------- DNSCRYPT ---------------
+  services.dnscrypt-proxy2 = {
+    enable = true;
+    settings = {
+      require_dnssec = true;
+      server_names = [
+        "fdnipv6"
+        "fdn"
+        "dnscry.pt-paris-ipv4"
+        "dnscry.pt-paris-ipv6"
+      ];
+    };
+  };
 
   # List services that you want to enable:
 

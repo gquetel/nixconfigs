@@ -50,8 +50,7 @@
     isNormalUser = true;
     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
     openssh.authorizedKeys.keys = [
-      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCwAqvvbyI8a6qH3yVxh9Dz9QPUDwW235yGtBM9oUrkSLpnYVrVQXPCTuMf66xBOkvjZfMixkcxfYd/LmpcYI/EU6c2TJ+8s4PdjB/Poqc6sMDOf99rEIfAs6P5g1+TJc1Yh2uS7e+u7Lbx9wH0YBjirSlzhlj8ttJenzu4U3m6NcgAiT4QNke1K3oTYlLc+sDx4MQyZ5UG+YEa7uUan65Kw3LOgQghCFvkTXKgG9XPlzVUMcRL0m8wpraP4N4lHWvq+uD7TGH6gp/TA6r7ufu0/lKZZxkH5hbBKeAWhI/VmdCuS//UFqomVt+qi3Fflcg8Tw8QQgmzfCzxRGZ9NmvoTRmP9fZq7OmgPyBkL8Lm3KTH2WMpMHpDZK7NwgVJIPK3xfj2TCs1ldT9OkwWQaIdfwPxDqvdv2z52B31dAMj1bJCpR1Cj2+/Wx7xTh6v/oMTXhMx9DyZDwVzE0ejfw+tmEJHfBjQUJBxMfmIX5c0R2FkdtDpgbKD7kWNY11IcAk= gquetel@scylla"
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO1dxKM7V5eeMJ38uGf520HF6Iw2Z8uyLYJwUGyqLLz5 gquetel@charybdis"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICK/iZJoWOdOasaD28jedexzjVc4tHosDTEYFIG/i9Fc gquetel@scylla"
     ];
     packages = with pkgs; [
       tree
@@ -63,8 +62,7 @@
     home = "/root";
     group = "root";
     openssh.authorizedKeys.keys = [
-      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCwAqvvbyI8a6qH3yVxh9Dz9QPUDwW235yGtBM9oUrkSLpnYVrVQXPCTuMf66xBOkvjZfMixkcxfYd/LmpcYI/EU6c2TJ+8s4PdjB/Poqc6sMDOf99rEIfAs6P5g1+TJc1Yh2uS7e+u7Lbx9wH0YBjirSlzhlj8ttJenzu4U3m6NcgAiT4QNke1K3oTYlLc+sDx4MQyZ5UG+YEa7uUan65Kw3LOgQghCFvkTXKgG9XPlzVUMcRL0m8wpraP4N4lHWvq+uD7TGH6gp/TA6r7ufu0/lKZZxkH5hbBKeAWhI/VmdCuS//UFqomVt+qi3Fflcg8Tw8QQgmzfCzxRGZ9NmvoTRmP9fZq7OmgPyBkL8Lm3KTH2WMpMHpDZK7NwgVJIPK3xfj2TCs1ldT9OkwWQaIdfwPxDqvdv2z52B31dAMj1bJCpR1Cj2+/Wx7xTh6v/oMTXhMx9DyZDwVzE0ejfw+tmEJHfBjQUJBxMfmIX5c0R2FkdtDpgbKD7kWNY11IcAk= gquetel@scylla"
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO1dxKM7V5eeMJ38uGf520HF6Iw2Z8uyLYJwUGyqLLz5 gquetel@charybdis"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICK/iZJoWOdOasaD28jedexzjVc4tHosDTEYFIG/i9Fc gquetel@scylla"
     ];
   };
 
@@ -138,6 +136,14 @@
     root = "/var/www/html/gquetel.fr";
   };
 
+  services.nginx.virtualHosts."recettes.gquetel.fr" = {
+    forceSSL = true;
+    enableACME = true;
+    locations."/" = {
+      proxyPass = "http://127.0.0.1:9000";
+    };
+  };
+
   # Reject all other invalid sub-subdomains.
   # TODO: Is there a better way to do this ? 80 is sent to 404 and https is sent a SSL error.
   services.nginx.virtualHosts."_" = {
@@ -168,6 +174,9 @@
       ];
     };
   };
+
+  # -----------------  Recettes -----------------
+  services.mealie.enable = true;
 
   # ----------------- Movies -----------------
   # TODO, setup flaresolverr (check for working release, current on crashes like dis: https://github.com/FlareSolverr/FlareSolverr/issues/1119)
@@ -229,7 +238,7 @@
   };
   # ----------------- Uptime Kuma -----------------
   services.uptime-kuma = {
-    enable = true;
+    enable = false;
   };
 
   # ----------------- Fail2ban -----------------
@@ -263,6 +272,7 @@
   environment.systemPackages = with pkgs; [
     wget
     htop
+    goaccess
   ];
 
   # NE PAS TOUCHER LE TRUC EN BAS
