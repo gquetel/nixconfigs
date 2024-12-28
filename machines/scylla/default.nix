@@ -108,18 +108,29 @@
           ms-python.black-formatter
           tomoki1207.pdf
           ms-vscode-remote.remote-ssh
+          yzhang.markdown-all-in-one
+          # arrterian.nix-env-selector
+          njpwerner.autodocstring
           # janisdd.vscode-edit-csv -> Not found
           visualstudioexptteam.vscodeintellicode
           mechatroner.rainbow-csv
           ms-python.vscode-pylance
         ];
       })
+      zoom-us
       black
+      element-desktop
       typst
-      python311
-      python311Packages.notebook
-      python311Packages.jupyter
-      python311Packages.pelican
+      (python311.withPackages (
+        ps:
+        with ps;
+        [
+          notebook
+          jupyter
+          pelican
+        ]
+        ++ pelican.optional-dependencies.markdown
+      ))
       zotero
       drawio
       git

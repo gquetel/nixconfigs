@@ -52,9 +52,6 @@
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICK/iZJoWOdOasaD28jedexzjVc4tHosDTEYFIG/i9Fc gquetel@scylla"
     ];
-    packages = with pkgs; [
-      tree
-    ];
   };
 
   users.users.root = {
