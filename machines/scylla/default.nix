@@ -103,6 +103,8 @@
           bbenoist.nix
           myriad-dreamin.tinymist
           ms-toolsai.jupyter
+          redhat.vscode-yaml
+
           github.copilot
           ms-python.python
           ms-python.black-formatter
@@ -118,6 +120,7 @@
         ];
       })
       zoom-us
+      hugo
       black
       element-desktop
       typst
@@ -132,6 +135,7 @@
         ++ pelican.optional-dependencies.markdown
       ))
       zotero
+      gimp
       drawio
       git
       tinymist
@@ -147,12 +151,14 @@
       libgcc
     ];
   };
+  virtualisation.docker.enable = true;
   programs.fish = {
     enable = true;
     interactiveShellInit = builtins.readFile ./interactive_init.fish;
   };
-  # Install firefox.
+
   programs.firefox.enable = true;
+  programs.direnv.enable = true;
   programs.bash = {
     interactiveShellInit = ''
       if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
@@ -162,11 +168,12 @@
       fi
     '';
   };
-  # Allow unfree packages
+
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
   ];
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [

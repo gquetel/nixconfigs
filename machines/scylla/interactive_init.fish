@@ -36,3 +36,4 @@ set -U fish_pager_color_selected_completion
 set -U fish_color_option 
 set -U fish_pager_color_secondary_completion 
 set -U fish_pager_color_secondary_prefix 
+set -g direnv_fish_mode eval_on_arrow
