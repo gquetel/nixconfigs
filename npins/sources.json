@@ -50,6 +50,18 @@
       "name": "nixos-24.11",
       "url": "https://releases.nixos.org/nixos/24.11/nixos-24.11beta709057.0c582677378f/nixexprs.tar.xz",
       "hash": "1pgv0ibf6j61hm55f09hmbb8w7faw4bshjhdw50b1fwb8xh12flz"
+    },
+    "unstable": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "nixos",
+        "repo": "nixpkgs"
+      },
+      "branch": "nixos-unstable",
+      "revision": "88195a94f390381c6afcdaa933c2f6ff93959cb4",
+      "url": "https://github.com/nixos/nixpkgs/archive/88195a94f390381c6afcdaa933c2f6ff93959cb4.tar.gz",
+      "hash": "1fs25csg0lq3v34jdzxr2qdvnyvylimmfh0qxlf39h4j1hclvbyj"
     }
   },
   "version": 3

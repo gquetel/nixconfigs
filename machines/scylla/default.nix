@@ -98,22 +98,19 @@
     ];
     packages = with pkgs; [
       thunderbird
-      (vscode-with-extensions.override {
-        vscodeExtensions = with vscode-extensions; [
+      (unstable.vscode-with-extensions.override {
+        vscodeExtensions = with unstable.vscode-extensions; [
           bbenoist.nix
           myriad-dreamin.tinymist
           ms-toolsai.jupyter
           redhat.vscode-yaml
-
           github.copilot
           ms-python.python
           ms-python.black-formatter
           tomoki1207.pdf
           ms-vscode-remote.remote-ssh
           yzhang.markdown-all-in-one
-          # arrterian.nix-env-selector
           njpwerner.autodocstring
-          # janisdd.vscode-edit-csv -> Not found
           visualstudioexptteam.vscodeintellicode
           mechatroner.rainbow-csv
           ms-python.vscode-pylance

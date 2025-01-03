@@ -27,6 +27,7 @@ rec {
           modules = [
             value
             disko
+            { nixpkgs.overlays = [ (final: prev: { unstable = import inputs.unstable { config.allowUnfree = true; }; }) ]; }
           ];
           extraModules = [ colmenaModules.deploymentOptions ];
         }
