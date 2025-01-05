@@ -114,6 +114,7 @@
           visualstudioexptteam.vscodeintellicode
           mechatroner.rainbow-csv
           ms-python.vscode-pylance
+          # mkhl.direnv
         ];
       })
       zoom-us
@@ -155,7 +156,7 @@
   };
 
   programs.firefox.enable = true;
-  programs.direnv.enable = true;
+  # programs.direnv.enable = true;
   programs.bash = {
     interactiveShellInit = ''
       if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
