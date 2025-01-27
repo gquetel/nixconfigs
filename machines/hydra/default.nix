@@ -14,7 +14,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "charybdis"; # Define your hostname.
+  networking.hostName = "hydra"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
@@ -23,24 +23,12 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
-  networking.nameservers = ["1.1.1.1"]
+
   # Set your time zone.
-  time.timeZone = "Europe/Paris";
+  time.timeZone = "Europe/Brussels";
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_GB.UTF-8";
-
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "fr_FR.UTF-8";
-    LC_IDENTIFICATION = "fr_FR.UTF-8";
-    LC_MEASUREMENT = "fr_FR.UTF-8";
-    LC_MONETARY = "fr_FR.UTF-8";
-    LC_NAME = "fr_FR.UTF-8";
-    LC_NUMERIC = "fr_FR.UTF-8";
-    LC_PAPER = "fr_FR.UTF-8";
-    LC_TELEPHONE = "fr_FR.UTF-8";
-    LC_TIME = "fr_FR.UTF-8";
-  };
 
   # Enable the X11 windowing system.
   services.xserver.enable = true;
@@ -79,7 +67,12 @@
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
-
+  deployment = {
+    allowLocalDeployment = true;
+    # Disable SSH deployment. This node will be skipped in a
+    # normal`colmena apply`
+    targetHost = null;
+  };
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.gquetel = {
     isNormalUser = true;
@@ -90,18 +83,61 @@
     ];
     packages = with pkgs; [
       thunderbird
-      (vscode-with-extensions.override { vscodeExtensions = with  vscode-extensions; [ bbenoist.nix];})
-      typst
+      firefox
+      git
+      (vscode-with-extensions.override {
+        vscodeExtensions = with vscode-extensions; [
+          bbenoist.nix
+          myriad-dreamin.tinymist
+          ms-toolsai.jupyter
+          redhat.vscode-yaml
+          github.copilot
+          james-yu.latex-workshop
+          ms-python.python
+          ms-python.black-formatter
+          ms-vscode-remote.remote-ssh
+          yzhang.markdown-all-in-one
+          njpwerner.autodocstring
+          visualstudioexptteam.vscodeintellicode
+          mechatroner.rainbow-csv
+          ms-python.vscode-pylance
+          daohong-emilio.yash
+        ];
+      })
+      htop
+      signal-desktop
+      colmena
+      typstfmt
       zotero
+      npins
       drawio
       git
+      git-lfs
+      tinymist
       nixfmt-rfc-style
+      obsidian
+      spotify
+      texliveFull
+
     ];
+  };
+  programs.fish = {
+    enable = true;
+    interactiveShellInit = builtins.readFile ./interactive_init.fish;
+  };
+
+  programs.bash = {
+    interactiveShellInit = ''
+      if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
+      then
+        shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=""
+        exec ${pkgs.fish}/bin/fish $LOGIN_OPTION
+      fi
+    '';
   };
 
   # Install firefox.
   programs.firefox.enable = true;
-  programs.gnome-terminal.enable = true;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -138,6 +174,6 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "24.05"; # Did you read the comment?
+  system.stateVersion = "24.11"; # Did you read the comment?
 
 }

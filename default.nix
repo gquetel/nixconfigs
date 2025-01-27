@@ -35,6 +35,7 @@ rec {
       {
         scylla = import ./machines/scylla;
         pegasus = import ./machines/pegasus;
+        hydra = import ./machines/hydra;
       };
 
 }
