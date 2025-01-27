@@ -105,19 +105,20 @@
           ms-toolsai.jupyter
           redhat.vscode-yaml
           github.copilot
+          james-yu.latex-workshop
           ms-python.python
           ms-python.black-formatter
-          tomoki1207.pdf
           ms-vscode-remote.remote-ssh
           yzhang.markdown-all-in-one
           njpwerner.autodocstring
           visualstudioexptteam.vscodeintellicode
           mechatroner.rainbow-csv
           ms-python.vscode-pylance
-          # mkhl.direnv
+          daohong-emilio.yash
         ];
       })
       zoom-us
+      texliveFull
       hugo
       black
       element-desktop
@@ -133,9 +134,11 @@
         ++ pelican.optional-dependencies.markdown
       ))
       zotero
+      npins
       gimp
       drawio
       git
+      git-lfs
       tinymist
       nixfmt-rfc-style
       obsidian
@@ -146,7 +149,6 @@
       colmena
       typstfmt
       openvpn
-      libgcc
     ];
   };
   virtualisation.docker.enable = true;
@@ -189,7 +191,7 @@
 
   # ----------------- DNSCRYPT ---------------
   services.dnscrypt-proxy2 = {
-    enable = true;
+    enable = false;
     settings = {
       require_dnssec = true;
       server_names = [
