@@ -230,7 +230,9 @@
       download_location = "/portemer/deluge/";
       enabled_plugins = [ "Label" ];
       move_completed = "false";
+      move_completed_path = "";
       allow_remote = true;
+
     };
   };
   # ----------------- Uptime Kuma -----------------
