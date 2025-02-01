@@ -272,7 +272,23 @@
     wget
     htop
     goaccess
+    git
   ];
+
+  programs.fish = {
+    enable = true;
+    interactiveShellInit = builtins.readFile ./interactive_init.fish;
+  };
+
+  programs.bash = {
+    interactiveShellInit = ''
+      if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
+      then
+        shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=""
+        exec ${pkgs.fish}/bin/fish $LOGIN_OPTION
+      fi
+    '';
+  };
 
   # NE PAS TOUCHER LE TRUC EN BAS
 
