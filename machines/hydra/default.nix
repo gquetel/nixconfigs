@@ -118,7 +118,7 @@
       obsidian
       spotify
       texliveFull
-
+	openvpn
     ];
   };
   programs.fish = {
