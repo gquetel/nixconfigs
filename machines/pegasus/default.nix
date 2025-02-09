@@ -216,7 +216,7 @@
 
   # Deluge génère automatiquement un mdp au boot dans /run/other-keys/deluge.
   # ATM, Il faut mettre à jour manuellement le profil de la connection dans delugeweb.
-  # TODO: Trouver comment ajouter de la persistance avec ce fichier (sorte de mécanisme de secrets).
+  # TODO: Trouver comment ajouter de la persistance avec ce fichier (sorte de mécanisme de secrets)
   # Je crois qu'un process veut append dedans dans tous les cas, mais on peut peut-être fournir un profil par défaut.
   services.deluge = {
     enable = true;
@@ -229,10 +229,7 @@
     config = {
       download_location = "/portemer/deluge/";
       enabled_plugins = [ "Label" ];
-      move_completed = "false";
-      move_completed_path = "";
       allow_remote = true;
-
     };
   };
   # ----------------- Uptime Kuma -----------------

@@ -25,10 +25,10 @@
       "pre_releases": false,
       "version_upper_bound": null,
       "release_prefix": null,
-      "version": "v1.9.0",
-      "revision": "49a4936cee640e27d74baee6fd1278285d29b100",
-      "url": "https://api.github.com/repos/nix-community/disko/tarball/v1.9.0",
-      "hash": "0j76ar4qz320fakdii4659w5lww8wiz6yb7g47npywqvf2lbp388"
+      "version": "v1.11.0",
+      "revision": "cdf8deded8813edfa6e65544f69fdd3a59fa2bb4",
+      "url": "https://api.github.com/repos/nix-community/disko/tarball/v1.11.0",
+      "hash": "13brimg7z7k9y36n4jc1pssqyw94nd8qvgfjv53z66lv4xkhin92"
     },
     "nixos-anywhere": {
       "type": "GitRelease",
@@ -40,16 +40,16 @@
       "pre_releases": false,
       "version_upper_bound": null,
       "release_prefix": null,
-      "version": "1.5.0",
-      "revision": "51d347d35caec995d36d1450cb5bb183318c7fb7",
-      "url": "https://api.github.com/repos/nix-community/nixos-anywhere/tarball/1.5.0",
-      "hash": "1rmpnd423jxqablx6v42ir4w1qxg9phb8l1x4kw4fs559qhv3c1f"
+      "version": "1.6.0",
+      "revision": "97b45ac774699b1cfd267e98a8bdecb74bace593",
+      "url": "https://api.github.com/repos/nix-community/nixos-anywhere/tarball/1.6.0",
+      "hash": "0af7wjgm1b0by89d5v4bvgmdc8dv28qci4szl8n9i6i68alck13a"
     },
     "nixpkgs": {
       "type": "Channel",
       "name": "nixos-24.11",
-      "url": "https://releases.nixos.org/nixos/24.11/nixos-24.11beta709057.0c582677378f/nixexprs.tar.xz",
-      "hash": "1pgv0ibf6j61hm55f09hmbb8w7faw4bshjhdw50b1fwb8xh12flz"
+      "url": "https://releases.nixos.org/nixos/24.11/nixos-24.11.714101.030ba1976b7c/nixexprs.tar.xz",
+      "hash": "02wdwwr6aw3cc1ws4qcbx1m6j52fqs34436khz5ffs125d1d70hk"
     },
     "unstable": {
       "type": "Git",
@@ -59,9 +59,9 @@
         "repo": "nixpkgs"
       },
       "branch": "nixos-unstable",
-      "revision": "88195a94f390381c6afcdaa933c2f6ff93959cb4",
-      "url": "https://github.com/nixos/nixpkgs/archive/88195a94f390381c6afcdaa933c2f6ff93959cb4.tar.gz",
-      "hash": "1fs25csg0lq3v34jdzxr2qdvnyvylimmfh0qxlf39h4j1hclvbyj"
+      "revision": "799ba5bffed04ced7067a91798353d360788b30d",
+      "url": "https://github.com/nixos/nixpkgs/archive/799ba5bffed04ced7067a91798353d360788b30d.tar.gz",
+      "hash": "15b3bqrmr98y5yhm1jrzw23flpiqzlbrwxaiyyzgd3dwfpwy30m2"
     }
   },
   "version": 3

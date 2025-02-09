@@ -103,7 +103,8 @@
           bbenoist.nix
           myriad-dreamin.tinymist
           ms-toolsai.jupyter
-          redhat.vscode-yaml
+ms-toolsai.jupyter-renderers          
+redhat.vscode-yaml
           github.copilot
           james-yu.latex-workshop
           ms-python.python
