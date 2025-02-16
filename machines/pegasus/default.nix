@@ -8,6 +8,11 @@
 
   disko = import ./disko.nix;
 
+  nixpkgs.config.permittedInsecurePackages = [
+    # "dotnet-sdk-6.0.428"
+    # "aspnetcore-runtime-6.0.36"
+  ];
+
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -133,14 +138,6 @@
     root = "/var/www/html/gquetel.fr";
   };
 
-  services.nginx.virtualHosts."recettes.gquetel.fr" = {
-    forceSSL = true;
-    enableACME = true;
-    locations."/" = {
-      proxyPass = "http://127.0.0.1:9000";
-    };
-  };
-
   # Reject all other invalid sub-subdomains.
   # TODO: Is there a better way to do this ? 80 is sent to 404 and https is sent a SSL error.
   services.nginx.virtualHosts."_" = {
@@ -176,8 +173,9 @@
   services.mealie.enable = true;
 
   # ----------------- Movies -----------------
-  # TODO, setup flaresolverr (check for working release, current on crashes like dis: https://github.com/FlareSolverr/FlareSolverr/issues/1119)
-  services.flaresolverr.enable = false; # Is broken RN
+  services.flaresolverr = {
+    enable = true;
+  };
 
   services.sonarr = {
     enable = true;
@@ -201,7 +199,7 @@
     enable = true;
     user = "mediaserver";
     group = "mediaserver";
-    package = pkgs.jackett.overrideAttrs (
+    package = pkgs.unstable.jackett.overrideAttrs (
       _: _: {
         postInstall = ''
           cp ${./ygg-api.yml} $out/lib/jackett/Definitions/ygg-api.yml
@@ -209,7 +207,6 @@
       }
     );
   };
-
   systemd.tmpfiles.rules = [
     "d /run/other-keys/ 755 mediaserver mediaserver -"
   ];
