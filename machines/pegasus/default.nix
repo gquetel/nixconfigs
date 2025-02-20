@@ -8,9 +8,10 @@
 
   disko = import ./disko.nix;
 
+
   nixpkgs.config.permittedInsecurePackages = [
-    # "dotnet-sdk-6.0.428"
-    # "aspnetcore-runtime-6.0.36"
+    "dotnet-sdk-6.0.428"
+    "aspnetcore-runtime-6.0.36"
   ];
 
   # Use the systemd-boot EFI boot loader.
@@ -31,6 +32,7 @@
     443
   ];
 
+networking.nameservers = [ "80.67.169.12" "80.67.169.40" "8.8.8.8" "8.8.4.4" ];
   systemd.network.enable = true;
   systemd.network.networks."10-wan" = {
     matchConfig.Name = "eno1";
@@ -157,7 +159,7 @@
 
   # ----------------- DNSCRYPT ---------------
   services.dnscrypt-proxy2 = {
-    enable = true;
+    enable = false;
     settings = {
       require_dnssec = true;
       server_names = [
@@ -170,11 +172,12 @@
   };
 
   # -----------------  Recettes -----------------
-  services.mealie.enable = true;
+  services.mealie.enable = false;
 
   # ----------------- Movies -----------------
   services.flaresolverr = {
     enable = true;
+    package = pkgs.callPackage ../../packages/flaresolverr {};
   };
 
   services.sonarr = {
