@@ -81,12 +81,11 @@
     group = "mediaserver";
   };
 
-  
   # ----------------- Gitlab runner -----------------
   # From: https://nixos.wiki/wiki/Gitlab_runner
-  
-  boot.kernel.sysctl."net.ipv4.ip_forward" = true; # Required for cloning 
-  virtualisation.docker.enable = true; 
+
+  boot.kernel.sysctl."net.ipv4.ip_forward" = true; # Required for cloning
+  virtualisation.docker.enable = true;
 
   services.gitlab-runner = {
     enable = true;
@@ -97,12 +96,13 @@
         # File should contain at least these two variables:
         # `CI_SERVER_URL`
         # `REGISTRATION_TOKEN`
-        
+
         # TODO: Automatically deploy with agenix
         registrationConfigFile = toString ~/.config/gitlab-runner/ci.env;
         dockerImage = "alpine";
         dockerVolumes = [
           "/nix/store:/nix/store:ro"
+          "/var/www/pdfs:/var/www/pdfs"
           "/nix/var/nix/db:/nix/var/nix/db:ro"
           "/nix/var/nix/daemon-socket:/nix/var/nix/daemon-socket:ro"
         ];
@@ -187,11 +187,20 @@
     };
   };
 
-  services.nginx.virtualHosts."status.gquetel.fr" = {
+  services.nginx.virtualHosts."thesis-artefacts.gquetel.fr" = {
     forceSSL = true;
     enableACME = true;
+    root = "/var/www/pdfs";
     locations."/" = {
-      proxyPass = "http://127.0.0.1:3001";
+      extraConfig = ''
+        auth_basic "Documents de thèse de Grégor"; 
+        auth_basic_user_file /run/other-keys/nginx-protected.htpasswd ;
+        
+        types {
+          application/pdf pdf;
+        }
+        autoindex on;
+      '';
     };
   };
 
@@ -231,9 +240,6 @@
       ];
     };
   };
-
-  # -----------------  Recettes -----------------
-  services.mealie.enable = false;
 
   # ----------------- Movies -----------------
   services.flaresolverr = {
@@ -331,6 +337,7 @@
     htop
     goaccess
     git
+    tree
   ];
 
   programs.fish = {

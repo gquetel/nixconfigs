@@ -9,5 +9,4 @@ pkgs.mkShell {
     pkgs.npins
     nixos-anywhere
   ];
-
 }
