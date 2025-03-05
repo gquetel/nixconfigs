@@ -97,59 +97,53 @@
       "wheel"
     ];
     packages = with pkgs; [
-      thunderbird
       (unstable.vscode-with-extensions.override {
         vscodeExtensions = with unstable.vscode-extensions; [
           bbenoist.nix
-          myriad-dreamin.tinymist
-          ms-toolsai.jupyter
-ms-toolsai.jupyter-renderers          
-redhat.vscode-yaml
+          daohong-emilio.yash
           github.copilot
           james-yu.latex-workshop
-          ms-python.python
-          ms-python.black-formatter
-          ms-vscode-remote.remote-ssh
-          yzhang.markdown-all-in-one
-          njpwerner.autodocstring
-          visualstudioexptteam.vscodeintellicode
           mechatroner.rainbow-csv
+          ms-python.black-formatter
+          ms-python.python
           ms-python.vscode-pylance
-          daohong-emilio.yash
+          ms-toolsai.jupyter
+          ms-toolsai.jupyter-renderers
+          ms-vscode-remote.remote-ssh
+          ms-vscode.cpptools
+          myriad-dreamin.tinymist
+          njpwerner.autodocstring
+          redhat.vscode-yaml
+          visualstudioexptteam.vscodeintellicode
+          yzhang.markdown-all-in-one
+
         ];
       })
-      zoom-us
-      texliveFull
-      hugo
       black
-      element-desktop
-      typst
-      (python311.withPackages (
-        ps:
-        with ps;
-        [
-          notebook
-          jupyter
-          pelican
-        ]
-        ++ pelican.optional-dependencies.markdown
-      ))
-      zotero
-      npins
-      gimp
+      colmena
       drawio
+      element-desktop
+      gimp
       git
       git-lfs
-      tinymist
-      nixfmt-rfc-style
-      obsidian
-      spotify
-      nix-init
       htop
-      signal-desktop
-      colmena
-      typstfmt
+      hugo
+      nix-init
+      nixfmt-rfc-style
+      npins
+      obsidian
       openvpn
+      signal-desktop
+      spotify
+      texliveFull
+      thunderbird
+      tinymist
+      tree
+      typst
+      typstfmt
+      wget
+      zoom-us
+      zotero
     ];
   };
   virtualisation.docker.enable = true;
@@ -159,7 +153,6 @@ redhat.vscode-yaml
   };
 
   programs.firefox.enable = true;
-  # programs.direnv.enable = true;
   programs.bash = {
     interactiveShellInit = ''
       if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
@@ -178,8 +171,6 @@ redhat.vscode-yaml
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-    wget
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
