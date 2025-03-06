@@ -139,7 +139,7 @@
       thunderbird
       tinymist
       tree
-      typst
+      unstable.typst
       typstfmt
       wget
       zoom-us
