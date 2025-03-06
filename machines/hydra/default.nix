@@ -118,6 +118,7 @@
       obsidian
       spotify
       texliveFull
+      element-desktop
 	openvpn
     ];
   };
