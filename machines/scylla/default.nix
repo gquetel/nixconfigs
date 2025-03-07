@@ -103,12 +103,11 @@
           daohong-emilio.yash
           github.copilot
           james-yu.latex-workshop
+          jnoortheen.nix-ide
           mechatroner.rainbow-csv
           ms-python.black-formatter
-          ms-python.python
+          # ms-python.python
           ms-python.vscode-pylance
-          ms-toolsai.jupyter
-          ms-toolsai.jupyter-renderers
           ms-vscode-remote.remote-ssh
           ms-vscode.cpptools
           myriad-dreamin.tinymist
@@ -116,7 +115,16 @@
           redhat.vscode-yaml
           visualstudioexptteam.vscodeintellicode
           yzhang.markdown-all-in-one
-
+          ms-toolsai.jupyter
+          ms-toolsai.jupyter-renderers
+        ] ++ unstable.vscode-utils.extensionsFromVscodeMarketplace [
+          # 2025-03-07:For some reason, unstable ms-python.python fails to build 
+          {
+            name = "python";
+            publisher = "ms-python";
+            hash = "sha256-QpmitRUz2WfiGGKqofxw0V1mLEu6EeZeMSmbQo5C6Y0=";
+            version = "2025.2.0";
+          }
         ];
       })
       black
