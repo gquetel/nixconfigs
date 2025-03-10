@@ -102,7 +102,7 @@
           bbenoist.nix
           daohong-emilio.yash
           github.copilot
-          james-yu.latex-workshop
+          james-yu.latex-workshop 	
           jnoortheen.nix-ide
           mechatroner.rainbow-csv
           ms-python.black-formatter
@@ -125,6 +125,12 @@
             hash = "sha256-QpmitRUz2WfiGGKqofxw0V1mLEu6EeZeMSmbQo5C6Y0=";
             version = "2025.2.0";
           }
+          {
+            name = "vscode-edit-csv";
+            publisher = "janisdd";
+            hash = "sha256-xMZSzbRbG3OCWhTBusx06i0XoN81feNDfOmF1hezmZg=";
+            version = "0.11.2";
+            }
         ];
       })
       black
