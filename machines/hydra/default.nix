@@ -85,23 +85,34 @@
       thunderbird
       firefox
       git
-      (vscode-with-extensions.override {
-        vscodeExtensions = with vscode-extensions; [
+      (unstable.vscode-with-extensions.override {
+        vscodeExtensions = with unstable.vscode-extensions; [
           bbenoist.nix
-          myriad-dreamin.tinymist
-          ms-toolsai.jupyter
-          redhat.vscode-yaml
+          daohong-emilio.yash
           github.copilot
           james-yu.latex-workshop
-          ms-python.python
-          ms-python.black-formatter
-          ms-vscode-remote.remote-ssh
-          yzhang.markdown-all-in-one
-          njpwerner.autodocstring
-          visualstudioexptteam.vscodeintellicode
+          jnoortheen.nix-ide
           mechatroner.rainbow-csv
+          ms-python.black-formatter
+          # ms-python.python
           ms-python.vscode-pylance
-          daohong-emilio.yash
+          ms-vscode-remote.remote-ssh
+          ms-vscode.cpptools
+          myriad-dreamin.tinymist
+          njpwerner.autodocstring
+          redhat.vscode-yaml
+          visualstudioexptteam.vscodeintellicode
+          yzhang.markdown-all-in-one
+          ms-toolsai.jupyter
+          ms-toolsai.jupyter-renderers
+        ] ++ unstable.vscode-utils.extensionsFromVscodeMarketplace [
+          # 2025-03-07:For some reason, unstable ms-python.python fails to build 
+          {
+            name = "python";
+            publisher = "ms-python";
+            hash = "sha256-QpmitRUz2WfiGGKqofxw0V1mLEu6EeZeMSmbQo5C6Y0=";
+            version = "2025.2.0";
+          }
         ];
       })
       htop
