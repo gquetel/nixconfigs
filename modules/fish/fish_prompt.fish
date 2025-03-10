@@ -1,3 +1,5 @@
+# For now, just copy and paste this in fish prompt to update fish config.
+# Supposedly, I could automatically update  ~/.config/fish/functions/fish_prompt.fish when reloading my configuration using home-manager. 
 
 functions -e fish_right_prompt; function fish_prompt -d "Write out the prompt"
     set -l laststatus $status

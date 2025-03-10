@@ -1,3 +1,5 @@
+# Based on configurations provided by: fish_config browse.
+
 set fish_greeting # Disable greeting
 set -U fish_color_normal normal
 set -U fish_color_command 99cc99

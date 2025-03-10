@@ -6,30 +6,18 @@
 
 {
   imports = [
-    # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    ../../modules/vscode
+    ../../modules/fish
   ];
 
-  # Bootloader.
+  # ---------------- Automatically generated  ----------------
+
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-
-  networking.hostName = "scylla"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Enable networking
   networking.networkmanager.enable = true;
-
-  # Set your time zone.
   time.timeZone = "Europe/Paris";
-
-  # Select internationalisation properties.
   i18n.defaultLocale = "en_GB.UTF-8";
-
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "fr_FR.UTF-8";
     LC_IDENTIFICATION = "fr_FR.UTF-8";
@@ -41,35 +29,15 @@
     LC_TELEPHONE = "fr_FR.UTF-8";
     LC_TIME = "fr_FR.UTF-8";
   };
-
-  nixpkgs.config.allowUnfree = true;
-
-  deployment = {
-    allowLocalDeployment = true;
-    # Disable SSH deployment. This node will be skipped in a
-    # normal`colmena apply`
-    targetHost = null;
-  };
-
-  # Enable the X11 windowing system.
   services.xserver.enable = true;
-  # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
-
-  # Configure keymap in X11
   services.xserver.xkb = {
     layout = "fr";
     variant = "azerty";
   };
-
-  # Configure console keymap
   console.keyMap = "fr";
-
-  # Enable CUPS to print documents.
   services.printing.enable = true;
-
-  # Enable sound with pipewire.
   hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
@@ -77,18 +45,21 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
-
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
-    #media-session.enable = true;
   };
 
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
+  # ---------------- My config  ----------------
+  networking.hostName = "scylla"; 
+  deployment = {
+    allowLocalDeployment = true;
+    targetHost = null; # Disable colmena SSH deployment.
+  };
+  virtualisation.docker.enable = true;
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
+  environment.systemPackages = with pkgs; [ ];
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.gquetel = {
     isNormalUser = true;
     description = "gquetel";
@@ -97,46 +68,11 @@
       "wheel"
     ];
     packages = with pkgs; [
-      (unstable.vscode-with-extensions.override {
-        vscodeExtensions = with unstable.vscode-extensions; [
-          bbenoist.nix
-          daohong-emilio.yash
-          github.copilot
-          james-yu.latex-workshop 	
-          jnoortheen.nix-ide
-          mechatroner.rainbow-csv
-          ms-python.black-formatter
-          # ms-python.python
-          ms-python.vscode-pylance
-          ms-vscode-remote.remote-ssh
-          ms-vscode.cpptools
-          myriad-dreamin.tinymist
-          njpwerner.autodocstring
-          redhat.vscode-yaml
-          visualstudioexptteam.vscodeintellicode
-          yzhang.markdown-all-in-one
-          ms-toolsai.jupyter
-          ms-toolsai.jupyter-renderers
-        ] ++ unstable.vscode-utils.extensionsFromVscodeMarketplace [
-          # 2025-03-07:For some reason, unstable ms-python.python fails to build 
-          {
-            name = "python";
-            publisher = "ms-python";
-            hash = "sha256-QpmitRUz2WfiGGKqofxw0V1mLEu6EeZeMSmbQo5C6Y0=";
-            version = "2025.2.0";
-          }
-          {
-            name = "vscode-edit-csv";
-            publisher = "janisdd";
-            hash = "sha256-xMZSzbRbG3OCWhTBusx06i0XoN81feNDfOmF1hezmZg=";
-            version = "0.11.2";
-            }
-        ];
-      })
       black
       colmena
       drawio
       element-desktop
+      firefox
       gimp
       git
       git-lfs
@@ -160,42 +96,16 @@
       zotero
     ];
   };
-  virtualisation.docker.enable = true;
-  programs.fish = {
+
+  # ---------------- Custom modules ----------------
+
+  vscode = {
     enable = true;
-    interactiveShellInit = builtins.readFile ./interactive_init.fish;
+    user = "gquetel";
   };
+  fish.enable = true;
 
-  programs.firefox.enable = true;
-  programs.bash = {
-    interactiveShellInit = ''
-      if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
-      then
-        shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=""
-        exec ${pkgs.fish}/bin/fish $LOGIN_OPTION
-      fi
-    '';
-  };
-
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
-
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  environment.systemPackages = with pkgs; [
-  ];
-
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
-
-  # ----------------- DNSCRYPT ---------------
+  # ---------------- Custom services  ----------------
   services.dnscrypt-proxy2 = {
     enable = false;
     settings = {
@@ -208,17 +118,6 @@
       ];
     };
   };
-
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

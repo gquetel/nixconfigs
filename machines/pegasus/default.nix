@@ -4,6 +4,7 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware.nix
+    ../../modules/fish
   ];
 
   disko = import ./disko.nix;
@@ -57,6 +58,7 @@
     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICK/iZJoWOdOasaD28jedexzjVc4tHosDTEYFIG/i9Fc gquetel@scylla"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIABgZ5qqnOl8LXcq2m/xaaKZlEB/ORDwIwaFSXJDs2eR gquetel@hydra"
     ];
   };
 
@@ -66,6 +68,7 @@
     group = "root";
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICK/iZJoWOdOasaD28jedexzjVc4tHosDTEYFIG/i9Fc gquetel@scylla"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIABgZ5qqnOl8LXcq2m/xaaKZlEB/ORDwIwaFSXJDs2eR gquetel@hydra"
     ];
   };
 
@@ -195,7 +198,7 @@
       extraConfig = ''
         auth_basic "Documents de thèse de Grégor"; 
         auth_basic_user_file /run/other-keys/nginx-protected.htpasswd ;
-        
+
         types {
           application/pdf pdf;
         }
@@ -339,11 +342,8 @@
     git
     tree
   ];
-
-  programs.fish = {
-    enable = true;
-    interactiveShellInit = builtins.readFile ./interactive_init.fish;
-  };
+  # ---------------- Custom modules ----------------
+  fish.enable = true;
 
   programs.bash = {
     interactiveShellInit = ''
