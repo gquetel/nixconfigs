@@ -48,12 +48,13 @@
   };
 
   # ---------------- My config  ----------------
-  networking.hostName = "scylla"; 
+  networking.hostName = "scylla";
   deployment = {
     allowLocalDeployment = true;
     targetHost = null; # Disable colmena SSH deployment.
   };
   virtualisation.docker.enable = true;
+  nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
@@ -83,6 +84,7 @@
       npins
       obsidian
       openvpn
+      ripgrep
       signal-desktop
       spotify
       texliveFull
