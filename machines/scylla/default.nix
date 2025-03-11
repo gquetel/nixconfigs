@@ -72,6 +72,7 @@
       black
       colmena
       drawio
+      eclipses.eclipse-sdk
       element-desktop
       firefox
       gimp

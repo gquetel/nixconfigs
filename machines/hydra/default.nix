@@ -38,6 +38,20 @@
     allowLocalDeployment = true;
     targetHost = null; # Disable SSH colmena deployment.
   };
+
+  services.dnscrypt-proxy2 = {
+    enable = true;
+    settings = {
+      require_dnssec = true;
+      server_names = [
+        "fdnipv6"
+        "fdn"
+        "dnscry.pt-paris-ipv4"
+        "dnscry.pt-paris-ipv6"
+      ];
+    };
+  };
+
   nixpkgs.config.allowUnfree = true;
   environment.systemPackages = with pkgs; [
     nano
@@ -55,6 +69,7 @@
       colmena
       drawio
       element-desktop
+      eclipses.eclipse-sdk
       firefox
       git
       git-lfs
