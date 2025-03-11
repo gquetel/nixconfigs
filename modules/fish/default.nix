@@ -15,7 +15,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    
+
     programs.fish = {
       enable = true;
       interactiveShellInit = builtins.readFile ./interactive_init.fish;
@@ -25,6 +25,8 @@ in
         nsp = "nix-shell -p";
         ns = "nix-shell";
         ncg = "sudo nix-collect-garbage --delete-older-than 30d";
+        nsc = "nix-shell -p --command \"code . ; return\"";
+        c = "code .";
       };
     };
 
