@@ -25,7 +25,7 @@ in
         nsp = "nix-shell -p";
         ns = "nix-shell";
         ncg = "sudo nix-collect-garbage --delete-older-than 30d";
-        nsc = "nix-shell -p --command \"code . ; return\"";
+        nsc = "nix-shell --command \"code . ; return\"";
         c = "code .";
       };
     };
