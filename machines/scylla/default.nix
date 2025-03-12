@@ -70,6 +70,7 @@
     ];
     packages = with pkgs; [
       black
+	broot
       colmena
       drawio
       eclipses.eclipse-sdk
