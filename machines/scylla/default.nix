@@ -9,6 +9,7 @@
     ./hardware-configuration.nix
     ../../modules/vscode
     ../../modules/fish
+    "${(import ../../npins).agenix}/modules/age.nix"
   ];
 
   # ---------------- Automatically generated  ----------------
@@ -68,41 +69,45 @@
       "networkmanager"
       "wheel"
     ];
-    packages = with pkgs; [
-      black
-	broot
-      colmena
-      drawio
-      eclipses.eclipse-sdk
-      element-desktop
-      firefox
-      gimp
-      git
-      git-lfs
-      htop
-      hugo
-      nix-init
-      nixfmt-rfc-style
-      npins
-      obsidian
-      openvpn
-      ripgrep
-      signal-desktop
-      spotify
-      texliveFull
-      thunderbird
-      tinymist
-      tree
-      unstable.typst
-      typstfmt
-      wget
-      zoom-us
-      zotero
-    ];
+    packages =
+      with pkgs;
+      [
+        black
+        broot
+        colmena
+        drawio
+        eclipses.eclipse-sdk
+        element-desktop
+        firefox
+        gimp
+        git
+        git-lfs
+        htop
+        hugo
+        nix-init
+        nixfmt-rfc-style
+        npins
+        obsidian
+        openvpn
+        ripgrep
+        signal-desktop
+        spotify
+        texliveFull
+        thunderbird
+        tinymist
+        tree
+        unstable.typst
+        typstfmt
+        wget
+        zoom-us
+        zotero
+      ]
+      ++ [
+        (pkgs.callPackage "${(import ../../npins).agenix}/pkgs/agenix.nix" { })
+      ];
   };
 
   # ---------------- Custom modules ----------------
-
   vscode = {
     enable = true;
     user = "gquetel";
@@ -115,10 +120,10 @@
     settings = {
       require_dnssec = true;
       server_names = [
-        "fdnipv6"
-        "fdn"
         "dnscry.pt-paris-ipv4"
         "dnscry.pt-paris-ipv6"
+        "fdnipv6"
+        "fdn"
       ];
     };
   };

@@ -5,6 +5,7 @@
     # Include the results of the hardware scan.
     ./hardware.nix
     ../../modules/fish
+    "${(import ../../npins).agenix}/modules/age.nix"
   ];
 
   disko = import ./disko.nix;

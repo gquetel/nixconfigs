@@ -5,6 +5,7 @@
     ./hardware-configuration.nix
     ../../modules/vscode
     ../../modules/fish
+    "${(import ../../npins).agenix}/modules/age.nix"
   ];
 
   # ---------------- Automatically generated  ----------------
