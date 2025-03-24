@@ -60,6 +60,7 @@
     "nix-command"
     "flakes"
   ];
+  boot.kernelPackages = pkgs.linuxPackages_latest;
   environment.systemPackages = with pkgs; [ ];
 
   users.users.gquetel = {

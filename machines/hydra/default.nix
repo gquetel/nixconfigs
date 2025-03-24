@@ -41,7 +41,7 @@
   };
 
   services.dnscrypt-proxy2 = {
-    enable = true;
+    enable = false;
     settings = {
       require_dnssec = true;
       server_names = [
@@ -79,6 +79,8 @@
       npins
       obsidian
       openvpn
+      python311
+      ripgrep
       signal-desktop
       spotify
       texliveFull

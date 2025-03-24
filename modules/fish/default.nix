@@ -27,6 +27,7 @@ in
         ncg = "sudo nix-collect-garbage --delete-older-than 30d";
         nsc = "nix-shell --command \"code . ; return\"";
         c = "code .";
+        rgf = "rg --files | rg";
       };
     };
 
