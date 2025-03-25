@@ -48,7 +48,6 @@
     pulse.enable = true;
   };
 
-  boot.kernelPackages = pkgs.linuxPackages_latest;
   # ---------------- My config  ----------------
   networking.hostName = "scylla";
   deployment = {
