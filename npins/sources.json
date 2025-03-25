@@ -63,8 +63,8 @@
     "nixpkgs": {
       "type": "Channel",
       "name": "nixos-24.11",
-      "url": "https://releases.nixos.org/nixos/24.11/nixos-24.11.715458.52e3095f6d81/nixexprs.tar.xz",
-      "hash": "1840xlhj1k8axc40dzw2ycrpwrap136kzmpg8m9vgxbhcsjm0z0r"
+      "url": "https://releases.nixos.org/nixos/24.11/nixos-24.11.715908.7105ae395770/nixexprs.tar.xz",
+      "hash": "1ri6w09cb1za1838abvc3lqlg103nqkfbb8i6mhw5bnzs31aw8f6"
     },
     "unstable": {
       "type": "Git",
@@ -74,9 +74,9 @@
         "repo": "nixpkgs"
       },
       "branch": "nixos-unstable",
-      "revision": "36fd87baa9083f34f7f5027900b62ee6d09b1f2f",
-      "url": "https://github.com/nixos/nixpkgs/archive/36fd87baa9083f34f7f5027900b62ee6d09b1f2f.tar.gz",
-      "hash": "0b56iwbr9cwakzzs4n9k6nacgzk3j81vx2spc8m6w6vvv2qdw7js"
+      "revision": "1e5b653dff12029333a6546c11e108ede13052eb",
+      "url": "https://github.com/nixos/nixpkgs/archive/1e5b653dff12029333a6546c11e108ede13052eb.tar.gz",
+      "hash": "0k4kimyk5065sb5l0hzabhbk5579dnj2fhkqzdqw8pfbwlagx68v"
     }
   },
   "version": 3

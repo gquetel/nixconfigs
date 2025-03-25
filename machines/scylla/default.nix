@@ -48,12 +48,14 @@
     pulse.enable = true;
   };
 
+  boot.kernelPackages = pkgs.linuxPackages_latest;
   # ---------------- My config  ----------------
   networking.hostName = "scylla";
   deployment = {
     allowLocalDeployment = true;
     targetHost = null; # Disable colmena SSH deployment.
   };
+
   virtualisation.docker.enable = true;
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [
