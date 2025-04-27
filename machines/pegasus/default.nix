@@ -337,11 +337,12 @@
   };
 
   environment.systemPackages = with pkgs; [
-    wget
+    broot
     htop
     goaccess
     git
     tree
+    wget
   ];
   # ---------------- Custom modules ----------------
   fish.enable = true;

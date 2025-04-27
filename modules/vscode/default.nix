@@ -37,7 +37,6 @@ in
               ms-python.vscode-pylance
               ms-toolsai.jupyter
               ms-toolsai.jupyter-renderers
-              ms-vscode-remote.remote-ssh
               ms-vscode.cpptools
               myriad-dreamin.tinymist
               njpwerner.autodocstring
@@ -59,6 +58,12 @@ in
                 publisher = "janisdd";
                 hash = "sha256-xMZSzbRbG3OCWhTBusx06i0XoN81feNDfOmF1hezmZg=";
                 version = "0.11.2";
+              }
+              { # vscode-extensions.ms-vscode-remote, usntable version fails to connect to TP clusters on hydra.
+                name = "remote-ssh";
+                publisher = "ms-vscode-remote";
+                hash = "sha256-vd+9d86Z8429QpQVCZm8gtiJDcMpD++aiFVwvCrPg5w=";
+                version = "0.78.0";
               }
             ]);
         })

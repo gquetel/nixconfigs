@@ -67,6 +67,7 @@
     ];
 
     packages = with pkgs; [
+      broot
       colmena
       drawio
       element-desktop
