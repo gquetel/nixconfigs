@@ -269,6 +269,15 @@
     group = "mediaserver";
   };
 
+  # This allows for Quick Sync usage 
+  
+  hardware.opengl = {
+    enable = true;
+    extraPackages = with pkgs; [
+      intel-vaapi-driver
+    ];
+  };
+
   services.jackett = {
     enable = true;
     user = "mediaserver";
@@ -289,6 +298,8 @@
   # ATM, Il faut mettre à jour manuellement le profil de la connection dans delugeweb.
   # TODO: Trouver comment ajouter de la persistance avec ce fichier (sorte de mécanisme de secrets)
   # Je crois qu'un process veut append dedans dans tous les cas, mais on peut peut-être fournir un profil par défaut.
+  
+  
   services.deluge = {
     enable = true;
     authFile = "/run/other-keys/deluge";
@@ -301,6 +312,9 @@
       download_location = "/portemer/deluge/";
       enabled_plugins = [ "Label" ];
       allow_remote = true;
+      max_active_seeding = 50;
+      max_active_downloading = 10;
+      max_active_limit = 60;
     };
   };
   # ----------------- Uptime Kuma -----------------
