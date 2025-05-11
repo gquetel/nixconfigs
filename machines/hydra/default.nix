@@ -75,7 +75,7 @@
       firefox
       git
       git-lfs
-      htop
+      btop
       nixfmt-rfc-style
       npins
       obsidian

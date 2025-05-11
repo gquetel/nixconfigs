@@ -338,7 +338,7 @@
 
   environment.systemPackages = with pkgs; [
     broot
-    htop
+    btop
     goaccess
     git
     tree

@@ -84,7 +84,7 @@
         gimp
         git
         git-lfs
-        htop
+        btop
         hugo
         nix-init
         nixfmt-rfc-style
@@ -107,6 +107,15 @@
       ++ [
         (pkgs.callPackage "${(import ../../npins).agenix}/pkgs/agenix.nix" { })
       ];
+  };
+
+  programs.tmux = {
+    enable = true;
+    clock24 = true;
+    plugins = [ pkgs.tmuxPlugins.catppuccin ];
+    extraConfig = ''
+          set -g @catppuccin_flavour 'mocha'
+    '';
   };
 
   # ---------------- Custom modules ----------------
