@@ -33,6 +33,12 @@
     pulse.enable = true;
   };
 
+  # hardware.opengl = {
+  #   enable = true;
+  #   extraPackages = with pkgs; [
+  #     intel-media-driver # LIBVA_DRIVER_NAME=iHD
+  #   ];
+  # };
   # ---------------- My config  ----------------
   networking.hostName = "hydra";
   deployment = {
@@ -70,6 +76,7 @@
       broot
       colmena
       drawio
+      lazygit
       element-desktop
       eclipses.eclipse-sdk
       firefox
@@ -85,6 +92,7 @@
       signal-desktop
       spotify
       texliveFull
+      tmux
       thunderbird
       tinymist
       typstfmt
