@@ -78,7 +78,6 @@
       drawio
       lazygit
       element-desktop
-      eclipses.eclipse-sdk
       firefox
       git
       git-lfs
@@ -95,10 +94,16 @@
       tmux
       thunderbird
       tinymist
+      # using unstable to get newer version (0.13), required by some 
+      # templates I use.
+      unstable.typst
       typstfmt
       zotero
+      # using unstable to be able to screenshare correctly. 
+      # See: https://github.com/NixOS/nixpkgs/pull/397036
+      unstable.zoom-us
     ];
-  };
+};
 
   # ---------- Custom modules ----------
   vscode = {
