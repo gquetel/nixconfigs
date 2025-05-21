@@ -62,7 +62,11 @@
     "flakes"
   ];
   boot.kernelPackages = pkgs.linuxPackages_latest;
-  environment.systemPackages = with pkgs; [ ];
+  environment.systemPackages = with pkgs; [ 
+    xdg-desktop-portal
+    xdg-desktop-portal-gnome
+    xdg-desktop-portal-kde
+  ];
 
   users.users.gquetel = {
     isNormalUser = true;
@@ -101,7 +105,7 @@
         unstable.typst
         typstfmt
         wget
-        zoom-us
+        unstable.zoom-us
         zotero
       ]
       ++ [
