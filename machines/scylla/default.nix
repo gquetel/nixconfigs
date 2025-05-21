@@ -80,6 +80,7 @@
       [
         black
         broot
+        btop
         colmena
         drawio
         eclipses.eclipse-sdk
@@ -88,8 +89,8 @@
         gimp
         git
         git-lfs
-        btop
         hugo
+        lazygit
         nix-init
         nixfmt-rfc-style
         npins
@@ -102,11 +103,12 @@
         thunderbird
         tinymist
         tree
-        unstable.typst
         typstfmt
         wget
-        unstable.zoom-us
         zotero
+
+        unstable.typst
+        unstable.zoom-us
       ]
       ++ [
         (pkgs.callPackage "${(import ../../npins).agenix}/pkgs/agenix.nix" { })
