@@ -10,6 +10,7 @@
       "pre_releases": false,
       "version_upper_bound": null,
       "release_prefix": null,
+      "submodules": false,
       "version": "0.15.0",
       "revision": "564595d0ad4be7277e07fa63b5a991b3c645655d",
       "url": "https://api.github.com/repos/ryantm/agenix/tarball/0.15.0",
@@ -25,6 +26,7 @@
       "pre_releases": false,
       "version_upper_bound": null,
       "release_prefix": null,
+      "submodules": false,
       "version": "v0.4.0",
       "revision": "f8a595d8e747e34d0b0c768f08cb6e263963c615",
       "url": "https://api.github.com/repos/zhaofengli/colmena/tarball/v0.4.0",
@@ -40,10 +42,11 @@
       "pre_releases": false,
       "version_upper_bound": null,
       "release_prefix": null,
-      "version": "v1.11.0",
-      "revision": "cdf8deded8813edfa6e65544f69fdd3a59fa2bb4",
-      "url": "https://api.github.com/repos/nix-community/disko/tarball/v1.11.0",
-      "hash": "13brimg7z7k9y36n4jc1pssqyw94nd8qvgfjv53z66lv4xkhin92"
+      "submodules": false,
+      "version": "v1.12.0",
+      "revision": "7121f74b976481bc36877abaf52adab2a178fcbe",
+      "url": "https://api.github.com/repos/nix-community/disko/tarball/v1.12.0",
+      "hash": "0wbx518d2x54yn4xh98cgm65wvj0gpy6nia6ra7ns4j63hx14fkq"
     },
     "nixos-anywhere": {
       "type": "GitRelease",
@@ -55,6 +58,7 @@
       "pre_releases": false,
       "version_upper_bound": null,
       "release_prefix": null,
+      "submodules": false,
       "version": "1.6.0",
       "revision": "97b45ac774699b1cfd267e98a8bdecb74bace593",
       "url": "https://api.github.com/repos/nix-community/nixos-anywhere/tarball/1.6.0",
@@ -62,9 +66,9 @@
     },
     "nixpkgs": {
       "type": "Channel",
-      "name": "nixos-24.11",
-      "url": "https://releases.nixos.org/nixos/24.11/nixos-24.11.717738.1d3aeb5a193b/nixexprs.tar.xz",
-      "hash": "09zzczsv7gjcr02hvmyyrwg0n3jjcnb308cl1fb45xkyk3jyzvl8"
+      "name": "nixos-25.05",
+      "url": "https://releases.nixos.org/nixos/25.05/nixos-25.05.802216.55d1f923c480/nixexprs.tar.xz",
+      "hash": "1vsl3j33q85skkjbjy2nrba7cdraa9kd6cpn8anng9rzc3pcf1bm"
     },
     "unstable": {
       "type": "Git",
@@ -74,10 +78,11 @@
         "repo": "nixpkgs"
       },
       "branch": "nixos-unstable",
-      "revision": "3730d8a308f94996a9ba7c7138ede69c1b9ac4ae",
-      "url": "https://github.com/nixos/nixpkgs/archive/3730d8a308f94996a9ba7c7138ede69c1b9ac4ae.tar.gz",
-      "hash": "0h8dhnw8j9ngxcj6wpyr8k1kx2jvwl4n5y2rk9ji7gv3iza4dspg"
+      "submodules": false,
+      "revision": "2795c506fe8fb7b03c36ccb51f75b6df0ab2553f",
+      "url": "https://github.com/nixos/nixpkgs/archive/2795c506fe8fb7b03c36ccb51f75b6df0ab2553f.tar.gz",
+      "hash": "0m6prywp2axikm2sld8x6g362lzy2y8nf51w106j2riaklg6mfav"
     }
   },
-  "version": 3
+  "version": 5
 }

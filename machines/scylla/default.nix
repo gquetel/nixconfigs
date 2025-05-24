@@ -103,12 +103,11 @@
         thunderbird
         tinymist
         tree
+        typst
         typstfmt
         wget
         zotero
-
-        unstable.typst
-        unstable.zoom-us
+        zoom-us
       ]
       ++ [
         (pkgs.callPackage "${(import ../../npins).agenix}/pkgs/agenix.nix" { })
