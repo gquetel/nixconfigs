@@ -39,7 +39,7 @@
   };
   console.keyMap = "fr";
   services.printing.enable = true;
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -63,9 +63,7 @@
   ];
   boot.kernelPackages = pkgs.linuxPackages_latest;
   environment.systemPackages = with pkgs; [ 
-    xdg-desktop-portal
-    xdg-desktop-portal-gnome
-    xdg-desktop-portal-kde
+
   ];
 
   users.users.gquetel = {
