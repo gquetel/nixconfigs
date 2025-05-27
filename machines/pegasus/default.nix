@@ -191,31 +191,40 @@
     };
   };
 
-  services.nginx.virtualHosts."thesis-artefacts.gquetel.fr" = {
-    forceSSL = true;
-    enableACME = true;
-    root = "/var/www/pdfs";
-    locations."/" = {
-      extraConfig = ''
-        auth_basic "Documents de thèse de Grégor"; 
-        auth_basic_user_file /run/other-keys/nginx-protected.htpasswd ;
+  # services.nginx.virtualHosts."thesis-artefacts.gquetel.fr" = {
+  #   forceSSL = true;
+  #   enableACME = true;
+  #   root = "/var/www/pdfs";
+  #   locations."/" = {
+  #     extraConfig = ''
+  #       auth_basic "Documents de thèse de Grégor";
+  #       auth_basic_user_file /run/other-keys/nginx-protected.htpasswd ;
 
-        types {
-          application/pdf pdf;
-        }
-        autoindex on;
-      '';
-    };
-  };
+  #       types {
+  #         application/pdf pdf;
+  #       }
+  #       autoindex on;
+  #     '';
+  #   };
+  # };
 
   services.nginx.virtualHosts."gquetel.fr" = {
     forceSSL = true;
     enableACME = true;
     root = "/var/www/html/gquetel.fr";
+
+    locations."/robots.txt" = {
+      return = "200 'User-agent: *\nDisallow: /\n'"; 
+      extraConfig = ''
+        add_header Content-Type text/plain;
+      '';
+    };
+
   };
 
   # Reject all other invalid sub-subdomains.
-  # TODO: Is there a better way to do this ? 80 is sent to 404 and https is sent a SSL error.
+  # TODO: Is there a better way to do this ?
+  # 80 is sent to 404 and https sent a SSL error.
   services.nginx.virtualHosts."_" = {
     rejectSSL = true;
     locations."/" = {
@@ -269,7 +278,7 @@
     group = "mediaserver";
   };
 
-  # This allows for Quick Sync usage 
+  # This allows for Quick Sync usage
   hardware.opengl = {
     enable = true;
     extraPackages = with pkgs; [
@@ -295,9 +304,8 @@
 
   # Deluge génère automatiquement un mdp au boot dans /run/other-keys/deluge.
   # ATM, Il faut manuellement modifier le profil dans delugeweb.
-  # TODO: Trouver comment ajouter de la persistance avec ce fichier 
- 
-  
+  # TODO: Trouver comment ajouter de la persistance avec ce fichier
+
   services.deluge = {
     enable = true;
     authFile = "/run/other-keys/deluge";

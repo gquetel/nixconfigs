@@ -27,8 +27,12 @@ in
         ncg = "sudo nix-collect-garbage --delete-older-than 30d";
         nsc = "nix-shell --command \"code . ; return\"";
         nsf = "nix-shell --run fish" ;
+        nspf = "nix-shell --run fish -p";
+        nscf = "nix-shell --command \"fish; code . ; return\"";
+
         c = "code .";
         rgf = "rg --files | rg";
+        
       };
     };
 

@@ -9,6 +9,8 @@
     ./hardware-configuration.nix
     ../../modules/vscode
     ../../modules/fish
+    ../../modules/fonts
+
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
 
@@ -61,8 +63,11 @@
     "nix-command"
     "flakes"
   ];
+  
   boot.kernelPackages = pkgs.linuxPackages_latest;
   environment.systemPackages = with pkgs; [ 
+            
+    gnome-tweaks
 
   ];
 
