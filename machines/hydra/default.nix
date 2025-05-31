@@ -6,6 +6,7 @@
     ../../modules/vscode
     ../../modules/fish
     ../../modules/fonts
+    ../../modules/languagetool
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
 
@@ -82,6 +83,7 @@
       firefox
       git
       git-lfs
+      gnome-tweaks
       btop
       nixfmt-rfc-style
       npins
@@ -108,6 +110,7 @@
     user = "gquetel";
   };
   fish.enable = true;
+  languagetool.enable = true;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

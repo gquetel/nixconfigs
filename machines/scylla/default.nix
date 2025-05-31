@@ -66,9 +66,7 @@
   
   boot.kernelPackages = pkgs.linuxPackages_latest;
   environment.systemPackages = with pkgs; [ 
-            
     gnome-tweaks
-
   ];
 
   users.users.gquetel = {

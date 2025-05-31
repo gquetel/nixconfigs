@@ -41,6 +41,7 @@ in
               myriad-dreamin.tinymist
               njpwerner.autodocstring
               redhat.vscode-yaml
+              valentjn.vscode-ltex
               visualstudioexptteam.vscodeintellicode
               yzhang.markdown-all-in-one
             ]
