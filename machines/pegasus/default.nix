@@ -277,7 +277,7 @@
     group = "mediaserver";
   };
 
-  # This allows for Quick Sync usage
+  # This permit ffmpeg to transcode using hardware acceleration
   hardware.opengl = {
     enable = true;
     extraPackages = with pkgs; [
@@ -363,6 +363,7 @@
     tree
     wget
   ];
+
   # ---------------- Custom modules ----------------
   fish.enable = true;
 
@@ -375,8 +376,6 @@
       fi
     '';
   };
-
-  # NE PAS TOUCHER LE TRUC EN BAS
 
   # This option defines the first version of NixOS you have installed on this particular machine,
   # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.

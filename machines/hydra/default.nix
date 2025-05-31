@@ -74,35 +74,40 @@
       "wheel"
     ];
 
-    packages = with pkgs; [
-      broot
-      colmena
-      drawio
-      lazygit
-      element-desktop
-      firefox
-      git
-      git-lfs
-      gnome-tweaks
-      btop
-      nixfmt-rfc-style
-      npins
-      obsidian
-      openvpn
-      python311
-      ripgrep
-      signal-desktop
-      spotify
-      texliveFull
-      tmux
-      thunderbird
-      tinymist
-      typst
-      typstfmt
-      zotero
-      zoom-us
-    ];
-};
+    packages =
+      with pkgs;
+      [
+        broot
+        colmena
+        drawio
+        lazygit
+        element-desktop
+        firefox
+        git
+        git-lfs
+        gnome-tweaks
+        btop
+        nixfmt-rfc-style
+        npins
+        obsidian
+        openvpn
+        python311
+        ripgrep
+        signal-desktop
+        spotify
+        texliveFull
+        tmux
+        thunderbird
+        tinymist
+        typst
+        typstfmt
+        zotero
+        zoom-us
+      ]
+      ++ [
+        (pkgs.callPackage "${(import ../../npins).agenix}/pkgs/agenix.nix" { })
+      ];
+  };
 
   # ---------- Custom modules ----------
   vscode = {
