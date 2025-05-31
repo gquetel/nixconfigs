@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   imports = [
@@ -68,20 +73,18 @@
     ];
   };
 
-  users.groups.mediaserver = {
-    name = "mediaserver";
-  };
-
-  users.users.mediaserver = {
-    name = "mediaserver";
-    uid = 1001;
-    isNormalUser = true;
-    home = "/home/mediaserver";
-    group = "mediaserver";
-  };
+  services.openssh.enable = true;
+  services.openssh.settings.LogLevel = "VERBOSE"; # Required by fail2ban, should be set by default, but just in case.
 
   # ----------------- age secrets -----------------
   age.secrets.gquetel-password.file = ../../secrets/gquetel-hydra.age;
+  age.secrets.thesis-artefacts = {
+    # https://github.com/ryantm/agenix?tab=readme-ov-file#agesecretsnamemode
+    file = ../../secrets/thesis-artefacts.age;
+    mode = "770";
+    owner = "nginx";
+    group = "nginx";
+  };
 
   # ----------------- Gitlab runner -----------------
   # From: https://nixos.wiki/wiki/Gitlab_runner
@@ -120,7 +123,7 @@
           mkdir -p -m 0755 /nix/var/nix/profiles/per-user/root
           mkdir -p -m 0700 "$HOME/.nix-defexpr"
           . ${pkgs.nix}/etc/profile.d/nix-daemon.sh
-          ${pkgs.nix}/bin/nix-channel --add https://nixos.org/channels/nixos-24.11 nixpkgs 
+          ${pkgs.nix}/bin/nix-channel --add https://nixos.org/channels/nixos-25.05 nixpkgs 
           ${pkgs.nix}/bin/nix-channel --update nixpkgs
           ${pkgs.nix}/bin/nix-env -i ${
             concatStringsSep " " (
@@ -148,7 +151,10 @@
 
   # ----------------- Nginx -----------------
 
-  services.nginx.enable = true;
+  services.nginx = {
+    enable = true;
+    logError = "/var/log/nginx/error.log error";
+  };
   services.nginx.virtualHosts."movies.gquetel.fr" = {
     forceSSL = true;
     enableACME = true;
@@ -189,22 +195,22 @@
     };
   };
 
-  # services.nginx.virtualHosts."thesis-artefacts.gquetel.fr" = {
-  #   forceSSL = true;
-  #   enableACME = true;
-  #   root = "/var/www/pdfs";
-  #   locations."/" = {
-  #     extraConfig = ''
-  #       auth_basic "Documents de thèse de Grégor";
-  #       auth_basic_user_file /run/other-keys/nginx-protected.htpasswd ;
+  services.nginx.virtualHosts."thesis-artefacts.gquetel.fr" = {
+    forceSSL = true;
+    enableACME = true;
+    root = "/var/www/pdfs";
+    locations."/" = {
+      extraConfig = ''
+        auth_basic "Documents de thèse de Grégor";
+        auth_basic_user_file ${config.age.secrets.thesis-artefacts.path} ;
 
-  #       types {
-  #         application/pdf pdf;
-  #       }
-  #       autoindex on;
-  #     '';
-  #   };
-  # };
+        types {
+          application/pdf pdf;
+        }
+        autoindex on;
+      '';
+    };
+  };
 
   services.nginx.virtualHosts."gquetel.fr" = {
     forceSSL = true;
@@ -212,7 +218,7 @@
     root = "/var/www/html/gquetel.fr";
 
     locations."/robots.txt" = {
-      return = "200 'User-agent: *\nDisallow: /\n'"; 
+      return = "200 'User-agent: *\nDisallow: /\n'";
       extraConfig = ''
         add_header Content-Type text/plain;
       '';
@@ -235,24 +241,19 @@
     defaults.email = "gregor.quetel@gquetel.fr";
   };
 
-  services.openssh.enable = true;
-  services.openssh.settings.LogLevel = "VERBOSE"; # Required by fail2ban, should be set by default, but just in case.
-
-  # ----------------- DNSCRYPT ---------------
-  services.dnscrypt-proxy2 = {
-    enable = false;
-    settings = {
-      require_dnssec = true;
-      server_names = [
-        "fdnipv6"
-        "fdn"
-        "dnscry.pt-paris-ipv4"
-        "dnscry.pt-paris-ipv6"
-      ];
-    };
+  # ----------------- Mediaserver -----------------
+  users.groups.mediaserver = {
+    name = "mediaserver";
   };
 
-  # ----------------- Movies -----------------
+  users.users.mediaserver = {
+    name = "mediaserver";
+    uid = 1001;
+    isNormalUser = true;
+    home = "/home/mediaserver";
+    group = "mediaserver";
+  };
+
   services.flaresolverr = {
     enable = true;
     package = pkgs.callPackage ../../packages/flaresolverr { };

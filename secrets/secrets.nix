@@ -12,4 +12,5 @@ in
 {
    # List of secrets and the users / systems we authorize to have access to.
    "gquetel-hydra.age".publicKeys = [hydra];
+   "thesis-artefacts.age".publicKeys = [hydra];
 }
