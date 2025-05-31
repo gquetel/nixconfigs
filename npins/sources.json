@@ -3,9 +3,8 @@
     "agenix": {
       "type": "GitRelease",
       "repository": {
-        "type": "GitHub",
-        "owner": "ryantm",
-        "repo": "agenix"
+        "type": "Git",
+        "url": "https://github.com/ryantm/agenix.git"
       },
       "pre_releases": false,
       "version_upper_bound": null,
@@ -13,7 +12,7 @@
       "submodules": false,
       "version": "0.15.0",
       "revision": "564595d0ad4be7277e07fa63b5a991b3c645655d",
-      "url": "https://api.github.com/repos/ryantm/agenix/tarball/0.15.0",
+      "url": null,
       "hash": "01dhrghwa7zw93cybvx4gnrskqk97b004nfxgsys0736823956la"
     },
     "colmena": {
@@ -59,16 +58,16 @@
       "version_upper_bound": null,
       "release_prefix": null,
       "submodules": false,
-      "version": "1.6.0",
-      "revision": "97b45ac774699b1cfd267e98a8bdecb74bace593",
-      "url": "https://api.github.com/repos/nix-community/nixos-anywhere/tarball/1.6.0",
-      "hash": "0af7wjgm1b0by89d5v4bvgmdc8dv28qci4szl8n9i6i68alck13a"
+      "version": "1.10.0",
+      "revision": "1e2882c902322f1fd5992da0f5674c70ad8b133b",
+      "url": "https://api.github.com/repos/nix-community/nixos-anywhere/tarball/1.10.0",
+      "hash": "1p0knllznf3xn53xis703gzn63iss54pzk0kgzaj9li6gp7sadn7"
     },
     "nixpkgs": {
       "type": "Channel",
       "name": "nixos-25.05",
-      "url": "https://releases.nixos.org/nixos/25.05/nixos-25.05.802216.55d1f923c480/nixexprs.tar.xz",
-      "hash": "1vsl3j33q85skkjbjy2nrba7cdraa9kd6cpn8anng9rzc3pcf1bm"
+      "url": "https://releases.nixos.org/nixos/25.05/nixos-25.05.802746.7282cb574e06/nixexprs.tar.xz",
+      "hash": "1wzh6wsfn3zhk8rzjzy36hj7nzgz4qmampplask77jm9zsbv3fzr"
     },
     "unstable": {
       "type": "Git",
@@ -79,9 +78,9 @@
       },
       "branch": "nixos-unstable",
       "submodules": false,
-      "revision": "2795c506fe8fb7b03c36ccb51f75b6df0ab2553f",
-      "url": "https://github.com/nixos/nixpkgs/archive/2795c506fe8fb7b03c36ccb51f75b6df0ab2553f.tar.gz",
-      "hash": "0m6prywp2axikm2sld8x6g362lzy2y8nf51w106j2riaklg6mfav"
+      "revision": "96ec055edbe5ee227f28cdbc3f1ddf1df5965102",
+      "url": "https://github.com/nixos/nixpkgs/archive/96ec055edbe5ee227f28cdbc3f1ddf1df5965102.tar.gz",
+      "hash": "064q32jmj54iwgh4lcdg2aii75cr5lvb683ym5pmj2kkj340pnpd"
     }
   },
   "version": 5

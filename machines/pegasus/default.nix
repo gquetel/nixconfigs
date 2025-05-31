@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   imports = [
@@ -9,11 +9,6 @@
   ];
 
   disko = import ./disko.nix;
-
-  nixpkgs.config.permittedInsecurePackages = [
-    "dotnet-sdk-6.0.428"
-    "aspnetcore-runtime-6.0.36"
-  ];
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -54,7 +49,7 @@
   deployment.targetHost = "gquetel.fr";
 
   users.users.gquetel = {
-    hashedPassword = "$y$j9T$/9PMk6pMAgVtX5KMZL96C0$0pgIQnSSBe3Yn7FDVsQIh.6FZVj1edXBnKVKSfWYeJ";
+    hashedPasswordFile = config.age.secrets.gquetel-password.path;
     isNormalUser = true;
     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
     openssh.authorizedKeys.keys = [
@@ -84,6 +79,9 @@
     home = "/home/mediaserver";
     group = "mediaserver";
   };
+
+  # ----------------- age secrets -----------------
+  age.secrets.gquetel-password.file = ../../secrets/gquetel-hydra.age;
 
   # ----------------- Gitlab runner -----------------
   # From: https://nixos.wiki/wiki/Gitlab_runner

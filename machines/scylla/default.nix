@@ -10,7 +10,6 @@
     ../../modules/vscode
     ../../modules/fish
     ../../modules/fonts
-
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
 
