@@ -24,6 +24,7 @@ in
         v4 = "curl api.ipify.org";
         nsp = "nix-shell -p";
         ns = "nix-shell";
+        nb = "nix-build";
         ncg = "sudo nix-collect-garbage --delete-older-than 30d";
         nsc = "nix-shell --command \"code . ; return\"";
         nsf = "nix-shell --run fish" ;
