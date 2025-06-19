@@ -35,12 +35,18 @@
     pulse.enable = true;
   };
 
-  # hardware.opengl = {
-  #   enable = true;
-  #   extraPackages = with pkgs; [
-  #     intel-media-driver # LIBVA_DRIVER_NAME=iHD
-  #   ];
-  # };
+
+
+  # ---------------- Drivers ----------------
+  # https://wiki.nixos.org/wiki/NVIDIA
+  # For 1050Ti, given this link https://www.nvidia.com/fr-fr/drivers/results/
+  # The latest driver version is 570.169 i.e stable, no need to fetch legacy packages:
+
+  hardware.graphics.enable = true;
+  services.xserver.videoDrivers = [ "nvidia" ];
+  # Open is not supported for this old GPU, set it to false.
+  hardware.nvidia.open = false;  
+
   # ---------------- My config  ----------------
   networking.hostName = "hydra";
   deployment = {
