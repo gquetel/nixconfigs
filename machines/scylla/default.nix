@@ -53,6 +53,7 @@
   # Allows to build for aarch64, needed for deploying on heimdall.
   # https://colmena.cli.rs/unstable/examples/multi-arch.html
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
   networking.hostName = "scylla";
   deployment = {
     allowLocalDeployment = true;
@@ -66,18 +67,25 @@
     "flakes"
   ];
 
+  # ---------------- Drivers ----------------
+  # GPU
+  # https://wiki.nixos.org/w/index.php?title=Jellyfin&mobileaction=toggle_view_desktop#VAAPI_and_Intel_QSV
+  # New drivers so iHD
+  hardware.graphics = {
+    enable = true;
+    extraPackages = with pkgs; [
+      intel-media-driver # For Broadwell (2014) or newer processors. LIBVA_DRIVER_NAME=iHD
+    ];
+  };
+
+  environment.sessionVariables = {
+    LIBVA_DRIVER_NAME = "iHD";
+  };
+
   boot.kernelPackages = pkgs.linuxPackages_latest;
   environment.systemPackages = with pkgs; [
     gnome-tweaks
   ];
-
-  # Camera support:
-  # ipu6ep for Alder Lake
-  # Is broken: build fails
-  # hardware.ipu6 = {
-  #   enable = true;
-  #   platform = "ipu6ep";
-  # };
 
   users.users.gquetel = {
     isNormalUser = true;
@@ -101,6 +109,7 @@
         git
         git-lfs
         hugo
+        intel-gpu-tools
         lazygit
         nix-init
         nixfmt-rfc-style
