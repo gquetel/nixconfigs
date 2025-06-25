@@ -13,7 +13,7 @@ in
   options = {
     fish.enable = lib.mkEnableOption "Install custom fish environment.";
   };
-
+  # TODO: automatically call fish_prompt and interactive_init
   config = lib.mkIf cfg.enable {
 
     programs.fish = {
