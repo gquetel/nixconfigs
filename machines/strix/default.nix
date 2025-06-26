@@ -348,6 +348,8 @@
     btop
     goaccess
     git
+    intel-gpu-tools
+    tmux
     tree
     wget
   ];
