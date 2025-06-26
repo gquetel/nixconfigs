@@ -53,24 +53,8 @@
     allowLocalDeployment = true;
     targetHost = null; # Disable SSH colmena deployment.
   };
-
-  services.dnscrypt-proxy2 = {
-    enable = false;
-    settings = {
-      require_dnssec = true;
-      server_names = [
-        "fdnipv6"
-        "fdn"
-        "dnscry.pt-paris-ipv4"
-        "dnscry.pt-paris-ipv6"
-      ];
-    };
-  };
-
   nixpkgs.config.allowUnfree = true;
-  environment.systemPackages = with pkgs; [
-    nano
-  ];
+
 
   users.users.gquetel = {
     isNormalUser = true;
@@ -115,6 +99,10 @@
       ];
   };
 
+  environment.systemPackages = with pkgs; [
+    nano
+  ];
+
   # ---------- Custom modules ----------
   vscode = {
     enable = true;
@@ -122,7 +110,7 @@
   };
   fish.enable = true;
   languagetool.enable = true;
-
+  
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
