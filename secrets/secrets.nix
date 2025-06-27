@@ -18,4 +18,5 @@ in
   # To modify it
   "gquetel-strix.age".publicKeys = [ system-strix ] ++ users;
   "thesis-artefacts.age".publicKeys = [ system-strix ] ++ users;
+  "gitlab-runner.env.age".publicKeys = [ system-strix ] ++ users;
 }
