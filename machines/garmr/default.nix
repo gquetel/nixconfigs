@@ -13,6 +13,7 @@
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     ../../modules/common
+    ../../modules/fish
   ];
 
   # ---------------- Automatically generated  ----------------
@@ -74,7 +75,7 @@
   ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
-  networking.firewall.enable = false;
+  # networking.firewall.enable = false;
 
   # ---------------- Deployment info ----------------
   deployment.targetHost = "192.168.1.28";
@@ -90,7 +91,6 @@
   };
 
   # ---------------- Modules ----------------
-  common.enable = true;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

@@ -3,10 +3,10 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/vscode
     ../../modules/fish
     ../../modules/fonts
     ../../modules/languagetool
+    ../../modules/vscode
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
 
@@ -35,17 +35,14 @@
     pulse.enable = true;
   };
 
-
-
   # ---------------- Drivers ----------------
   # https://wiki.nixos.org/wiki/NVIDIA
   # For 1050Ti, given this link https://www.nvidia.com/fr-fr/drivers/results/
   # The latest driver version is 570.169 i.e stable, no need to fetch legacy packages:
 
   hardware.graphics.enable = true;
-  services.xserver.videoDrivers = [ "nvidia" ];
-  # Open is not supported for this old GPU, set it to false.
-  hardware.nvidia.open = false;  
+  # TODO: Implement cache usage
+  # services.xserver.videoDrivers = [ "nvidia" ];
 
   # ---------------- My config  ----------------
   networking.hostName = "hydra";
@@ -54,7 +51,6 @@
     targetHost = null; # Disable SSH colmena deployment.
   };
   nixpkgs.config.allowUnfree = true;
-
 
   users.users.gquetel = {
     isNormalUser = true;
@@ -99,18 +95,9 @@
       ];
   };
 
-  environment.systemPackages = with pkgs; [
-    nano
-  ];
-
   # ---------- Custom modules ----------
-  vscode = {
-    enable = true;
-    user = "gquetel";
-  };
-  fish.enable = true;
-  languagetool.enable = true;
-  
+
+
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave

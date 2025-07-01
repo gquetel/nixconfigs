@@ -5,38 +5,37 @@
   ...
 }:
 
-let
-  cfg = config.common;
-  unstable = pkgs.unstable;
-in
 {
-  options.common = {
-    enable = lib.mkEnableOption "Common configuration for all my machines.";
+
+
+  # Use latest kernel version.
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  # Enable tmux.
+  programs.tmux = {
+    enable = true;
+    clock24 = true;
   };
-  config = lib.mkIf cfg.enable {
 
-    # Use latest kernel version.
-    boot.kernelPackages = pkgs.linuxPackages_latest;
+  # Packages to be installed system-wide.
+  environment.systemPackages = with pkgs; [
+    broot
+    btop
+    colmena
+    git
+    git-lfs
+    lazygit
+    nano
+    npins
+    ripgrep
+    wget
+  ];
 
-    # Enable tmux.
-    programs.tmux = {
-      enable = true;
-      clock24 = true;
-    };
-
-    # Packages to be installed system-wide.
-    environment.systemPackages = with pkgs; [
-      broot
-      btop
-      colmena
-      git
-      git-lfs
-      lazygit
-      nano
-      npins
-      ripgrep
-      wget
-    ];
-
+  # Memory management service, more aggressive than default oom agent.
+  # If avail memory <= 5%, start killing bigger processes.
+  services.earlyoom = {
+    enable = true;
+    freeMemThreshold = 5;
   };
+
 }

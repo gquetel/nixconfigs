@@ -125,19 +125,10 @@
   };
 
   # ---------------- Custom modules ----------------
-  vscode = {
-    enable = true;
-    user = "gquetel";
-  };
-  fish.enable = true;
-  common.enable = true;
+
 
   # ---------------- Custom services  ----------------
-  services.earlyoom = {
-    enable = true;
-    # If avail memory <= 5%, start killing bigger processes.
-    freeMemThreshold = 5;
-  };
+
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
