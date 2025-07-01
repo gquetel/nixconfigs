@@ -5,6 +5,7 @@
     ./hardware-configuration.nix
     ../../modules/fish
     ../../modules/fonts
+    ../../modules/headscale-client
     ../../modules/languagetool
     ../../modules/vscode
     "${(import ../../npins).agenix}/modules/age.nix"

@@ -11,6 +11,7 @@
     ./hardware.nix
     ../../modules/fish
     ../../modules/common
+    ../../modules/headscale-client
 
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
