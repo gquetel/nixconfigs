@@ -7,6 +7,8 @@
 
 {
 
+  # Enable firewall
+  networking.firewall.enable = true;
 
   # Use latest kernel version.
   boot.kernelPackages = pkgs.linuxPackages_latest;
