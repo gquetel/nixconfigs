@@ -1,7 +1,3 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
 {
   config,
   pkgs,
@@ -15,7 +11,7 @@
     ../../modules/headscale-server
     ../../modules/common
     ../../modules/fish
-
+    ../../modules/fail2ban
   ];
 
   # ---------------- Automatically generated  ----------------
@@ -75,23 +71,13 @@
     80
     443
   ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
   # ---------------- Deployment info ----------------
-  deployment.targetHost = "192.168.1.28";
+  deployment.targetHost = "garmr";
   deployment.targetUser = "root";
 
   # ---------------- Services ----------------
   services.openssh.enable = true;
-
-  services.earlyoom = {
-    enable = true;
-    # If avail memory <= 5%, start killing bigger processes.
-    freeMemThreshold = 5;
-  };
-
   # ---------------- Modules ----------------
 
   # This value determines the NixOS release from which the default
@@ -101,5 +87,4 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "25.05"; # Did you read the comment?
-
 }

@@ -12,6 +12,7 @@
     ../../modules/fish
     ../../modules/common
     ../../modules/headscale-client
+    ../../modules/fail2ban
 
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
@@ -86,7 +87,7 @@
   };
 
   services.openssh.enable = true;
-  services.openssh.settings.LogLevel = "VERBOSE"; # Required by fail2ban, should be set by default, but just in case.
+
 
   # ----------------- age secrets -----------------
   # https://github.com/ryantm/agenix?tab=readme-ov-file#agesecretsnamemode
@@ -167,11 +168,11 @@
   };
 
   # ----------------- Nginx -----------------
-
   services.nginx = {
     enable = true;
     logError = "/var/log/nginx/error.log error";
   };
+
   services.nginx.virtualHosts."movies.gquetel.fr" = {
     forceSSL = true;
     enableACME = true;
@@ -333,13 +334,6 @@
     };
   };
 
-  # ----------------- Fail2ban -----------------
-  services.fail2ban = {
-    enable = true;
-    maxretry = 5;
-    bantime = "24h";
-    bantime-increment.multipliers = "1 2 4 8 16 32 64";
-  };
 
   # ----------------- /etc -----------------
 
