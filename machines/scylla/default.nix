@@ -10,6 +10,8 @@
     ../../modules/vscode
     ../../modules/fish
     ../../modules/fonts
+    ../../modules/common
+
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
 
@@ -82,7 +84,6 @@
     LIBVA_DRIVER_NAME = "iHD";
   };
 
-  boot.kernelPackages = pkgs.linuxPackages_latest;
   environment.systemPackages = with pkgs; [
     gnome-tweaks
   ];
@@ -98,34 +99,23 @@
       with pkgs;
       [
         black
-        broot
-        btop
-        colmena
         drawio
-        eclipses.eclipse-sdk
         element-desktop
         firefox
-        gimp
-        git
-        git-lfs
         hugo
         intel-gpu-tools
         lazygit
         nix-init
         nixfmt-rfc-style
-        npins
         obsidian
         openvpn
-        ripgrep
         signal-desktop
         spotify
         texliveFull
         thunderbird
         tinymist
-        tree
         typst
         typstfmt
-        wget
         zotero
         zoom-us
       ]
@@ -134,36 +124,15 @@
       ];
   };
 
-  programs.tmux = {
-    enable = true;
-    clock24 = true;
-    plugins = [ pkgs.tmuxPlugins.catppuccin ];
-    extraConfig = ''
-      set -g @catppuccin_flavour 'mocha'
-    '';
-  };
-
   # ---------------- Custom modules ----------------
   vscode = {
     enable = true;
     user = "gquetel";
   };
   fish.enable = true;
+  common.enable = true;
 
   # ---------------- Custom services  ----------------
-  services.dnscrypt-proxy2 = {
-    enable = false;
-    settings = {
-      require_dnssec = true;
-      server_names = [
-        "dnscry.pt-paris-ipv4"
-        "dnscry.pt-paris-ipv6"
-        "fdnipv6"
-        "fdn"
-      ];
-    };
-  };
-
   services.earlyoom = {
     enable = true;
     # If avail memory <= 5%, start killing bigger processes.

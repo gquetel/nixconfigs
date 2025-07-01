@@ -10,6 +10,8 @@
     # Include the results of the hardware scan.
     ./hardware.nix
     ../../modules/fish
+    ../../modules/common
+
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
 
@@ -37,8 +39,8 @@
     "8.8.8.8"
     "8.8.4.4"
   ];
-  
-  # TODO: Review the following config, might be useless / wrong. 
+
+  # TODO: Review the following config, might be useless / wrong.
   systemd.network.enable = true;
   systemd.network.networks."10-wan" = {
     matchConfig.Name = "eno1";
@@ -56,10 +58,12 @@
     linkConfig.RequiredForOnline = "routable";
   };
 
-  # mutableUsers: all changed passwords will be reset according to the users.users 
-  # configuration on activation.
-
+  # Changed passwords will be reset according to the users.users configuration.
   users.mutableUsers = false;
+
+  # Enable automatic login for the user.
+  services.getty.autologinUser = "gquetel";
+
   users.users.gquetel = {
     hashedPasswordFile = config.age.secrets.gquetel-strix.path;
     isNormalUser = true;
@@ -100,11 +104,11 @@
   # First create a runner instance for a project, the value for both the
   # CI_SERVER_URL & CI_SERVER_TOKEN will be given. My jobs do not have any tags so i must
   # enable the option "Run untagged jobs" on the runner options.
-  # Then, create a .env file with given values.  
+  # Then, create a .env file with given values.
 
   boot.kernel.sysctl."net.ipv4.ip_forward" = true; # Required for cloning
   virtualisation.docker.enable = true;
-  
+
   services.gitlab-runner = {
     enable = true;
     services = {
@@ -288,8 +292,13 @@
   hardware.graphics = {
     enable = true;
     extraPackages = with pkgs; [
-      intel-vaapi-driver
+      intel-media-driver
     ];
+  };
+
+  systemd.services.jellyfin.environment.LIBVA_DRIVER_NAME = "iHD";
+  environment.sessionVariables = {
+    LIBVA_DRIVER_NAME = "iHD";
   };
 
   services.jackett = {
@@ -352,19 +361,13 @@
   };
 
   environment.systemPackages = with pkgs; [
-    broot
-    btop
     goaccess
-    git
     intel-gpu-tools
-    tmux
-    tree
-    wget
   ];
 
   # ---------------- Custom modules ----------------
   fish.enable = true;
-
+  common.enable = true;
   programs.bash = {
     interactiveShellInit = ''
       if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
