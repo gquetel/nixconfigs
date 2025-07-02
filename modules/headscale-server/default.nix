@@ -5,9 +5,10 @@
   ...
 }:
 {
-  # Headscale server setup. Via:
+  # Headscale server setup. References:
   # - [1] https://headscale.net/stable/setup/requirements/
   # - [2] https://search.nixos.org/options?channel=25.05&from=0&size=50&sort=relevance&type=packages&query=headscale
+  # - [3] https://www.youtube.com/watch?v=ph5zQYx3HS8
 
   services.headscale = {
     enable = true;
@@ -28,7 +29,7 @@
         override_local_dns = true;
         magic_dns = true;
 
-        # Extra DNS records hardcoded to route to the correct 
+        # Extra DNS records hardcoded to route to the correct
         # machine in the tailnet.
         extra_records = [
           {
@@ -50,6 +51,11 @@
             name = "radarr.mesh.gq";
             type = "A";
             value = "100.64.0.3";
+          }
+          {
+            name = "ca.mesh.gq";
+            type = "A";
+            value = "100.64.0.5";
           }
         ];
       };

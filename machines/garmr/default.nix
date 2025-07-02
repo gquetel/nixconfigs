@@ -9,6 +9,7 @@
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     ../../modules/headscale-server
+    ../../modules/headscale-client
     ../../modules/common
     ../../modules/fish
     ../../modules/fail2ban

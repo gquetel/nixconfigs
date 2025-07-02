@@ -16,4 +16,7 @@
     trustedInterfaces = [ "tailscale0" ];
     allowedUDPPorts = [ config.services.tailscale.port ];
   };
+
+  # A client is added using the command: 
+  # sudo tailscale up --login-server headscale_server_url
 }

@@ -19,7 +19,6 @@
   };
 
   # ----------------- Services -----------------
-
   services.sonarr = {
     enable = true;
     user = "mediaserver";

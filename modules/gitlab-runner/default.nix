@@ -10,7 +10,7 @@
   # From: https://wiki.nixos.org/wiki/Gitlab_runner
   # First create a runner instance for a project, the value for both the
   # CI_SERVER_URL & CI_SERVER_TOKEN will be given. My jobs do not have any tags so i must
-  # enable the option "Run untagged jobs" on the runner options.
+  # enable the option "Run untagged jobs" on the runner options in the web interface.
   # Then, create a .env file with given values.
 
   boot.kernel.sysctl."net.ipv4.ip_forward" = true; # Required for cloning
@@ -71,8 +71,5 @@
       };
     };
   };
-
-
   age.secrets.gitlab-runner-env.file = ../../secrets/gitlab-runner.env.age;
-
 }
