@@ -10,9 +10,12 @@
     ./hardware-configuration.nix
     ../../modules/headscale-server
     ../../modules/headscale-client
+
     ../../modules/common
     ../../modules/fish
     ../../modules/fail2ban
+
+    ../../modules/step-ca
   ];
 
   # ---------------- Automatically generated  ----------------

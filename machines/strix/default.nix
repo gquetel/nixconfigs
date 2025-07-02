@@ -112,6 +112,7 @@
   environment.systemPackages = with pkgs; [
     goaccess
     intel-gpu-tools
+    step-cli
   ];
 
   # ----------------- Services -----------------
