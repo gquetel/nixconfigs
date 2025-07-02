@@ -5,8 +5,10 @@
   ...
 }:
 {
- # Headscale client setup.
-  services.tailscale.enable = true;
+  # Headscale client setup.
+  services.tailscale = {
+    enable = true;
+  };
 
   networking.firewall = {
     # Disable reverse path via same interface packet filtering

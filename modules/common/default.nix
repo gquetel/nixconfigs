@@ -21,9 +21,11 @@
 
   # Packages to be installed system-wide.
   environment.systemPackages = with pkgs; [
+
     broot
     btop
     colmena
+    dig
     git
     git-lfs
     lazygit
@@ -31,6 +33,7 @@
     npins
     ripgrep
     wget
+    whois
   ];
 
   # Memory management service, more aggressive than default oom agent.

@@ -76,34 +76,50 @@
     };
   };
 
-  services.nginx.virtualHosts."deluge.movies.gquetel.fr" = {
-    forceSSL = true;
-    enableACME = true;
+  services.nginx.virtualHosts."deluge.mesh.gq" = {
+    # forceSSL = true;
+    # enableACME = true;
     locations."/" = {
+      extraConfig = "
+      allow 100.64.0.0/10;
+      allow  fd7a:115c:a1e0::/48;
+      deny all;";
       proxyPass = "http://127.0.0.1:8112";
     };
   };
 
-  services.nginx.virtualHosts."veste.movies.gquetel.fr" = {
-    forceSSL = true;
-    enableACME = true;
+  services.nginx.virtualHosts."veste.mesh.gq" = {
+    # forceSSL = true;
+    # enableACME = true;
     locations."/" = {
+      extraConfig = "
+      allow 100.64.0.0/10;
+      allow  fd7a:115c:a1e0::/48;
+      deny all;";
       proxyPass = "http://127.0.0.1:9117";
     };
   };
 
-  services.nginx.virtualHosts."sonarr.movies.gquetel.fr" = {
-    forceSSL = true;
-    enableACME = true;
+  services.nginx.virtualHosts."sonarr.mesh.gq" = {
+    # forceSSL = true;
+    # enableACME = true;
     locations."/" = {
+      extraConfig = "
+      allow 100.64.0.0/10;
+      allow  fd7a:115c:a1e0::/48;
+      deny all;";
       proxyPass = "http://127.0.0.1:8989";
     };
   };
 
-  services.nginx.virtualHosts."radarr.movies.gquetel.fr" = {
-    forceSSL = true;
-    enableACME = true;
+  services.nginx.virtualHosts."radarr.mesh.gq" = {
+    # forceSSL = true;
+    # enableACME = true;
     locations."/" = {
+      extraConfig = "
+      allow 100.64.0.0/10;
+      allow  fd7a:115c:a1e0::/48;
+      deny all;";
       proxyPass = "http://127.0.0.1:7878";
     };
   };
