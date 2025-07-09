@@ -10,6 +10,7 @@
     ../../modules/vscode
     ../../modules/fish
     ../../modules/fonts
+    ../../modules/headscale-client
     ../../modules/common
 
     "${(import ../../npins).agenix}/modules/age.nix"

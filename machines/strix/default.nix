@@ -10,6 +10,7 @@
     # Include the results of the hardware scan.
     ./hardware.nix
     ../../modules/fish
+    ../../modules/fonts
     ../../modules/common
     ../../modules/headscale-client
     ../../modules/fail2ban
@@ -24,43 +25,10 @@
   boot.loader.efi.canTouchEfiVariables = true;
   time.timeZone = "Europe/Paris";
   console.keyMap = "fr";
-  networking.useNetworkd = true;
+
+
+  # ---------------- My config  ----------------
   networking.hostName = "strix";
-
-  # Colmena deployment info
-  deployment.targetHost = "gquetel.fr";
-  deployment.targetUser = "root";
-
-  networking.firewall.allowedTCPPorts = [
-    22
-    80
-    443
-  ];
-
-  networking.nameservers = [
-    "80.67.169.12"
-    "80.67.169.40"
-    "8.8.8.8"
-    "8.8.4.4"
-  ];
-
-  # TODO: Review the following config, might be useless / wrong.
-  systemd.network.enable = true;
-  systemd.network.networks."10-wan" = {
-    matchConfig.Name = "eno1";
-    networkConfig = {
-      Address = "192.168.1.33/24";
-    };
-    routes = [
-      {
-        routeConfig = {
-          Gateway = "192.168.1.1";
-          Destination = "0.0.0.0/0";
-        };
-      }
-    ];
-    linkConfig.RequiredForOnline = "routable";
-  };
 
   # Changed passwords will be reset according to the users.users configuration.
   users.mutableUsers = false;
@@ -84,6 +52,29 @@
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIABgZ5qqnOl8LXcq2m/xaaKZlEB/ORDwIwaFSXJDs2eR gquetel@hydra"
     ];
   };
+
+
+  # ---------------- Networking  ----------------
+
+  networking.firewall.allowedTCPPorts = [
+    22
+    80
+    443
+  ];
+
+  networking.nameservers = [
+    "8.8.8.8"
+    "8.8.4.4"
+  ];
+  # TODO: Review the following config, might be useless / wrong.
+  systemd.network.enable = true;
+
+
+  # Colmena deployment info
+  deployment.targetHost = "strix";
+
+
+
 
   # ----------------- age secrets -----------------
   # https://github.com/ryantm/agenix?tab=readme-ov-file#agesecretsnamemode
@@ -115,7 +106,12 @@
   ];
 
   # ----------------- Services -----------------
-  services.openssh.enable = true;
+  services.openssh = {
+    enable = true;
+    settings = {
+      PasswordAuthentication = false;
+    };
+  };
 
   #      ------------ Nginx ------------
   services.nginx = {

@@ -18,7 +18,6 @@
   # ---------------- Automatically generated  ----------------
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  networking.networkmanager.enable = true;
   time.timeZone = "Europe/Paris";
   i18n.defaultLocale = "en_GB.UTF-8";
 
@@ -38,8 +37,6 @@
   # ---------------- My config  ----------------
   networking.hostName = "garmr";
 
-  # Enable automatic login for the user.
-  services.getty.autologinUser = "gquetel";
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
@@ -66,12 +63,52 @@
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIABgZ5qqnOl8LXcq2m/xaaKZlEB/ORDwIwaFSXJDs2eR gquetel@hydra"
     ];
   };
-  # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [
-    22
-    80
-    443
-  ];
+
+  # ---------------- Networking  ----------------
+  networking.networkmanager.enable = true;
+  networking = {
+    # Open ports in the firewall.
+    firewall.allowedTCPPorts = [
+      22
+      80
+      443
+    ];
+
+    interfaces.enp0s31f6 = {
+      ipv6.addresses = [
+        {
+          # IPv6 prefix given by my FAI + my custom suffix
+          address = "2a01:cb00:02c4:3a00::0005";
+          prefixLength = 64;
+        }
+      ];
+
+      ipv4.addresses = [
+        {
+          # Correspond to IP address statically set in router config for this machine.
+          address = "192.168.1.28";
+          prefixLength = 24;
+        }
+      ];
+    };
+
+    # Default ipv6 gateway: my router
+    defaultGateway6 = {
+      address = "2a01:cb00:2c4:3a00::1";
+      interface = "enp0s31f6";
+    };
+    
+    # Default ipv4 gateway: my router
+    defaultGateway = {
+      address = "192.168.1.1";
+      interface = "enp0s31f6";
+    };
+
+    nameservers = [
+      "8.8.8.8"
+      "8.8.4.4"
+    ];
+  };
 
   # ---------------- Deployment info ----------------
   deployment.targetHost = "garmr";
