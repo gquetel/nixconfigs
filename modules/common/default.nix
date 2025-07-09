@@ -21,7 +21,6 @@
 
   # Packages to be installed system-wide.
   environment.systemPackages = with pkgs; [
-
     broot
     btop
     colmena
@@ -29,6 +28,7 @@
     git
     git-lfs
     lazygit
+    lsof
     nano
     npins
     ripgrep
