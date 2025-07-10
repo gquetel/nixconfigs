@@ -19,6 +19,12 @@
     clock24 = true;
   };
 
+  # Enable both flakes and nix-command 
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
+
   # Packages to be installed system-wide.
   environment.systemPackages = with pkgs; [
     broot

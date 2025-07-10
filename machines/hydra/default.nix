@@ -3,6 +3,7 @@
 {
   imports = [
     ./hardware-configuration.nix
+    ../../modules/common
     ../../modules/fish
     ../../modules/fonts
     ../../modules/headscale-client
@@ -64,22 +65,14 @@
     packages =
       with pkgs;
       [
-        broot
-        colmena
         drawio
-        lazygit
         element-desktop
         firefox
-        git
-        git-lfs
         gnome-tweaks
-        btop
         nixfmt-rfc-style
-        npins
         obsidian
         openvpn
         python311
-        ripgrep
         signal-desktop
         spotify
         texliveFull
@@ -97,7 +90,6 @@
   };
 
   # ---------- Custom modules ----------
-
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
