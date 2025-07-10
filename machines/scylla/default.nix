@@ -12,6 +12,7 @@
     ../../modules/fonts
     ../../modules/headscale-client
     ../../modules/common
+    ../../modules/firefox
 
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
@@ -102,7 +103,6 @@
         black
         drawio
         element-desktop
-        firefox
         hugo
         intel-gpu-tools
         lazygit
@@ -127,9 +127,7 @@
 
   # ---------------- Custom modules ----------------
 
-
   # ---------------- Custom services  ----------------
-
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
