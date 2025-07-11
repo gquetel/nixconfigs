@@ -21,7 +21,6 @@
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  networking.networkmanager.enable = true;
   time.timeZone = "Europe/Paris";
   i18n.defaultLocale = "en_GB.UTF-8";
   i18n.extraLocaleSettings = {
@@ -58,13 +57,18 @@
   # https://colmena.cli.rs/unstable/examples/multi-arch.html
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
-  networking.hostName = "scylla";
   deployment = {
     allowLocalDeployment = true;
     targetHost = null; # Disable colmena SSH deployment.
   };
 
   virtualisation.docker.enable = true;
+
+  # ---------------- Networking  ----------------
+  # From the doc is seems that systemd-networkd might not be suited for laptops with 
+  # dynamic network configuration: https://wiki.nixos.org/wiki/Systemd/networkd
+  networking.networkmanager.enable = true;
+  networking.hostName = "scylla";
 
 
   # ---------------- Drivers ----------------

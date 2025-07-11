@@ -35,7 +35,6 @@
   console.keyMap = "fr";
 
   # ---------------- My config  ----------------
-  networking.hostName = "garmr";
 
 
   users.users.gquetel = {
@@ -63,48 +62,46 @@
   };
 
   # ---------------- Networking  ----------------
-  networking.networkmanager.enable = true;
+  # systemd-networkd should be prefered over "scripted networking". Refs:
+  # - https://wiki.archlinux.org/title/Systemd-networkd
+  # - https://wiki.nixos.org/wiki/Systemd/networkd
+  # - https://man7.org/linux/man-pages/man5/systemd.netdev.5.html For networks configs.
+
+  networking.useNetworkd = true;
+  systemd.network = {
+    enable = true;
+
+    networks."10-wired" = {
+      # Match device name.
+      matchConfig.Name = "enp0s31f6";
+
+      # static IPv4 or IPv6 addresses and their prefix length
+      addresses = [
+        { Address = "192.168.1.28/24"; }
+        { Address = "2a01:cb00:02c4:3a00::0005/64"; }
+      ];
+
+      # Routes define where to route a packet (Gateway) given a destination range.
+      routes = [
+        {
+          routeConfig = {
+            Gateway = "192.168.1.1";
+            Destination = "0.0.0.0/0";
+          };
+        }
+      ];
+      # make routing on this interface a dependency for network-online.target
+      linkConfig.RequiredForOnline = "routable";
+    };
+  };
+
   networking = {
-    # Open ports in the firewall.
+    hostName = "garmr";
+
     firewall.allowedTCPPorts = [
       22
       80
       443
-    ];
-
-    interfaces.enp0s31f6 = {
-      ipv6.addresses = [
-        {
-          # IPv6 prefix given by my FAI + my custom suffix
-          address = "2a01:cb00:02c4:3a00::0005";
-          prefixLength = 64;
-        }
-      ];
-
-      ipv4.addresses = [
-        {
-          # Correspond to IP address statically set in router config for this machine.
-          address = "192.168.1.28";
-          prefixLength = 24;
-        }
-      ];
-    };
-
-    # Default ipv6 gateway: my router
-    defaultGateway6 = {
-      address = "2a01:cb00:2c4:3a00::1";
-      interface = "enp0s31f6";
-    };
-    
-    # Default ipv4 gateway: my router
-    defaultGateway = {
-      address = "192.168.1.1";
-      interface = "enp0s31f6";
-    };
-
-    nameservers = [
-      "8.8.8.8"
-      "8.8.4.4"
     ];
   };
 

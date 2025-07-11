@@ -26,9 +26,7 @@
   time.timeZone = "Europe/Paris";
   console.keyMap = "fr";
 
-
   # ---------------- My config  ----------------
-  networking.hostName = "strix";
 
   # Changed passwords will be reset according to the users.users configuration.
   users.mutableUsers = false;
@@ -53,28 +51,52 @@
     ];
   };
 
-
   # ---------------- Networking  ----------------
+  networking = {
+    hostName = "strix";
 
-  networking.firewall.allowedTCPPorts = [
-    22
-    80
-    443
-  ];
+    firewall.allowedTCPPorts = [
+      22
+      80
+      443
+    ];
+  };
 
-  networking.nameservers = [
-    "8.8.8.8"
-    "8.8.4.4"
-  ];
-  # TODO: Review the following config, might be useless / wrong.
-  systemd.network.enable = true;
+  # systemd-networkd should be prefered over "scripted networking". Refs:
+  # - https://wiki.archlinux.org/title/Systemd-networkd
+  # - https://wiki.nixos.org/wiki/Systemd/networkd
+  # - https://man7.org/linux/man-pages/man5/systemd.netdev.5.html For networks configs.
 
+  networking.useNetworkd = true;
+  systemd.network = {
+    enable = true;
+
+    networks."10-wired" = {
+      # Match device name.
+      matchConfig.Name = "enp0s31f6";
+
+      # static IPv4 or IPv6 addresses and their prefix length
+      addresses = [
+        { Address = "192.168.1.33/24"; }
+        { Address = "2a01:cb00:02c4:3a00::0003/64"; }
+      ];
+
+      # Routes define where to route a packet (Gateway) given a destination range.
+      routes = [
+        {
+          routeConfig = {
+            Gateway = "192.168.1.1";
+            Destination = "0.0.0.0/0";
+          };
+        }
+      ];
+      # make routing on this interface a dependency for network-online.target
+      linkConfig.RequiredForOnline = "routable";
+    };
+  };
 
   # Colmena deployment info
   deployment.targetHost = "strix";
-
-
-
 
   # ----------------- age secrets -----------------
   # https://github.com/ryantm/agenix?tab=readme-ov-file#agesecretsnamemode
