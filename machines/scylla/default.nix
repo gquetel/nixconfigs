@@ -102,7 +102,6 @@
         element-desktop
         hugo
         intel-gpu-tools
-        lazygit
         nix-init
         nixfmt-rfc-style
         obsidian
@@ -114,8 +113,8 @@
         tinymist
         typst
         typstfmt
-        zotero
         zoom-us
+        zotero
       ]
       ++ [
         (pkgs.callPackage "${(import ../../npins).agenix}/pkgs/agenix.nix" { })
