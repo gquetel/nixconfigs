@@ -37,8 +37,6 @@
   # ---------------- My config  ----------------
   networking.hostName = "garmr";
 
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
 
   users.users.gquetel = {
     isNormalUser = true;

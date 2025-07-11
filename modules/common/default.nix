@@ -19,11 +19,14 @@
     clock24 = true;
   };
 
-  # Enable both flakes and nix-command 
+  # Enable both flakes and nix-command
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
   ];
+
+  # Allow unfree packages
+  nixpkgs.config.allowUnfree = true;
 
   # Packages to be installed system-wide.
   environment.systemPackages = with pkgs; [

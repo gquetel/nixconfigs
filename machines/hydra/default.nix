@@ -52,7 +52,6 @@
     allowLocalDeployment = true;
     targetHost = null; # Disable SSH colmena deployment.
   };
-  nixpkgs.config.allowUnfree = true;
 
   users.users.gquetel = {
     isNormalUser = true;

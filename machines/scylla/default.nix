@@ -65,7 +65,6 @@
   };
 
   virtualisation.docker.enable = true;
-  nixpkgs.config.allowUnfree = true;
 
 
   # ---------------- Drivers ----------------
