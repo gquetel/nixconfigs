@@ -27,6 +27,14 @@
             Name = "NixOS Options";
             URLTemplate = "https://search.nixos.org/options?from=0&size=200&sort=relevance&type=packages&query={searchTerms}";
           }
+          {
+            Alias = "@nw";
+            Description = "Search in NixOS Wiki";
+            IconURL = "https://nixos.org/favicon.png";
+            Method = "GET";
+            Name = "NixOS Wiki";
+            URLTemplate = "https://wiki.nixos.org/w/index.php?search={searchTerms}";
+          }
         ];
       };
     };
