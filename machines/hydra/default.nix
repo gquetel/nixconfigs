@@ -5,6 +5,7 @@
     ./hardware-configuration.nix
     ../../modules/common
     ../../modules/fish
+    ../../modules/firefox
     ../../modules/fonts
     ../../modules/headscale-client
     ../../modules/languagetool
@@ -19,13 +20,7 @@
   networking.networkmanager.enable = true;
   time.timeZone = "Europe/Brussels";
   i18n.defaultLocale = "en_GB.UTF-8";
-  services.xserver.enable = true;
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
-  services.xserver.xkb = {
-    layout = "fr";
-    variant = "azerty";
-  };
+
   console.keyMap = "fr";
   services.printing.enable = true;
   services.pulseaudio.enable = false;
@@ -37,14 +32,49 @@
     pulse.enable = true;
   };
 
-  # ---------------- Drivers ----------------
+  # ---------------- Display ----------------
+  # This computer possess 2 GPUs: A 1050Ti, and an integrated iHD 630
+  # - The NVIDIA card still receive driver updates, which can be enabled using this doc:
   # https://wiki.nixos.org/wiki/NVIDIA
-  # For 1050Ti, given this link https://www.nvidia.com/fr-fr/drivers/results/
-  # The latest driver version is 570.169 i.e stable, no need to fetch legacy packages:
+  # - To enable the iGPU, I had to enable it in the BIOS of the computer.
 
-  hardware.graphics.enable = true;
-  # TODO: Implement cache usage
-  # services.xserver.videoDrivers = [ "nvidia" ];
+  # Only then "lspci -d ::03xx" is able to find both:
+  # 00:02.0 Display controller: Intel Corporation HD Graphics 630 (rev 04)
+  # 01:00.0 VGA compatible controller: NVIDIA Corporation GP107 [GeForce GTX 1050 Ti] (rev a1)
+
+  # From there, i can setup PRIME to solely use the GPU for intensive tasks, and the
+  # iGPU for window management.
+  # TODO: This currently does not work. While both GPUs can be accessed, X server uses 
+  # the NVIDIA card.
+
+  hardware.graphics = {
+    enable = true;
+  };
+
+  hardware.nvidia = {
+    open = false; # setting to true break correct display.
+    prime = {
+      intelBusId = "PCI:0:2:0";
+      nvidiaBusId = "PCI:1:0:0";
+      sync.enable = true;
+    };
+  };
+
+  services.xserver = {
+    enable = true;
+    displayManager.gdm.enable = true;
+    desktopManager.gnome.enable = true;
+    xkb = {
+      layout = "fr";
+      variant = "azerty";
+    };
+
+    videoDrivers = [
+      "nvidia"
+      # modesetting is needed for offloading, otherwise the X-server is run on the nvidia card
+      "modesetting"
+    ];
+  };
 
   # ---------------- My config  ----------------
   networking.hostName = "hydra";
@@ -66,7 +96,6 @@
       [
         drawio
         element-desktop
-        firefox
         gnome-tweaks
         nixfmt-rfc-style
         obsidian
