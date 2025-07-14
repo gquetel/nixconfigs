@@ -1,0 +1,87 @@
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
+
+let
+  domain = {
+    # This domain is handled by nginx (other servers will use this to generate certs).
+    fqdn = "ca.mesh.gq";
+    # This local domain is specifically for step-ca, which needs to run over
+    # https with a domain name it can generate a cert for. The CA is not
+    # allowed to generate certs for `localhost`, so we need some other domain
+    # that resolves to localhost instead.
+    local = "local.ca.mesh.gq";
+  };
+
+  cfg = config.snow.step-ca;
+in
+{
+  options.snow.step-ca = {
+    role = lib.mkOption {
+      type = lib.types.enum [
+        "client"
+        "server"
+      ];
+    };
+  };
+
+  config = {
+
+    security.acme = {
+      acceptTerms = true;
+      defaults = {
+        server = "https://${domain.local}:5050/acme/acme/directory";
+        renewInterval = "hourly";
+      };
+    };
+  };
+
+  imports = [
+    {
+      config = {
+        networking.extraHosts = "127.0.0.1 ${domain.local}";
+
+        services.nginx.virtualHosts.${domain.fqdn} = {
+          forceSSL = true;
+          enableACME = true;
+          locations."/" = {
+            proxyPass = "https://localhost:${toString config.services.step-ca.port}";
+          };
+        };
+
+        services.step-ca = {
+          enable = true;
+          address = "127.0.0.1";
+          port = 5050;
+          intermediatePasswordFile = "/dev/null";
+          settings = {
+            root = "/var/lib/step-ca-data/root/ca.crt";
+            crt = "/var/lib/step-ca-data/intermediate/im.crt";
+            key = "/var/lib/step-ca-data/intermediate/im.key";
+            # This machine is the only thing that talks directly to step-ca.
+            # Everything else is proxied through nginx.
+            dnsNames = [ "ca.mesh.gq" ];
+            # You need to configure a db for ACME to work. If you don't, you'll just
+            # get a 404 with no additional information :(
+            db = {
+              type = "badgerv2";
+              dataSource = "/var/lib/step-ca/db";
+              badgerFileLoadingMode = "";
+            };
+            authority = {
+              provisioners = [
+                {
+                  type = "ACME";
+                  name = "acme";
+                }
+              ];
+            };
+          };
+        };
+      };
+    }
+  ];
+}

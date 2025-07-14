@@ -8,12 +8,14 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    ../../modules/headscale-server
-    ../../modules/headscale-client
     ../../modules/common
-    ../../modules/fish
-    ../../modules/systemd-resolved
     ../../modules/fail2ban
+    ../../modules/fish
+    ../../modules/headscale-client
+    ../../modules/headscale-server
+    ../../modules/step-ca
+    ../../modules/systemd-resolved
+    "${(import ../../npins).agenix}/modules/age.nix"
   ];
 
   # ---------------- Automatically generated  ----------------
@@ -97,7 +99,6 @@
 
   networking = {
     hostName = "garmr";
-
     firewall.allowedTCPPorts = [
       22
       80
@@ -111,7 +112,11 @@
 
   # ---------------- Services ----------------
   services.openssh.enable = true;
+
   # ---------------- Modules ----------------
+
+  # ---------------- age secrets ----------------
+  age.secrets.step-ca-pwd.file = ../../secrets/step-ca.pwd.age;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
