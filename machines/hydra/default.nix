@@ -44,7 +44,7 @@
 
   # From there, i can setup PRIME to solely use the GPU for intensive tasks, and the
   # iGPU for window management.
-  # TODO: This currently does not work. While both GPUs can be accessed, X server uses 
+  # TODO: This currently does not work. While both GPUs can be accessed, X server uses
   # the NVIDIA card.
 
   hardware.graphics = {
@@ -89,6 +89,7 @@
     extraGroups = [
       "networkmanager"
       "wheel"
+      "docker" # Run docker without sudo.
     ];
 
     packages =
@@ -117,8 +118,12 @@
       ];
   };
 
-  # ---------- Custom modules ----------
+  # ---------------- Custom modules ----------------
 
+  # ---------------- Custom services  ----------------
+  virtualisation.docker = {
+    enable = true;
+  };
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
