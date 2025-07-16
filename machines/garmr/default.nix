@@ -12,6 +12,7 @@
     ../../modules/headscale-client
     ../../modules/common
     ../../modules/fish
+    ../../modules/systemd-resolved
     ../../modules/fail2ban
   ];
 
@@ -35,7 +36,6 @@
   console.keyMap = "fr";
 
   # ---------------- My config  ----------------
-
 
   users.users.gquetel = {
     isNormalUser = true;
