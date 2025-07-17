@@ -16,11 +16,11 @@
 
   # 1 - Generate CA certificate:  step certificate create --profile=root-ca \
   #     "garmr Root CA" ca.crt ca.key --no-password --insecure
-  
+
   # 2 - Generate intermediate certificate with custom password:
   #     step certificate create  --profile=intermediate-ca "garmr Intermediate CA" \
   #     im.crt im.key --ca=../root/ca.crt --ca-key=../root/ca.key
-  
+
   # 3 - Make sure the user step-ca has access to all files:
   #     chown -R step-ca:step-ca /var/lib/step-ca-data/
 
@@ -28,8 +28,9 @@
     enable = true;
 
     # Address and port of step CA, overrides settings.address.
+    # Is required.
     address = "127.0.0.1";
-    port = 5050;
+    port = 6060;
 
     # File containing clear-text password for intermediate key passphrase.
     intermediatePasswordFile = config.age.secrets.step-ca-pwd.path;
@@ -38,7 +39,7 @@
       crt = "/var/lib/step-ca-data/intermediate/im.crt";
       key = "/var/lib/step-ca-data/intermediate/im.key";
       dnsNames = [
-        "ca.mesh.gq" 
+        "ca.mesh.gq"
       ];
 
       db = {
@@ -69,26 +70,31 @@
     };
   };
 
+  networking.extraHosts = ''
+    127.0.0.1 local.ca.mesh.gq
+  '';
+
   services.nginx.virtualHosts."ca.mesh.gq" = {
     # Enable SSL and use ACME certificate
     forceSSL = true;
     enableACME = true;
 
     locations."/" = {
-      proxyPass = "https://127.0.0.1:5050";
-      extraConfig = ''
-        allow 100.64.0.0/10;
-        allow fd7a:115c:a1e0::/48;
-        deny all;
-      '';
+      proxyPass = "https://localhost:6060";
+      # extraConfig = ''
+      #   allow 100.64.0.0/10;
+      #   allow fd7a:115c:a1e0::/48;
+      #   deny all;
+      # '';
     };
-  };  
+  };
 
   security.acme.acceptTerms = true;
 
   # Attribute set of certificates to get signed and renewed.
   security.acme.certs."ca.mesh.gq" = {
     server = "https://ca.mesh.gq/acme/acme/directory";
+    webroot = "/var/lib/acme/acme-challenge";
   };
 
   environment.systemPackages = with pkgs; [
