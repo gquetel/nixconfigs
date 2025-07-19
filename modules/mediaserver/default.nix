@@ -76,8 +76,8 @@
   };
 
   services.nginx.virtualHosts."deluge.mesh.gq" = {
-    # forceSSL = true;
-    # enableACME = true;
+    forceSSL = true;
+    enableACME = true;
     locations."/" = {
       extraConfig = "
       allow 100.64.0.0/10;
@@ -86,10 +86,11 @@
       proxyPass = "http://127.0.0.1:8112";
     };
   };
+  security.acme.certs."deluge.mesh.gq".server = "https://ca.mesh.gq/acme/acme/directory";
 
   services.nginx.virtualHosts."veste.mesh.gq" = {
-    # forceSSL = true;
-    # enableACME = true;
+    forceSSL = true;
+    enableACME = true;
     locations."/" = {
       extraConfig = "
       allow 100.64.0.0/10;
@@ -98,10 +99,11 @@
       proxyPass = "http://127.0.0.1:9117";
     };
   };
+  security.acme.certs."veste.mesh.gq".server = "https://ca.mesh.gq/acme/acme/directory";
 
   services.nginx.virtualHosts."sonarr.mesh.gq" = {
-    # forceSSL = true;
-    # enableACME = true;
+    forceSSL = true;
+    enableACME = true;
     locations."/" = {
       extraConfig = "
       allow 100.64.0.0/10;
@@ -110,10 +112,11 @@
       proxyPass = "http://127.0.0.1:8989";
     };
   };
+  security.acme.certs."sonarr.mesh.gq".server = "https://ca.mesh.gq/acme/acme/directory";
 
   services.nginx.virtualHosts."radarr.mesh.gq" = {
-    # forceSSL = true;
-    # enableACME = true;
+    forceSSL = true;
+    enableACME = true;
     locations."/" = {
       extraConfig = "
       allow 100.64.0.0/10;
@@ -122,6 +125,7 @@
       proxyPass = "http://127.0.0.1:7878";
     };
   };
+  security.acme.certs."radarr.mesh.gq".server = "https://ca.mesh.gq/acme/acme/directory";
 
   # ----------------- Other -----------------
   # fail2ban rules for too many authentication attempts.
