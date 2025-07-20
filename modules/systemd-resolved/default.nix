@@ -11,7 +11,8 @@
   services.resolved = {
     enable = true;
     dnssec = "true";
-    domains = [ "~." ];
+    # These domains are used as search suffixes 
+    domains = ["mesh.gq"];
     fallbackDns = [
       "9.9.9.9"
       "149.112.112.112"
@@ -27,5 +28,4 @@
     "80.67.169.12"
     "80.67.169.40"
   ];
-
 }
