@@ -9,6 +9,7 @@
     ../../modules/fonts
     ../../modules/headscale-client
     ../../modules/languagetool
+    ../../modules/systemd-resolved
     ../../modules/vscode
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
@@ -17,7 +18,6 @@
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  networking.networkmanager.enable = true;
   time.timeZone = "Europe/Brussels";
   i18n.defaultLocale = "en_GB.UTF-8";
 
@@ -77,7 +77,7 @@
   };
 
   # ---------------- My config  ----------------
-  networking.hostName = "hydra";
+
   deployment = {
     allowLocalDeployment = true;
     targetHost = null; # Disable SSH colmena deployment.
@@ -87,7 +87,6 @@
     isNormalUser = true;
     description = "gquetel";
     extraGroups = [
-      "networkmanager"
       "wheel"
       "docker" # Run docker without sudo.
     ];
@@ -116,6 +115,36 @@
       ++ [
         (pkgs.callPackage "${(import ../../npins).agenix}/pkgs/agenix.nix" { })
       ];
+  };
+
+  # ---------------- Networking  ----------------
+  networking.hostName = "hydra";
+  networking.useNetworkd = true;
+  systemd.network = {
+    enable = true;
+
+    networks."10-wired" = {
+      # Match device name.
+      matchConfig.Name = "enp0s31f6";
+
+      # static IPv4 or IPv6 addresses and their prefix length
+      addresses = [
+        { Address = "192.168.1.32/24"; }
+        { Address = "2a01:cb00:02c4:3a00::0001/64"; }
+      ];
+
+      # Routes define where to route a packet (Gateway) given a destination range.
+      routes = [
+        {
+          routeConfig = {
+            Gateway = "192.168.1.1";
+            Destination = "0.0.0.0/0";
+          };
+        }
+      ];
+      # make routing on this interface a dependency for network-online.target
+      linkConfig.RequiredForOnline = "routable";
+    };
   };
 
   # ---------------- Custom modules ----------------
