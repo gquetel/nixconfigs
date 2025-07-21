@@ -22,7 +22,6 @@
       hIgwCgYIKoZIzj0EAwIDSQAwRgIhAIquFboD0RZbpfRCmQur2qsw8Bk+d504IyNn
       nA6kaXCXAiEAzJj3anHJZxCNi2UpSMfQKyACd/W7c56y+FcTOjvgPjM=
       -----END CERTIFICATE-----
-
     ''
   ];
 
