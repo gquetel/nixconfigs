@@ -46,7 +46,9 @@
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
-
+  
+  # Show which package provide this command.
+  programs.command-not-found.enable = true;
   # Packages to be installed system-wide.
   environment.systemPackages = with pkgs; [
     broot
