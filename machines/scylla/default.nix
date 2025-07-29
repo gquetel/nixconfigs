@@ -12,7 +12,7 @@
     ../../modules/fish
     ../../modules/fonts
     ../../modules/headscale-client
-    ../../modules/systemd-resolved
+    # ../../modules/systemd-resolved
     ../../modules/vscode
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
@@ -66,40 +66,14 @@
 
   # ---------------- Networking  ----------------
   # From the doc is seems that systemd-networkd might not be suited for laptops with
-  # dynamic network configuration: https://wiki.nixos.org/wiki/Systemd/networkd
-  # networking.networkmanager.enable = true;
-  networking.hostName = "scylla";
-
-  # This is a laptop, which hop from network to network, I need a dynamic config
-  # found on wiki [1]
-  # - [1]: https://wiki.nixos.org/wiki/Systemd/networkd#DHCP/RA
-  networking.useNetworkd = true;
-  systemd.network = {
-    enable = true;
-
-    networks."10-wlan" = {
-      matchConfig.Name = "wlp0s20f3";
-      networkConfig = {
-        DHCP = "ipv4";
-        IPv6AcceptRA = true;
-      };
-      # make routing on this interface a dependency for network-online.target
-      linkConfig.RequiredForOnline = "routable";
-    };
-
-    networks."20-wired" = {
-      matchConfig.Name = "enp86s0";
-      networkConfig = {
-        # start a DHCP Client for IPv4 Addressing/Routing
-        DHCP = "ipv4";
-        # accept Router Advertisements for Stateless IPv6 Autoconfiguraton (SLAAC)
-        IPv6AcceptRA = true;
-      };
-      # this port is not always connected and not required to be online
-      linkConfig.RequiredForOnline = "routable";
-    };
-  };
   networking.networkmanager.enable = true;
+  networking.hostName = "scylla";
+  # We disablel systemd-resolved because it somehow fucks up the
+  # access to cluster machines @ Télécom. 
+  
+  # networking.networkmanager.dns = "systemd-resolved";
+
+
 
   # ---------------- Drivers ----------------
   # GPU
