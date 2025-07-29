@@ -6,7 +6,10 @@ let
   gquetel-hydra = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIABgZ5qqnOl8LXcq2m/xaaKZlEB/ORDwIwaFSXJDs2eR gquetel@hydra";
   gquetel-scylla = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICK/iZJoWOdOasaD28jedexzjVc4tHosDTEYFIG/i9Fc gquetel@scylla";
 
-  servers = [ system-strix system-garmr ];
+  servers = [
+    system-strix
+    system-garmr
+  ];
   users = [
     gquetel-hydra
     gquetel-scylla
@@ -20,8 +23,10 @@ in
   "gquetel-strix.age".publicKeys = [ system-strix ] ++ users;
   "thesis-artefacts.age".publicKeys = [ system-strix ] ++ users;
   "gitlab-runner.env.age".publicKeys = [ system-strix ] ++ users;
+  "dex-outline-secret.age".publicKeys = [ system-strix ] ++ users;
 
   # Secrets for garmr machine, it should be able to decrypt, and laptop users
-  # should be able to read them. 
+  # should be able to read them.
   "step-ca.pwd.age".publicKeys = [ system-garmr ] ++ users;
+
 }

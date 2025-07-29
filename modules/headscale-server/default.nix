@@ -57,6 +57,17 @@
             type = "A";
             value = "100.64.0.5";
           }
+          {
+            name = "notes.mesh.gq";
+            type = "A";
+            value = "100.64.0.3";
+          }
+
+          {
+            name = "dex.mesh.gq";
+            type = "A";
+            value = "100.64.0.3";
+          }
         ];
       };
     };

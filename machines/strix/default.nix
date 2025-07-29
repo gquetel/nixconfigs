@@ -17,6 +17,7 @@
     ../../modules/systemd-resolved
     ../../modules/gitlab-runner
     ../../modules/mediaserver
+    ../../modules/outline
 
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
