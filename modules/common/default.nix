@@ -46,8 +46,14 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
   
-  # Show which package provide this command.
+  # Show which package provide this command. Per [1:  you need to make sure that
+  # root’s channels include a channel named nixos: 
+
+  # nix-channel --add https://nixos.org/channels/nixos-unstable nixos
+  # sudo nix-channel --update
+  # - [1] https://discourse.nixos.org/t/command-not-found-unable-to-open-database/3807
   programs.command-not-found.enable = true;
+
   # Packages to be installed system-wide.
   environment.systemPackages = with pkgs; [
     broot
