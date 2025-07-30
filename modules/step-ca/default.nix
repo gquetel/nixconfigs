@@ -83,9 +83,11 @@
     locations."/" = {
       proxyPass = "https://ca.mesh.gq:6060";
       # Only allow interactions from machines in the tailnet.
+      # And localhost for when when tailnet is not active yet.
       extraConfig = ''
         allow 100.64.0.0/10;
         allow fd7a:115c:a1e0::/48;
+        allow ::1/128;
         deny all;
       '';
     };

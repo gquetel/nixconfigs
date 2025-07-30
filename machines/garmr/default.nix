@@ -62,6 +62,11 @@
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIABgZ5qqnOl8LXcq2m/xaaKZlEB/ORDwIwaFSXJDs2eR gquetel@hydra"
     ];
   };
+  # FIXME: When booting the machine, nginx will check as ca.mesh.gq for certificates, nginx is started before
+  # tailscale / headscale, hence it does not find ca.mesh.gq. There might be a better workaround.
+  networking.hosts = {
+    "127.0.0.1" = [ "ca.mesh.gq" ];
+  };
 
   # ---------------- Networking  ----------------
   # systemd-networkd should be prefered over "scripted networking". Refs:
