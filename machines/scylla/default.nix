@@ -14,6 +14,7 @@
     ../../modules/headscale-client
     # ../../modules/systemd-resolved
     ../../modules/vscode
+    ../../modules/languagetool
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
 
