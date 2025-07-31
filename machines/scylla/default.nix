@@ -70,11 +70,9 @@
   networking.networkmanager.enable = true;
   networking.hostName = "scylla";
   # We disablel systemd-resolved because it somehow fucks up the
-  # access to cluster machines @ Télécom. 
-  
+  # access to cluster machines @ Télécom.
+
   # networking.networkmanager.dns = "systemd-resolved";
-
-
 
   # ---------------- Drivers ----------------
   # GPU
