@@ -26,11 +26,10 @@
 
   services.step-ca = {
     enable = true;
-    # Address and port of step CA, overrides settings.address. Is required.
-    # 127.0.0.1 / localhost doesn't work, because clients will go to
-    # https://ca.mesh.gq/acme/acme/directory and be given URL containing localhost as
-    # the API endpoints to interact with.
-    address = "ca.mesh.gq";
+    # Is required. Address and port of step CA, overrides settings.address.
+    # 127.0.0.1 / localhost doesn't work, because these values are used to build URL
+    # given at https://ca.mesh.gq/acme/acme/directory.
+    address = "100.64.0.5";
     port = 6060;
 
     # File containing clear-text password for intermediate key passphrase.
@@ -39,10 +38,12 @@
       root = "/var/lib/step-ca-data/root/ca.crt";
       crt = "/var/lib/step-ca-data/intermediate/im.crt";
       key = "/var/lib/step-ca-data/intermediate/im.key";
-      # DNS name for the CA. Not sure how exactly this is used by step-ca, but
-      # removing this entry breaks things.
+      # DNS entries for which the certificate ca.mesh.gq should be valid
+      # We add 100.64.0.5, because this is what will be used by links in links
+      # provided by https://ca.mesh.gq/acme/acme/directory.
       dnsNames = [
         "ca.mesh.gq"
+        "100.64.0.5"
       ];
 
       db = {
@@ -81,7 +82,7 @@
     enableACME = true;
 
     locations."/" = {
-      proxyPass = "https://ca.mesh.gq:6060";
+      proxyPass = "https://100.64.0.5:6060";
       # Only allow interactions from machines in the tailnet.
       # And localhost for when when tailnet is not active yet.
       extraConfig = ''
