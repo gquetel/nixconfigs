@@ -59,8 +59,13 @@
             # https://ca.mesh.gq/acme/acme/directory
             type = "ACME";
             name = "acme";
+            claims = {
+              # Issue certificates that lasts a week rather  than 24h
+              defaultTLSCertDuration = "168h";
+            };
           }
         ];
+
       };
       tls = {
         cipherSuites = [
