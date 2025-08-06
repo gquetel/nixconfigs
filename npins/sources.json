@@ -66,8 +66,8 @@
     "nixpkgs": {
       "type": "Channel",
       "name": "nixos-25.05",
-      "url": "https://releases.nixos.org/nixos/25.05/nixos-25.05.807117.13e8d35b7d60/nixexprs.tar.xz",
-      "hash": "1ghk3zv6wnsjn8kgg21352appk40g2ranlk6hgfgz9kq3fzzk6xc"
+      "url": "https://releases.nixos.org/nixos/25.05/nixos-25.05.807313.59e69648d345/nixexprs.tar.xz",
+      "hash": "0wm4rnlfg1swkbhsr5101hgwkw8ghsm5bi4igizpgcx03zkrrpg0"
     },
     "unstable": {
       "type": "Git",
@@ -78,9 +78,9 @@
       },
       "branch": "nixos-unstable",
       "submodules": false,
-      "revision": "17f6bd177404d6d43017595c5264756764444ab8",
-      "url": "https://github.com/nixos/nixpkgs/archive/17f6bd177404d6d43017595c5264756764444ab8.tar.gz",
-      "hash": "1nwqbj0bmhdqf34d0y6qbpnwqa9bkhlqd03ffv60yami7fppnyb6"
+      "revision": "5b09dc45f24cf32316283e62aec81ffee3c3e376",
+      "url": "https://github.com/nixos/nixpkgs/archive/5b09dc45f24cf32316283e62aec81ffee3c3e376.tar.gz",
+      "hash": "09nmwsahc0zsylyk5vf6i62x4jfvwq4r2mk8j0lmr3zzk723dwj3"
     }
   },
   "version": 5
