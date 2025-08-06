@@ -9,7 +9,6 @@
     ../../modules/fonts
     ../../modules/headscale-client
     ../../modules/languagetool
-    ../../modules/systemd-resolved
     ../../modules/vscode
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
@@ -119,33 +118,7 @@
 
   # ---------------- Networking  ----------------
   networking.hostName = "hydra";
-  networking.useNetworkd = true;
-  systemd.network = {
-    enable = true;
-
-    networks."10-wired" = {
-      # Match device name.
-      matchConfig.Name = "enp0s31f6";
-
-      # static IPv4 or IPv6 addresses and their prefix length
-      addresses = [
-        { Address = "192.168.1.32/24"; }
-        { Address = "2a01:cb00:02c4:3a00::0001/64"; }
-      ];
-
-      # Routes define where to route a packet (Gateway) given a destination range.
-      routes = [
-        {
-          routeConfig = {
-            Gateway = "192.168.1.1";
-            Destination = "0.0.0.0/0";
-          };
-        }
-      ];
-      # make routing on this interface a dependency for network-online.target
-      linkConfig.RequiredForOnline = "routable";
-    };
-  };
+  networking.networkmanager.enable = true;
 
   # ---------------- Custom modules ----------------
 
