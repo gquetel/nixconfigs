@@ -81,11 +81,10 @@
     networks."10-wired" = {
       # Match device name.
       matchConfig.Name = "enp0s31f6";
-
       # static IPv4 or IPv6 addresses and their prefix length
       addresses = [
         { Address = "192.168.1.28/24"; }
-        { Address = "2a01:cb00:02c4:3a00::0005/64"; }
+        { Address = "2a01:cb00:1d3a:1100::0005/64"; }
       ];
 
       # Routes define where to route a packet (Gateway) given a destination range.
@@ -99,6 +98,14 @@
       ];
       # make routing on this interface a dependency for network-online.target
       linkConfig.RequiredForOnline = "routable";
+
+      # Disable SLAAC. It seems that it mess with the identification of the
+      # machine by the Orange router: the machine seems to be identified by the
+      # temporary address, then the firewall does not allow traffic directed at the
+      # IPV6 address given above...
+      networkConfig = {
+        IPv6AcceptRA = true; # disable SLAAC (no RAs)
+      };
     };
   };
 

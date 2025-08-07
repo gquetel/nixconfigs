@@ -80,7 +80,7 @@
       # static IPv4 or IPv6 addresses and their prefix length
       addresses = [
         { Address = "192.168.1.33/24"; }
-        { Address = "2a01:cb00:02c4:3a00::0003/64"; }
+        { Address = "2a01:cb00:1d3a:1100::0003/64"; }
       ];
 
       # Routes define where to route a packet (Gateway) given a destination range.
