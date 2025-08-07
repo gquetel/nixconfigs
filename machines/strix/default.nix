@@ -18,7 +18,7 @@
     ../../modules/gitlab-runner
     ../../modules/mediaserver
     ../../modules/outline
-
+    ../../modules/servers
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
 

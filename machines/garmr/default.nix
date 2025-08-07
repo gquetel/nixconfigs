@@ -14,6 +14,7 @@
     ../../modules/headscale-client
     ../../modules/headscale-server
     ../../modules/step-ca
+    ../../modules/servers
     ../../modules/systemd-resolved
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
