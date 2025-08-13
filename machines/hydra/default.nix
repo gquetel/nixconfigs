@@ -10,6 +10,7 @@
     ../../modules/headscale-client
     ../../modules/languagetool
     ../../modules/vscode
+    ../../modules/emacs
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
 
@@ -119,6 +120,16 @@
   # ---------------- Networking  ----------------
   networking.hostName = "hydra";
   networking.networkmanager.enable = true;
+
+  networking.nameservers = [
+    # Cloudflare
+    "1.1.1.1"
+    "1.0.0.1"
+    # Quad9
+    "9.9.9.9"
+    "149.112.112.112"
+  ];
+  # ---------------- System Packages  ----------------
 
   # ---------------- Custom modules ----------------
 
