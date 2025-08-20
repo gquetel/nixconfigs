@@ -12,7 +12,8 @@ rec {
       nodeSpecialArgs = builtins.mapAttrs (_: v: v._module.specialArgs) nixosConfigurations;
       specialArgs.lib = pkgs.lib;
     };
-  } // builtins.mapAttrs (_: v: { imports = v._module.args.modules; }) nixosConfigurations;
+  }
+  // builtins.mapAttrs (_: v: { imports = v._module.args.modules; }) nixosConfigurations;
 
   nixosConfigurations =
     builtins.mapAttrs
@@ -43,6 +44,8 @@ rec {
         strix = import ./machines/strix;
         hydra = import ./machines/hydra;
         garmr = import ./machines/garmr;
+        vapula = import ./machines/vapula;
+
       };
 
 }
