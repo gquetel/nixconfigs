@@ -72,8 +72,15 @@
   # We disablel systemd-resolved because it somehow fucks up the
   # access to cluster machines @ Télécom.
 
-  # networking.networkmanager.dns = "systemd-resolved";
-
+  # networking.networkmanager.dns = "systemd-resolved"; 
+  
+  # Procrastination websites to ban.
+  networking.extraHosts =
+  ''
+    127.0.0.1 reddit.com
+    127.0.0.1 www.reddit.com
+    127.0.0.1 x.com
+  '';
   # ---------------- Drivers ----------------
   # GPU
   # https://wiki.nixos.org/w/index.php?title=Jellyfin&mobileaction=toggle_view_desktop#VAAPI_and_Intel_QSV
