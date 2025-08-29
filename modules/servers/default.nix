@@ -6,25 +6,31 @@
 }:
 {
 
-  # https://discourse.nixos.org/t/alternative-to-salt-grains-or-puppet-facts/3308/4
-  # motd replacement.
-  environment.loginShellInit = ''
-    if [ `id -u` != 0 ]; then                                                                                                        
-      if [ "x''${SSH_TTY}" != "x" ]; then                                                                                            
-        echo "[ Hostname: $(hostname) ]"
-        echo "[ Kernel: $(uname -r) ]"
-        echo "[ Disk Usage: $(df -h / | tail -1 | awk '{print $5 " used of " $2}') ]"
-        failed=$(systemctl --failed --no-legend --plain | awk '{print $1}')
-        if [ -n "$failed" ]; then
-          echo "[ Failed Services: $failed ]"
-        else
-          echo "[ All systemd services OK ]"
-        fi                                                                                                
-      fi                                                                                                                             
-    fi                                                                                                                               
-  '';
+  # motd
+  # https://github.com/rust-motd/rust-motd
+  programs.rust-motd = {
+    enable = true;
+    order = [
+      "filesystems"
+      "memory"
+      "last_login"
+      "uptime"
+      "service_status"
+      "fail_2_ban"
+    ];
+    # Config Error: unknown field `fail2ban`, expected one of `global`, `banner`, `cg_stats`,
+    # `docker`, `fail_2_ban`, `filesystems`, `last_login`, `last_run`, `load_avg`, `memory`, `service_status`,
+    #  `user_service_status`, `ssl_certificates`, `uptime`, `weather` at line 17 column 1
 
-  environment.systemPackages = [
-    pkgs.sysstat
-  ];
+    settings = {
+      uptime.prefix = "Up";
+      service_status.nginx = "nginx";
+      filesystems.root = "/";
+      last_login.gquetel = 3;
+      filesystems.boot = "/boot";
+      memory.swap_pos = "none";
+      fail_2_ban.jails = [ "sshd" ];
+    };
+  };
+  systemd.services.rust-motd.path = [ pkgs.fail2ban ];
 }
