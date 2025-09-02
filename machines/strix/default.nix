@@ -189,6 +189,29 @@
     };
   };
 
+  # ---------------- Modules ----------------
+  servers.motd = {
+    enable = true;
+    settings = {
+      uptime.prefix = "Up";
+      
+      service_status.nginx = "nginx";
+      service_status.jellyfin = "jellyfin";
+      service_status.deluged = "deluged";
+      service_status.sonarr = "sonarr";
+      service_status.radarr = "radarr";
+      service_status.jackett = "jackett";
+      service_status.gitlab-runner = "gitlab-runner";
+      service_status.outline = "outline";
+
+      filesystems.root = "/";
+      last_login.gquetel = 3;
+      filesystems.boot = "/boot";
+      memory.swap_pos = "none";
+      fail_2_ban.jails = [ "sshd" ];
+    };
+  };
+
   # This option defines the first version of NixOS you have installed on this particular machine,
   # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
   #

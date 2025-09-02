@@ -4,33 +4,50 @@
   pkgs,
   ...
 }:
+with lib;
+let
+  cfgmotd = config.servers.motd;
+  format = pkgs.formats.toml { };
+in
 {
 
-  # motd
+  # motd. We want each machine to customize displayed services hence the options.
   # https://github.com/rust-motd/rust-motd
-  programs.rust-motd = {
-    enable = true;
-    order = [
-      "filesystems"
-      "memory"
-      "last_login"
-      "uptime"
-      "service_status"
-      "fail_2_ban"
-    ];
-    # Config Error: unknown field `fail2ban`, expected one of `global`, `banner`, `cg_stats`,
-    # `docker`, `fail_2_ban`, `filesystems`, `last_login`, `last_run`, `load_avg`, `memory`, `service_status`,
-    #  `user_service_status`, `ssl_certificates`, `uptime`, `weather` at line 17 column 1
+  options.servers.motd = {
+    enable = mkEnableOption "motd on servers";
+    order = mkOption {
+      type = types.listOf types.str;
+      default = [
+        "filesystems"
+        "memory"
+        "last_login"
+        "uptime"
+        "service_status"
+        "fail_2_ban"
+      ];
+    };
 
-    settings = {
-      uptime.prefix = "Up";
-      service_status.nginx = "nginx";
-      filesystems.root = "/";
-      last_login.gquetel = 3;
-      filesystems.boot = "/boot";
-      memory.swap_pos = "none";
-      fail_2_ban.jails = [ "sshd" ];
+    settings = mkOption {
+      type = types.attrsOf format.type;
+      default = {
+        uptime.prefix = "Up";
+        service_status.nginx = "nginx";
+        filesystems.root = "/";
+        last_login.gquetel = 3;
+        filesystems.boot = "/boot";
+        memory.swap_pos = "none";
+        fail_2_ban.jails = [ "sshd" ];
+      };
     };
   };
-  systemd.services.rust-motd.path = [ pkgs.fail2ban ];
+
+  config = mkIf cfgmotd.enable {
+    programs.rust-motd = {
+      enable = true;
+      order = cfgmotd.order;
+      settings = cfgmotd.settings;
+    };
+    systemd.services.rust-motd.path = [ pkgs.fail2ban ];
+  };
+
 }

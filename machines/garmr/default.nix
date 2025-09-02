@@ -127,7 +127,21 @@
   services.openssh.enable = true;
 
   # ---------------- Modules ----------------
-
+  servers.motd = {
+    enable = true;
+    settings = {
+      uptime.prefix = "Up";
+      service_status.nginx = "nginx";
+      service_status.headscale = "headscale";
+      service_status.tailscaled = "tailscale";
+      service_status.step-ca = "step-ca";
+      filesystems.root = "/";
+      last_login.gquetel = 3;
+      filesystems.boot = "/boot";
+      memory.swap_pos = "none";
+      fail_2_ban.jails = [ "sshd" ];
+    };
+  };
   # ---------------- age secrets ----------------
   age.secrets.step-ca-pwd.file = ../../secrets/step-ca.pwd.age;
 
