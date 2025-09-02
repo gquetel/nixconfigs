@@ -8,6 +8,7 @@
   # Headscale client setup.
   services.tailscale = {
     enable = true;
+    package = pkgs.unstable.tailscale;
   };
 
   networking.firewall = {
@@ -17,6 +18,6 @@
     allowedUDPPorts = [ config.services.tailscale.port ];
   };
 
-  # A client is added using the command: 
+  # A client is added using the command:
   # sudo tailscale up --login-server headscale_server_url
 }
