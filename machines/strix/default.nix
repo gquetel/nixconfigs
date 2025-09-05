@@ -70,12 +70,23 @@
   # - https://man7.org/linux/man-pages/man5/systemd.netdev.5.html For networks configs.
 
   networking.useNetworkd = true;
+
   systemd.network = {
     enable = true;
 
     networks."10-wired" = {
       # Match device name.
       matchConfig.Name = "enp0s31f6";
+      # TODO: Single variable holding DNS servers provided to resolved
+      dns = [
+        "80.67.169.12"
+        "1.1.1.1"
+        "80.67.169.40"
+
+        "9.9.9.9"
+        "1.0.0.1"
+        "149.112.112.112"
+      ];
 
       # static IPv4 or IPv6 addresses and their prefix length
       addresses = [
@@ -194,7 +205,7 @@
     enable = true;
     settings = {
       uptime.prefix = "Up";
-      
+
       service_status.nginx = "nginx";
       service_status.jellyfin = "jellyfin";
       service_status.deluged = "deluged";

@@ -88,6 +88,17 @@
         { Address = "2a01:cb00:1d3a:1100::0005/64"; }
       ];
 
+      # TODO: Single variable holding DNS servers provided to resolved
+      dns = [
+        "80.67.169.12"
+        "1.1.1.1"
+        "80.67.169.40"
+
+        "9.9.9.9"
+        "1.0.0.1"
+        "149.112.112.112"
+      ];
+
       # Routes define where to route a packet (Gateway) given a destination range.
       routes = [
         {
