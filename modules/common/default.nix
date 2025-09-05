@@ -43,11 +43,18 @@
     "flakes"
   ];
 
+  # Automatic garbe collection
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 30d";
+  };
+
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
-  
+
   # Show which package provide this command. Per [1:  you need to make sure that
-  # root’s channels include a channel named nixos: 
+  # root’s channels include a channel named nixos:
 
   # nix-channel --add https://nixos.org/channels/nixos-unstable nixos
   # sudo nix-channel --update
