@@ -8,7 +8,7 @@
     ../../modules/firefox
     ../../modules/fonts
     ../../modules/headscale-client
-    ../../modules/languagetool
+    # ../../modules/languagetool
     ../../modules/vscode
     ../../modules/emacs
     "${(import ../../npins).agenix}/modules/age.nix"
@@ -94,9 +94,13 @@
     packages =
       with pkgs;
       [
+        discord
         drawio
         element-desktop
         gnome-tweaks
+        atlauncher
+        prismlauncher
+        hmcl
         nixfmt-rfc-style
         obsidian
         openvpn

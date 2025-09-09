@@ -18,20 +18,15 @@
       fsType = "ext4";
     };
 
+  fileSystems."/ssd" =
+    { device = "/dev/disk/by-uuid/2ea145b8-2b7f-4a94-8a98-c9431f9ea1e6";
+      fsType = "ext4";
+    };
+
   fileSystems."/boot" =
     { device = "/dev/disk/by-uuid/9990-DEA3";
       fsType = "vfat";
       options = [ "fmask=0077" "dmask=0077" ];
-    };
-
-  fileSystems."/hdd" =
-    { device = "/dev/disk/by-uuid/83f9bf0b-cbae-4970-bd2f-ebab7d56f2d7";
-      fsType = "ext4";
-    };
-
-  fileSystems."/ssd" =
-    { device = "/dev/disk/by-uuid/2ea145b8-2b7f-4a94-8a98-c9431f9ea1e6";
-      fsType = "ext4";
     };
 
   swapDevices = [ ];
@@ -41,7 +36,9 @@
   # still possible to use this option, but it's recommended to use it in conjunction
   # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
   networking.useDHCP = lib.mkDefault true;
+  # networking.interfaces.docker0.useDHCP = lib.mkDefault true;
   # networking.interfaces.enp0s31f6.useDHCP = lib.mkDefault true;
+  # networking.interfaces.tailscale0.useDHCP = lib.mkDefault true;
   # networking.interfaces.wlp3s0.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
