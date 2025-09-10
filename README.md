@@ -3,8 +3,9 @@
 A repository containing the configurations of my machines running NixOS. Existing machines are: 
 - [hydra](./machines/hydra/): an old gaming desktop, today used for remote work. No fancy software are installed, it mostly consists of those used for research (Zotero,Oobsidian, typst, ...)  
 - [scylla](./machines/scylla/): a laptop for work, no fancy config here either, same installed software programs as hydra.
-- [strix](./machines/strix/): a ThinkCenter acting as a webserver, mediaserver, also host a gitlab-runner and an outline instance.
+- [strix](./machines/strix/): a ThinkCenter acting as a webserver, also host a gitlab-runner and an outline instance.
 - [garmr](./machines/garmr/): a ThinkCenter hosting a Headscale server and Certificate Authority.
+- [vapula](./machines/vapula/): a ThinkCenter acting as mediaserver with zfs disks.
 
 Here are some nix-specific packages that might interest you, that are used in this repository: 
 - [agenix](https://github.com/ryantm/agenix): To encrypt and manage secrets according to specific SSH keys.

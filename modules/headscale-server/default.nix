@@ -35,22 +35,22 @@
           {
             name = "deluge.mesh.gq";
             type = "A";
-            value = "100.64.0.3";
+            value = "100.64.0.2";
           }
           {
             name = "veste.mesh.gq";
             type = "A";
-            value = "100.64.0.3";
+            value = "100.64.0.2";
           }
           {
             name = "sonarr.mesh.gq";
             type = "A";
-            value = "100.64.0.3";
+            value = "100.64.0.2";
           }
           {
             name = "radarr.mesh.gq";
             type = "A";
-            value = "100.64.0.3";
+            value = "100.64.0.2";
           }
           {
             name = "ca.mesh.gq";

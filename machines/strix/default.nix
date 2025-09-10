@@ -16,7 +16,6 @@
     ../../modules/fail2ban
     ../../modules/systemd-resolved
     ../../modules/gitlab-runner
-    ../../modules/mediaserver
     ../../modules/outline
     ../../modules/servers
     "${(import ../../npins).agenix}/modules/age.nix"
@@ -56,7 +55,6 @@
   # ---------------- Networking  ----------------
   networking = {
     hostName = "strix";
-
     firewall.allowedTCPPorts = [
       22
       80
@@ -122,22 +120,9 @@
   };
 
   # ----------------- Drivers -----------------
-  # This permit ffmpeg to transcode using hardware acceleration
-  hardware.graphics = {
-    enable = true;
-    extraPackages = with pkgs; [
-      intel-media-driver
-    ];
-  };
-  # TODO: Debug so that encoding / decoding uses GPU
-  # systemd.services.jellyfin.environment.LIBVA_DRIVER_NAME = "iHD";
-  # environment.sessionVariables = {
-  #   LIBVA_DRIVER_NAME = "iHD";
-  # };
 
   environment.systemPackages = with pkgs; [
     goaccess
-    intel-gpu-tools
   ];
 
   # ----------------- Services -----------------
@@ -207,11 +192,6 @@
       uptime.prefix = "Up";
 
       service_status.nginx = "nginx";
-      service_status.jellyfin = "jellyfin";
-      service_status.deluged = "deluged";
-      service_status.sonarr = "sonarr";
-      service_status.radarr = "radarr";
-      service_status.jackett = "jackett";
       service_status.gitlab-runner = "gitlab-runner";
       service_status.outline = "outline";
 

@@ -52,7 +52,7 @@
     openFirewall = false;
     web.enable = true;
     config = {
-      download_location = "/portemer/deluge/";
+      download_location = "/mmedia/deluge/";
       enabled_plugins = [ "Label" ];
       allow_remote = true;
       max_active_seeding = 50;
