@@ -68,6 +68,11 @@
             type = "A";
             value = "100.64.0.3";
           }
+          {
+            name = "dmd.mesh.gq";
+            type = "A";
+            value = "100.64.0.2";
+          }
         ];
       };
     };

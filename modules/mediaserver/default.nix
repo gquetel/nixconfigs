@@ -61,6 +61,12 @@
     };
   };
 
+  services.jellyseerr = {
+    enable = true;
+    port = 8097;
+    package = pkgs.unstable.jellyseerr;
+  };
+
   # ----------------- Nginx reverse proxy -----------------
   services.nginx = {
     enable = true;
@@ -74,6 +80,19 @@
       proxyPass = "http://127.0.0.1:8096";
     };
   };
+
+  services.nginx.virtualHosts."dmd.mesh.gq" = {
+    forceSSL = true;
+    enableACME = true;
+    locations."/" = {
+      extraConfig = "
+      allow 100.64.0.0/10;
+      allow  fd7a:115c:a1e0::/48;
+      deny all;";
+      proxyPass = "http://127.0.0.1:8097";
+    };
+  };
+  security.acme.certs."dmd.mesh.gq".server = "https://ca.mesh.gq/acme/acme/directory";
 
   services.nginx.virtualHosts."deluge.mesh.gq" = {
     forceSSL = true;
