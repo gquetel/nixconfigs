@@ -68,23 +68,11 @@
             type = "A";
             value = "100.64.0.3";
           }
-          {
-            name = "dmd.mesh.gq";
-            type = "A";
-            value = "100.64.0.2";
-          }
         ];
       };
     };
   };
-
-  # Headscale requires to be served on port 443 according to [1]
-  # I use nginx to do that.
-  services.nginx = {
-    enable = true;
-    logError = "/var/log/nginx/error.log error";
-  };
-
+  
   security.acme = {
     acceptTerms = true;
     defaults.email = "gregor.quetel@gquetel.fr";

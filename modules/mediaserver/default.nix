@@ -68,10 +68,6 @@
   };
 
   # ----------------- Nginx reverse proxy -----------------
-  services.nginx = {
-    enable = true;
-    logError = "/var/log/nginx/error.log error";
-  };
 
   services.nginx.virtualHosts."movies.gquetel.fr" = {
     forceSSL = true;
@@ -81,18 +77,14 @@
     };
   };
 
-  services.nginx.virtualHosts."dmd.mesh.gq" = {
+  services.nginx.virtualHosts."dmd.gquetel.fr" = {
     forceSSL = true;
     enableACME = true;
     locations."/" = {
-      extraConfig = "
-      allow 100.64.0.0/10;
-      allow  fd7a:115c:a1e0::/48;
-      deny all;";
       proxyPass = "http://127.0.0.1:8097";
     };
   };
-  security.acme.certs."dmd.mesh.gq".server = "https://ca.mesh.gq/acme/acme/directory";
+  # security.acme.certs."dmd.mesh.gq".server = "https://ca.mesh.gq/acme/acme/directory";
 
   services.nginx.virtualHosts."deluge.mesh.gq" = {
     forceSSL = true;

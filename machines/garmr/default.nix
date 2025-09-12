@@ -142,6 +142,12 @@
     };
   };
 
+  services.nginx = {
+    enable = true;
+    logError = "/var/log/nginx/error.log error";
+    recommendedProxySettings = true;
+  };
+
   # ---------------- Modules ----------------
   servers.motd = {
     enable = true;
