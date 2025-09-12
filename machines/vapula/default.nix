@@ -180,8 +180,8 @@ in
   services.nginx = {
     enable = true;
     logError = "/var/log/nginx/error.log error";
+    recommendedProxySettings = true;
   };
-
   security.acme = {
     acceptTerms = true;
     defaults.email = "gregor.quetel@gquetel.fr";
@@ -199,8 +199,8 @@ in
       service_status.deluged = "deluged";
       service_status.sonarr = "sonarr";
       service_status.radarr = "radarr";
-      service_status.jackett = "jackett";      
-      
+      service_status.jackett = "jackett";
+
       filesystems.root = "/";
       filesystems.boot = "/boot";
       filesystems.mmedia = "/mmedia";

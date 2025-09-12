@@ -137,8 +137,9 @@
   services.nginx = {
     enable = true;
     logError = "/var/log/nginx/error.log error";
+    recommendedProxySettings = true;
   };
-
+  
   security.acme = {
     acceptTerms = true;
     defaults.email = "gregor.quetel@gquetel.fr";
