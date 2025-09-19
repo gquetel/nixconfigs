@@ -14,7 +14,7 @@
     ../../modules/common
     ../../modules/headscale-client
     ../../modules/fail2ban
-    ../../modules/systemd-resolved
+    # ../../modules/systemd-resolved
     ../../modules/gitlab-runner
     ../../modules/outline
     ../../modules/servers

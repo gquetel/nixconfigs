@@ -27,7 +27,7 @@ in
     ../../modules/mediaserver
     ../../modules/headscale-client
     ../../modules/servers
-    ../../modules/systemd-resolved
+    # ../../modules/systemd-resolved
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
 
