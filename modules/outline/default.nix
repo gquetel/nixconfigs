@@ -61,15 +61,14 @@ in
     ];
     locations."/" = {
       recommendedProxySettings = true;
+      # Required, else break editing: 
+      # https://github.com/outline/outline/discussions/3546
+      proxyWebsockets = true;
 
+      # FIXME: Everyone is localhost here; 
+      # Either validate using tailscale-auth ? https://tailscale.com/blog/tailscale-auth-nginx
+      # Or properly set remote IP   
       extraConfig = ''
-        # https://github.com/outline/outline/discussions/3546
-        # Required since when using PROXY
-        
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-
         allow 100.64.0.0/10;
         allow  fd7a:115c:a1e0::/48;
         allow ::1; # FIXME
