@@ -104,6 +104,7 @@ in
       22
       80
       443
+      444
     ];
     useNetworkd = true;
   };
@@ -153,11 +154,6 @@ in
       intel-media-driver
     ];
   };
-  # TODO: Debug so that encoding / decoding uses GPU
-  # systemd.services.jellyfin.environment.LIBVA_DRIVER_NAME = "iHD";
-  # environment.sessionVariables = {
-  #   LIBVA_DRIVER_NAME = "iHD";
-  # };
 
   environment.systemPackages = with pkgs; [
     goaccess

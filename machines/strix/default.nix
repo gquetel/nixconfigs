@@ -59,6 +59,7 @@
       22
       80
       443
+      444
     ];
   };
 
@@ -133,13 +134,58 @@
     };
   };
 
+  # Ressources:
+  # - https://blog.le-vert.net/?p=224
+  # TODO: Add SNI config here:
+  # TODO: Il faudrait probablement que garmr soit le SNI proxy:
+  # Ici si garmr ou strix plante, je n'ai plus accès au cluster (headscale + SNI).
+  # En mettant le SNI proxy sur garmr, je n'ai plus accès au cluster seulement si
+  # garmr plante.
+  # movies.gquetel.fr | dmd.gquetel.fr =>
+  # { Address = "192.168.1.37/24"; }
+  # { Address = "2a01:cb00:1d3a:1100::0007/64"; }
+
+  # mesh.gquetel.fr =>
+  # { Address = "192.168.1.28/24"; }
+  # { Address = "2a01:cb00:1d3a:1100::0005/64"; }
+
+  # *.gquetel.fr =>
+  # redirect to gquetel.fr  ?
+
+  # Stopper gquetel.fr d'écouter sur 443 car maintenant c'est
+  # le SNI proxy.
+  # Du coup juste changer le port TLS devrait le faire et je met ça à jour dans la
+  # config juste en dessous.
+
+  # FIXME, je crois que le SNI proxy fait foirer la validation ACME HTTP
   #      ------------ Nginx ------------
   services.nginx = {
     enable = true;
     logError = "/var/log/nginx/error.log error";
     recommendedProxySettings = true;
+
+    streamConfig = ''
+      map $ssl_preread_server_name $targetBackend {
+         movies.gquetel.fr   [2a01:cb00:1d3a:1100::7]:444;
+         dmd.gquetel.fr   [2a01:cb00:1d3a:1100::7]:444;
+
+         mesh.gquetel.fr   [2a01:cb00:1d3a:1100::5]:444;
+         
+         default [::1]:444;
+      }
+
+      log_format proxy '$remote_addr -> $targetBackend';
+      access_log /var/log/nginx/proxy.log proxy;
+
+      server {
+          listen 0.0.0.0:443;
+          proxy_protocol on;
+          proxy_pass $targetBackend;
+          ssl_preread on;
+      }
+    '';
   };
-  
+
   security.acme = {
     acceptTerms = true;
     defaults.email = "gregor.quetel@gquetel.fr";
@@ -148,8 +194,24 @@
   services.nginx.virtualHosts."gquetel.fr" = {
     forceSSL = true;
     enableACME = true;
+    listen = [
+      {
+        addr = "[::]";
+        port = 444;
+        ssl = true;
+        proxyProtocol = true;
+      }
+      {
+        addr = "[::]";
+        port = 443;
+        ssl = true;
+      }
+      {
+        addr = "0.0.0.0";
+        port = 80;
+      }
+    ];
     root = "/var/www/html/gquetel.fr";
-
     locations."/robots.txt" = {
       return = "200 'User-agent: *\nDisallow: /\n'";
       extraConfig = ''
@@ -162,6 +224,23 @@
   services.nginx.virtualHosts."thesis-artefacts.gquetel.fr" = {
     forceSSL = true;
     enableACME = true;
+    listen = [
+      {
+        addr = "[::]";
+        port = 444;
+        ssl = true;
+        proxyProtocol = true;
+      }
+      {
+        addr = "[::]";
+        port = 443;
+        ssl = true;
+      }
+      {
+        addr = "0.0.0.0";
+        port = 80;
+      }
+    ];
     root = "/var/www/pdfs";
     locations."/" = {
       extraConfig = ''
@@ -173,16 +252,6 @@
         }
         autoindex on;
       '';
-    };
-  };
-
-  # Reject all other invalid sub-subdomains.
-  # TODO: Is there a better way to do this ?
-  # 80 is sent to 404 and https sent a SSL error.
-  services.nginx.virtualHosts."_" = {
-    rejectSSL = true;
-    locations."/" = {
-      return = "404";
     };
   };
 

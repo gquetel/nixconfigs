@@ -7,7 +7,7 @@
 }:
 let
   dexUrl = "dex.mesh.gq";
-  dexPort = 9293;
+  dexPort = 9294;
   outlineUrl = "notes.mesh.gq";
 in
 {
@@ -39,22 +39,45 @@ in
     };
   };
 
-
   services.nginx.virtualHosts."notes.mesh.gq" = {
     forceSSL = true;
     enableACME = true;
+    listen = [
+      {
+        addr = "[::]";
+        port = 444;
+        ssl = true;
+        proxyProtocol = true;
+      }
+      {
+        addr = "[::]";
+        port = 443;
+        ssl = true;
+      }
+      {
+        addr = "0.0.0.0";
+        port = 80;
+      }
+    ];
     locations."/" = {
       recommendedProxySettings = true;
-      proxyWebsockets = true;
-      extraConfig = "
-      allow 100.64.0.0/10;
-      allow  fd7a:115c:a1e0::/48;
-      deny all;";
+
+      extraConfig = ''
+        # https://github.com/outline/outline/discussions/3546
+        # Required since when using PROXY
+        
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+
+        allow 100.64.0.0/10;
+        allow  fd7a:115c:a1e0::/48;
+        allow ::1; # FIXME
+        deny all;'';
       proxyPass = "http://localhost:9292";
     };
   };
   security.acme.certs."notes.mesh.gq".server = "https://ca.mesh.gq/acme/acme/directory";
-
 
   # Maybe: https://github.com/outline/outline/discussions/2089
   # To fix dex failure
@@ -89,10 +112,28 @@ in
   services.nginx.virtualHosts."dex.mesh.gq" = {
     forceSSL = true;
     enableACME = true;
+    listen = [
+      {
+        addr = "[::]";
+        port = 444;
+        ssl = true;
+        proxyProtocol = true;
+      }
+      {
+        addr = "[::]";
+        port = 443;
+        ssl = true;
+      }
+      {
+        addr = "0.0.0.0";
+        port = 80;
+      }
+    ];
     locations."/" = {
       extraConfig = "
       allow 100.64.0.0/10;
       allow  fd7a:115c:a1e0::/48;
+      allow ::1; # FIXME
       deny all;";
       proxyPass = "http://127.0.0.1:${toString dexPort}";
     };

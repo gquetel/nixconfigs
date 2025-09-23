@@ -72,7 +72,7 @@
       };
     };
   };
-  
+
   security.acme = {
     acceptTerms = true;
     defaults.email = "gregor.quetel@gquetel.fr";
@@ -83,7 +83,23 @@
     enableACME = true;
     locations."/" = {
       proxyPass = "http://127.0.0.1:9090";
-      proxyWebsockets = true;
     };
+    listen = [
+      {
+        addr = "[::]";
+        port = 444;
+        ssl = true;
+        proxyProtocol = true;
+      }
+      {
+        addr = "[::]";
+        port = 443;
+        ssl = true;
+      }
+      {
+        addr = "0.0.0.0";
+        port = 80;
+      }
+    ];
   };
 }
