@@ -163,7 +163,16 @@
     enable = true;
     logError = "/var/log/nginx/error.log error";
     recommendedProxySettings = true;
+    
+    appendHttpConfig = ''
+      log_format vcombined '$host:$server_port '
+              '$remote_addr - $remote_user [$time_local] '
+              '"$request" $status $body_bytes_sent '
+              '"$http_referer" "$http_user_agent"';
 
+      access_log /var/log/nginx/access.log vcombined;
+    '';
+    
     streamConfig = ''
       map $ssl_preread_server_name $targetBackend {
          movies.gquetel.fr   [2a01:cb00:1d3a:1100::7]:444;
