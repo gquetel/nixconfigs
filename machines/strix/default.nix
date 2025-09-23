@@ -35,7 +35,10 @@
   users.users.gquetel = {
     hashedPasswordFile = config.age.secrets.gquetel-strix.path;
     isNormalUser = true;
-    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [
+      "wheel"
+      "nginx"
+    ];
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICK/iZJoWOdOasaD28jedexzjVc4tHosDTEYFIG/i9Fc gquetel@scylla"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIABgZ5qqnOl8LXcq2m/xaaKZlEB/ORDwIwaFSXJDs2eR gquetel@hydra"
@@ -136,34 +139,24 @@
 
   # Ressources:
   # - https://blog.le-vert.net/?p=224
-  # TODO: Add SNI config here:
-  # TODO: Il faudrait probablement que garmr soit le SNI proxy:
-  # Ici si garmr ou strix plante, je n'ai plus accès au cluster (headscale + SNI).
-  # En mettant le SNI proxy sur garmr, je n'ai plus accès au cluster seulement si
-  # garmr plante.
-  # movies.gquetel.fr | dmd.gquetel.fr =>
-  # { Address = "192.168.1.37/24"; }
-  # { Address = "2a01:cb00:1d3a:1100::0007/64"; }
 
-  # mesh.gquetel.fr =>
-  # { Address = "192.168.1.28/24"; }
-  # { Address = "2a01:cb00:1d3a:1100::0005/64"; }
+  # FIXME: Add trusted sni proxy
+  # https://nginx.org/en/docs/http/ngx_http_realip_module.html
+  # set_real_ip_from: Defines trusted addresses that are known to send correct replacement addresses.
+  # - https://github.com/JulienMalka/snowfield/blob/f3e41b53c459fc4bda0d0773851dc0753e6e27ae/profiles/behind-sniproxy.nix#L10
+  # real_ip_header:  Defines the request header field whose value will be used to replace the client address.
+  # However, which   allowedUpstream = ""; value to set ? ::1 seems sketchy.
 
-  # *.gquetel.fr =>
-  # redirect to gquetel.fr  ?
+  # FIXME: Also the SNI proxy shouldn't listen on all IPV4, I think only the
+  # ethernet one. This allows to listen on 443 for tailnet-only services on the
+  # tailscale interface.
 
-  # Stopper gquetel.fr d'écouter sur 443 car maintenant c'est
-  # le SNI proxy.
-  # Du coup juste changer le port TLS devrait le faire et je met ça à jour dans la
-  # config juste en dessous.
-
-  # FIXME, je crois que le SNI proxy fait foirer la validation ACME HTTP
   #      ------------ Nginx ------------
   services.nginx = {
     enable = true;
     logError = "/var/log/nginx/error.log error";
     recommendedProxySettings = true;
-    
+
     appendHttpConfig = ''
       log_format vcombined '$host:$server_port '
               '$remote_addr - $remote_user [$time_local] '
@@ -171,8 +164,11 @@
               '"$http_referer" "$http_user_agent"';
 
       access_log /var/log/nginx/access.log vcombined;
+
+      set_real_ip_from ::1/128;
+      real_ip_header proxy_protocol;
     '';
-    
+
     streamConfig = ''
       map $ssl_preread_server_name $targetBackend {
          movies.gquetel.fr   [2a01:cb00:1d3a:1100::7]:444;
@@ -187,7 +183,7 @@
       access_log /var/log/nginx/proxy.log proxy;
 
       server {
-          listen 0.0.0.0:443;
+          listen 192.168.1.33:443;
           proxy_protocol on;
           proxy_pass $targetBackend;
           ssl_preread on;

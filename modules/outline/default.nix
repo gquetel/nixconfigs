@@ -44,34 +44,25 @@ in
     enableACME = true;
     listen = [
       {
-        addr = "[::]";
-        port = 444;
-        ssl = true;
-        proxyProtocol = true;
-      }
-      {
-        addr = "[::]";
+        addr = "100.64.0.3";
         port = 443;
         ssl = true;
       }
       {
-        addr = "0.0.0.0";
+        addr = "100.64.0.3";
         port = 80;
       }
     ];
     locations."/" = {
       recommendedProxySettings = true;
-      # Required, else break editing: 
+      # Required, else break editing:
       # https://github.com/outline/outline/discussions/3546
       proxyWebsockets = true;
 
-      # FIXME: Everyone is localhost here; 
-      # Either validate using tailscale-auth ? https://tailscale.com/blog/tailscale-auth-nginx
-      # Or properly set remote IP   
+
       extraConfig = ''
         allow 100.64.0.0/10;
         allow  fd7a:115c:a1e0::/48;
-        allow ::1; # FIXME
         deny all;'';
       proxyPass = "http://localhost:9292";
     };
@@ -113,18 +104,12 @@ in
     enableACME = true;
     listen = [
       {
-        addr = "[::]";
-        port = 444;
-        ssl = true;
-        proxyProtocol = true;
-      }
-      {
-        addr = "[::]";
+        addr = "100.64.0.3";
         port = 443;
         ssl = true;
       }
       {
-        addr = "0.0.0.0";
+        addr = "100.64.0.3";
         port = 80;
       }
     ];
@@ -132,7 +117,6 @@ in
       extraConfig = "
       allow 100.64.0.0/10;
       allow  fd7a:115c:a1e0::/48;
-      allow ::1; # FIXME
       deny all;";
       proxyPass = "http://127.0.0.1:${toString dexPort}";
     };
