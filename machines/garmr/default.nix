@@ -164,7 +164,7 @@
       uptime.prefix = "Up";
       service_status.nginx = "nginx";
       service_status.headscale = "headscale";
-      service_status.tailscaled = "tailscale";
+      service_status.tailscale = "tailscaled";
       service_status.step-ca = "step-ca";
       filesystems.root = "/";
       last_login.gquetel = 3;

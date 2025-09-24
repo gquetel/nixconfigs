@@ -45,11 +45,15 @@ in
     enableACME = true;
     locations."/" = {
       recommendedProxySettings = true;
+      # Required, else break editing:
+      # https://github.com/outline/outline/discussions/3546
       proxyWebsockets = true;
-      extraConfig = "
-      allow 100.64.0.0/10;
-      allow  fd7a:115c:a1e0::/48;
-      deny all;";
+
+
+      extraConfig = ''
+        allow 100.64.0.0/10;
+        allow  fd7a:115c:a1e0::/48;
+        deny all;'';
       proxyPass = "http://localhost:9292";
     };
   };
