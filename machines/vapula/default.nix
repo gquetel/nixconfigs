@@ -153,11 +153,6 @@ in
       intel-media-driver
     ];
   };
-  # TODO: Debug so that encoding / decoding uses GPU
-  # systemd.services.jellyfin.environment.LIBVA_DRIVER_NAME = "iHD";
-  # environment.sessionVariables = {
-  #   LIBVA_DRIVER_NAME = "iHD";
-  # };
 
   environment.systemPackages = with pkgs; [
     goaccess
@@ -181,7 +176,17 @@ in
     enable = true;
     logError = "/var/log/nginx/error.log error";
     recommendedProxySettings = true;
+
+    appendHttpConfig = ''
+      log_format vcombined '$host:$server_port '
+              '$remote_addr - $remote_user [$time_local] '
+              '"$request" $status $body_bytes_sent '
+              '"$http_referer" "$http_user_agent"';
+
+      access_log /var/log/nginx/access.log vcombined;
+    '';
   };
+
   security.acme = {
     acceptTerms = true;
     defaults.email = "gregor.quetel@gquetel.fr";
