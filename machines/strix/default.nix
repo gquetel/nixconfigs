@@ -59,6 +59,7 @@
       22
       80
       443
+      444
     ];
   };
 
@@ -133,6 +134,11 @@
     };
   };
 
+  # SNI Proxy Ressources:
+  # - https://blog.le-vert.net/?p=224
+  # -  https://nginx.org/en/docs/http/ngx_http_realip_module.html
+  # - https://github.com/JulienMalka/snowfield/blob/f3e41b53c459fc4bda0d0773851dc0753e6e27ae/profiles/behind-sniproxy.nix#L10
+
   #      ------------ Nginx ------------
   services.nginx = {
     enable = true;
@@ -147,11 +153,35 @@
 
       access_log /var/log/nginx/access.log vcombined;
 
-      set_real_ip_from ::1/128;
+      #  Defines trusted addresses that are known to send correct replacement addresses
+      set_real_ip_from 2a01:cb00:1d3a:1100::/64;
+
+      # Defines the request header field whose value will be used to replace the client address.
       real_ip_header proxy_protocol;
     '';
+
+    streamConfig = ''
+      map $ssl_preread_server_name $targetBackend {
+         movies.gquetel.fr   [2a01:cb00:1d3a:1100::7]:444;
+         dmd.gquetel.fr   [2a01:cb00:1d3a:1100::7]:444;
+
+         mesh.gquetel.fr   [2a01:cb00:1d3a:1100::5]:444;
+         
+         default [::1]:444;
+      }
+
+      log_format proxy '$remote_addr -> $targetBackend';
+      access_log /var/log/nginx/proxy.log proxy;
+
+      server {
+          listen 192.168.1.33:443;
+          proxy_protocol on;
+          proxy_pass $targetBackend;
+          ssl_preread on;
+      }
+    '';
   };
-  
+
   security.acme = {
     acceptTerms = true;
     defaults.email = "gregor.quetel@gquetel.fr";
@@ -160,8 +190,24 @@
   services.nginx.virtualHosts."gquetel.fr" = {
     forceSSL = true;
     enableACME = true;
+    listen = [
+      {
+        addr = "[::]";
+        port = 444;
+        ssl = true;
+        proxyProtocol = true;
+      }
+      {
+        addr = "[::]";
+        port = 443;
+        ssl = true;
+      }
+      {
+        addr = "0.0.0.0";
+        port = 80;
+      }
+    ];
     root = "/var/www/html/gquetel.fr";
-
     locations."/robots.txt" = {
       return = "200 'User-agent: *\nDisallow: /\n'";
       extraConfig = ''
@@ -174,6 +220,23 @@
   services.nginx.virtualHosts."thesis-artefacts.gquetel.fr" = {
     forceSSL = true;
     enableACME = true;
+    listen = [
+      {
+        addr = "[::]";
+        port = 444;
+        ssl = true;
+        proxyProtocol = true;
+      }
+      {
+        addr = "[::]";
+        port = 443;
+        ssl = true;
+      }
+      {
+        addr = "0.0.0.0";
+        port = 80;
+      }
+    ];
     root = "/var/www/pdfs";
     locations."/" = {
       extraConfig = ''
@@ -185,16 +248,6 @@
         }
         autoindex on;
       '';
-    };
-  };
-
-  # Reject all other invalid sub-subdomains.
-  # TODO: Is there a better way to do this ?
-  # 80 is sent to 404 and https sent a SSL error.
-  services.nginx.virtualHosts."_" = {
-    rejectSSL = true;
-    locations."/" = {
-      return = "404";
     };
   };
 

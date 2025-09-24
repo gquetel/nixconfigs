@@ -127,6 +127,7 @@
       22
       80
       443
+      444 # TODO: MODULE
     ];
   };
 
@@ -154,6 +155,11 @@
               '"$http_referer" "$http_user_agent"';
 
       access_log /var/log/nginx/access.log vcombined;
+      #  Defines trusted addresses that are known to send correct replacement addresses
+      set_real_ip_from 2a01:cb00:1d3a:1100::/64;
+
+      # Defines the request header field whose value will be used to replace the client address.
+      real_ip_header proxy_protocol;
     '';
   };
 

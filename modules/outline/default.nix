@@ -7,7 +7,7 @@
 }:
 let
   dexUrl = "dex.mesh.gq";
-  dexPort = 9293;
+  dexPort = 9294;
   outlineUrl = "notes.mesh.gq";
 in
 {
@@ -39,10 +39,20 @@ in
     };
   };
 
-
   services.nginx.virtualHosts."notes.mesh.gq" = {
     forceSSL = true;
     enableACME = true;
+    listen = [
+      {
+        addr = "100.64.0.3";
+        port = 443;
+        ssl = true;
+      }
+      {
+        addr = "100.64.0.3";
+        port = 80;
+      }
+    ];
     locations."/" = {
       recommendedProxySettings = true;
       # Required, else break editing:
@@ -58,7 +68,6 @@ in
     };
   };
   security.acme.certs."notes.mesh.gq".server = "https://ca.mesh.gq/acme/acme/directory";
-
 
   # Maybe: https://github.com/outline/outline/discussions/2089
   # To fix dex failure
@@ -93,6 +102,17 @@ in
   services.nginx.virtualHosts."dex.mesh.gq" = {
     forceSSL = true;
     enableACME = true;
+    listen = [
+      {
+        addr = "100.64.0.3";
+        port = 443;
+        ssl = true;
+      }
+      {
+        addr = "100.64.0.3";
+        port = 80;
+      }
+    ];
     locations."/" = {
       extraConfig = "
       allow 100.64.0.0/10;

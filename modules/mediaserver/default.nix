@@ -75,6 +75,23 @@
     locations."/" = {
       proxyPass = "http://127.0.0.1:8096";
     };
+    listen = [
+      {
+        addr = "[::]";
+        port = 444;
+        ssl = true;
+        proxyProtocol = true;
+      }
+      {
+        addr = "[::]";
+        port = 443;
+        ssl = true;
+      }
+      {
+        addr = "0.0.0.0";
+        port = 80;
+      }
+    ];
   };
 
   services.nginx.virtualHosts."dmd.gquetel.fr" = {
@@ -83,8 +100,24 @@
     locations."/" = {
       proxyPass = "http://127.0.0.1:8097";
     };
+    listen = [
+      {
+        addr = "[::]";
+        port = 444;
+        ssl = true;
+        proxyProtocol = true;
+      }
+      {
+        addr = "[::]";
+        port = 443;
+        ssl = true;
+      }
+      {
+        addr = "0.0.0.0";
+        port = 80;
+      }
+    ];
   };
-  # security.acme.certs."dmd.mesh.gq".server = "https://ca.mesh.gq/acme/acme/directory";
 
   services.nginx.virtualHosts."deluge.mesh.gq" = {
     forceSSL = true;

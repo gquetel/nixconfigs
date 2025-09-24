@@ -72,7 +72,7 @@
       };
     };
   };
-  
+
   security.acme = {
     acceptTerms = true;
     defaults.email = "gregor.quetel@gquetel.fr";
@@ -86,5 +86,22 @@
       # Required because we are behind a reverse proxy.
       proxyWebsockets = true;
     };
+    listen = [
+      {
+        addr = "[::]";
+        port = 444;
+        ssl = true;
+        proxyProtocol = true;
+      }
+      {
+        addr = "[::]";
+        port = 443;
+        ssl = true;
+      }
+      {
+        addr = "0.0.0.0";
+        port = 80;
+      }
+    ];
   };
 }
