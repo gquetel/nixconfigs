@@ -44,7 +44,7 @@
     isNormalUser = true;
     description = "gquetel";
     extraGroups = [
-      "networkmanager"
+      "nginx"
       "wheel"
     ];
     packages = with pkgs; [ ];

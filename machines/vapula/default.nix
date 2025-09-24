@@ -56,8 +56,8 @@ in
     isNormalUser = true;
     description = "gquetel";
     extraGroups = [
-      "networkmanager"
       "wheel"
+      "nginx"
     ];
     packages = with pkgs; [ ];
     openssh.authorizedKeys.keys = [
