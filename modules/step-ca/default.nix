@@ -38,9 +38,11 @@
       root = "/var/lib/step-ca-data/root/ca.crt";
       crt = "/var/lib/step-ca-data/intermediate/im.crt";
       key = "/var/lib/step-ca-data/intermediate/im.key";
+      
       # DNS entries for which the certificate ca.mesh.gq should be valid
       # We add 100.64.0.5, because this is what will be used by links in links
       # provided by https://ca.mesh.gq/acme/acme/directory.
+      
       dnsNames = [
         "ca.mesh.gq"
         "100.64.0.5"
@@ -98,25 +100,6 @@
       '';
     };
   };
-  security.pki.certificates = [
-    # That second is the one used by minica on garmr to first create a self
-    # signed certificate. Required otherwise deployment fails.
-    ''
-      -----BEGIN CERTIFICATE-----
-      MIIB+zCCAYKgAwIBAgIIQb5m+VqV8sQwCgYIKoZIzj0EAwMwIDEeMBwGA1UEAxMV
-      bWluaWNhIHJvb3QgY2EgNDFiZTY2MCAXDTI1MDcyODE4MTc1MloYDzIxMjUwNzI4
-      MTgxNzUyWjAgMR4wHAYDVQQDExVtaW5pY2Egcm9vdCBjYSA0MWJlNjYwdjAQBgcq
-      hkjOPQIBBgUrgQQAIgNiAATEmOlDxiYNGxaNhxGDgVTgOSSjHLsOY0zSwi20fz7M
-      jtu/fgVsSj/boVRwrBkfEjQQ9bCVP+eSa7XMWphlqGQFBk4v5cl6lMS01FkG0lJx
-      pZjEB64AtyWfFpgNUgaZE+CjgYYwgYMwDgYDVR0PAQH/BAQDAgKEMB0GA1UdJQQW
-      MBQGCCsGAQUFBwMBBggrBgEFBQcDAjASBgNVHRMBAf8ECDAGAQH/AgEAMB0GA1Ud
-      DgQWBBQEGhG/hr3sQ7AQrAikC2ixX5E0ejAfBgNVHSMEGDAWgBQEGhG/hr3sQ7AQ
-      rAikC2ixX5E0ejAKBggqhkjOPQQDAwNnADBkAjAgXYtq1BtFJcBCR/btHhwvI3wT
-      BIajNPcqMVODVYZOEwTQLxZc3NXcxLlZDhxG5hwCMA6zkHaMgq2ZFER2lzytpwm8
-      17b2Z+VCtTEAp1+o0APKsKWoY6zR6EvIgKagT6L4Pg==
-      -----END CERTIFICATE-----
-    ''
-  ];
 
   # Attribute set of certificates to get signed and renewed.
   security.acme.certs."ca.mesh.gq" = {
