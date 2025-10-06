@@ -72,8 +72,6 @@
   # We disablel systemd-resolved because it somehow fucks up the
   # access to cluster machines @ Télécom.
 
-  # networking.networkmanager.dns = "systemd-resolved";
-
   # Procrastination websites to ban.
   networking.extraHosts = ''
     127.0.0.1 reddit.com
@@ -105,10 +103,6 @@
   environment.sessionVariables = {
     LIBVA_DRIVER_NAME = "iHD";
   };
-
-  environment.systemPackages = with pkgs; [
-    gnome-tweaks
-  ];
 
   users.users.gquetel = {
     isNormalUser = true;
@@ -148,6 +142,12 @@
   # ---------------- Custom modules ----------------
 
   # ---------------- Custom services  ----------------
+  environment.systemPackages = with pkgs; [
+    gnome-tweaks
+    gpu-screen-recorder-gtk # Recording App
+
+  ];
+  programs.gpu-screen-recorder.enable = true; # For promptless recording on both CLI and GUI
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
