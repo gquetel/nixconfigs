@@ -122,6 +122,17 @@
   services.nginx.virtualHosts."deluge.mesh.gq" = {
     forceSSL = true;
     enableACME = true;
+    listen = [
+      {
+        addr = "100.64.0.2";
+        port = 443;
+        ssl = true;
+      }
+      {
+        addr = "100.64.0.2";
+        port = 80;
+      }
+    ];
     locations."/" = {
       extraConfig = "
       allow 100.64.0.0/10;
@@ -135,6 +146,17 @@
   services.nginx.virtualHosts."veste.mesh.gq" = {
     forceSSL = true;
     enableACME = true;
+    listen = [
+      {
+        addr = "100.64.0.2";
+        port = 443;
+        ssl = true;
+      }
+      {
+        addr = "100.64.0.2";
+        port = 80;
+      }
+    ];
     locations."/" = {
       extraConfig = "
       allow 100.64.0.0/10;
@@ -148,6 +170,17 @@
   services.nginx.virtualHosts."sonarr.mesh.gq" = {
     forceSSL = true;
     enableACME = true;
+    listen = [
+      {
+        addr = "100.64.0.2";
+        port = 443;
+        ssl = true;
+      }
+      {
+        addr = "100.64.0.2";
+        port = 80;
+      }
+    ];
     locations."/" = {
       extraConfig = "
       allow 100.64.0.0/10;
@@ -161,6 +194,17 @@
   services.nginx.virtualHosts."radarr.mesh.gq" = {
     forceSSL = true;
     enableACME = true;
+    listen = [
+      {
+        addr = "100.64.0.2";
+        port = 443;
+        ssl = true;
+      }
+      {
+        addr = "100.64.0.2";
+        port = 80;
+      }
+    ];
     locations."/" = {
       extraConfig = "
       allow 100.64.0.0/10;
