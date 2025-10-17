@@ -211,12 +211,6 @@
       }
     ];
     root = "/var/www/html/gquetel.fr";
-    locations."/robots.txt" = {
-      return = "200 'User-agent: *\nDisallow: /\n'";
-      extraConfig = ''
-        add_header Content-Type text/plain;
-      '';
-    };
   };
 
   # VHost on which pdf artefacts are hosted.
