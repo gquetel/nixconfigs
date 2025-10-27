@@ -16,6 +16,8 @@
     ../../modules/step-ca
     ../../modules/servers
     ../../modules/grafana
+    ../../modules/prometheus
+   ../../modules/prometheus-ne
     # ../../modules/systemd-resolved
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
@@ -66,9 +68,9 @@
   };
   # FIXME: When booting the machine, nginx will check as ca.mesh.gq for certificates, nginx is started before
   # tailscale / headscale, hence it does not find ca.mesh.gq. There might be a better workaround.
-  networking.hosts = {
-    "127.0.0.1" = [ "ca.mesh.gq" ];
-  };
+  # networking.hosts = {
+  #   "127.0.0.1" = [ "ca.mesh.gq" ];
+  # };
 
   # ---------------- Networking  ----------------
   # systemd-networkd should be prefered over "scripted networking". Refs:
@@ -182,6 +184,8 @@
   };
 
   grafana.enable = true;
+  prometheus.enable = true;
+  prometheus_ne.enable = true;
 
   # ---------------- age secrets ----------------
   age.secrets.step-ca-pwd.file = ../../secrets/step-ca.pwd.age;

@@ -38,11 +38,11 @@
       root = "/var/lib/step-ca-data/root/ca.crt";
       crt = "/var/lib/step-ca-data/intermediate/im.crt";
       key = "/var/lib/step-ca-data/intermediate/im.key";
-      
+
       # DNS entries for which the certificate ca.mesh.gq should be valid
       # We add 100.64.0.5, because this is what will be used by links in links
       # provided by https://ca.mesh.gq/acme/acme/directory.
-      
+
       dnsNames = [
         "ca.mesh.gq"
         "100.64.0.5"
@@ -87,7 +87,17 @@
     # Enable SSL and use ACME certificate
     forceSSL = true;
     enableACME = true;
-
+    listen = [
+      {
+        addr = "100.64.0.5";
+        port = 443;
+        ssl = true;
+      }
+      {
+        addr = "100.64.0.5";
+        port = 80;
+      }
+    ];
     locations."/" = {
       proxyPass = "https://100.64.0.5:6060";
       # Only allow interactions from machines in the tailnet.

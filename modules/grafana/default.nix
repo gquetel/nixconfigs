@@ -38,7 +38,7 @@ in
       port = cfg.port;
       addr = cfg.addr;
     };
-
+    
     services.nginx.virtualHosts.${cfg.domain} = {
       forceSSL = true;
       enableACME = true;
@@ -59,6 +59,7 @@ in
           allow fd7a:115c:a1e0::/48;
           deny all;
         '';
+        proxyWebsockets = true;
         proxyPass = "http://${cfg.addr}:${toString cfg.port}";
       };
     };
