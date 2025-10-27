@@ -68,6 +68,12 @@
             type = "A";
             value = "100.64.0.3";
           }
+
+          {
+            name = config.grafana.domain;
+            type = "A";
+            value = "100.64.0.5";
+          }
         ];
       };
     };

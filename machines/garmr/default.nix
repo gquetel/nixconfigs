@@ -15,6 +15,7 @@
     ../../modules/headscale-server
     ../../modules/step-ca
     ../../modules/servers
+    ../../modules/grafana
     # ../../modules/systemd-resolved
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
@@ -179,6 +180,9 @@
       fail_2_ban.jails = [ "sshd" ];
     };
   };
+
+  grafana.enable = true;
+
   # ---------------- age secrets ----------------
   age.secrets.step-ca-pwd.file = ../../secrets/step-ca.pwd.age;
 
