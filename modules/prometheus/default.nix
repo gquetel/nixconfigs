@@ -1,4 +1,4 @@
-{ lib, config, ... }:
+{ lib, config, nodes, ... }:
 
 with lib;
 
@@ -9,24 +9,13 @@ in
   options.prometheus = {
     enable = mkEnableOption "Prometheus metrics management service";
 
-    # domain = mkOption {
-    #   type = types.str;
-    #   default = "grafana.mesh.gq";
-    #   description = "Domain name for the Grafana web interface.";
-    # };
-
     port = mkOption {
       type = types.int;
       default = 9009;
       description = "Port number for Grafana to listen on.";
     };
-
-    # addr = mkOption {
-    #   type = types.str;
-    #   default = "127.0.0.1";
-    #   description = "Address Grafana binds to.";
-    # };
   };
+
   # Ressources:
   # https://xeiaso.net/blog/prometheus-grafana-loki-nixos-2020-11-20/
   # https://wiki.nixos.org/wiki/Prometheus
@@ -38,10 +27,10 @@ in
 
       scrapeConfigs = [
         {
-          job_name = "garmr-systemd";
+          job_name = "cluster-systemd";
           static_configs = [
             {
-              targets = [ "127.0.0.1:${toString config.services.prometheus.exporters.node.port}" ];
+              targets = [ "${nodes.garmr.config.deployment.targetHost}:${toString config.services.prometheus.exporters.node.port}" ];
             }
           ];
         }

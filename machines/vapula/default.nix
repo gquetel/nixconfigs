@@ -111,7 +111,6 @@ in
 
   systemd.network = {
     enable = true;
-
     networks."10-wired" = {
       # Match device name.
       matchConfig.Name = "enp0s31f6";

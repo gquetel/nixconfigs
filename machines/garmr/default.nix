@@ -1,5 +1,6 @@
 {
   config,
+  nodes,
   pkgs,
   ...
 }:
@@ -185,7 +186,10 @@
 
   grafana.enable = true;
   prometheus.enable = true;
-  prometheus_ne.enable = true;
+  prometheus_ne = {
+    enable = true;
+    addr = "0.0.0.0";
+  };
 
   # ---------------- age secrets ----------------
   age.secrets.step-ca-pwd.file = ../../secrets/step-ca.pwd.age;
