@@ -1,9 +1,21 @@
-{ lib, config, nodes, ... }:
+{
+  lib,
+  config,
+  nodes,
+  ...
+}:
 
 with lib;
 
 let
   cfg = config.prometheus;
+
+  # Array of targets, built from hosts with prometheus_ne enabled
+  # or false is required for machines that does not declare prometheus_ne.
+  prometheusNodeTargets = lib.mapAttrsToList (
+    name: node: "${node.config.machine.meta.ipTailscale}:${toString node.config.prometheus_ne.port}"
+  ) (lib.filterAttrs (name: node: node.config.prometheus_ne.enable or false) nodes);
+
 in
 {
   options.prometheus = {
@@ -30,7 +42,7 @@ in
           job_name = "cluster-systemd";
           static_configs = [
             {
-              targets = [ "${nodes.garmr.config.deployment.targetHost}:${toString config.services.prometheus.exporters.node.port}" ];
+              targets = prometheusNodeTargets;
             }
           ];
         }

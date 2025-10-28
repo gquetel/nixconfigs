@@ -189,8 +189,10 @@
 
   grafana.enable = true;
   prometheus.enable = true;
+
   prometheus_ne = {
     enable = true;
+    #FIXME: Enable prometheus node exporter after tailscale so that ipTailscale is up. 
     addr = "0.0.0.0";
   };
 

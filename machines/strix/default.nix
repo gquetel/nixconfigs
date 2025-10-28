@@ -18,6 +18,8 @@
     ../../modules/gitlab-runner
     ../../modules/outline
     ../../modules/servers
+    ../../modules/prometheus-ne
+
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
 
@@ -266,6 +268,11 @@
       memory.swap_pos = "none";
       fail_2_ban.jails = [ "sshd" ];
     };
+  };
+
+  prometheus_ne = {
+    enable = true;
+    addr = config.machine.meta.ipTailscale;
   };
 
   # This option defines the first version of NixOS you have installed on this particular machine,

@@ -27,6 +27,8 @@ in
     ../../modules/mediaserver
     ../../modules/headscale-client
     ../../modules/servers
+    ../../modules/prometheus-ne
+
     # ../../modules/systemd-resolved
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
@@ -222,6 +224,11 @@ in
       last_login.gquetel = 3;
       fail_2_ban.jails = [ "sshd" ];
     };
+  };
+
+  prometheus_ne = {
+    enable = true;
+    addr = config.machine.meta.ipTailscale;
   };
   # ---------------- age secrets ----------------
 
