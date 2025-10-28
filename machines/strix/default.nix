@@ -261,7 +261,8 @@
       service_status.nginx = "nginx";
       service_status.gitlab-runner = "gitlab-runner";
       service_status.outline = "outline";
-
+      service_status.prometheus_node_exporter = "prometheus-node-exporter";
+      
       filesystems.root = "/";
       last_login.gquetel = 3;
       filesystems.boot = "/boot";

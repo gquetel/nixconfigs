@@ -178,6 +178,8 @@
       service_status.nginx = "nginx";
       service_status.headscale = "headscale";
       service_status.tailscale = "tailscaled";
+      service_status.prometheus = "prometheus";
+      service_status.prometheus_node_exporter = "prometheus-node-exporter";
       service_status.step-ca = "step-ca";
       filesystems.root = "/";
       last_login.gquetel = 3;

@@ -212,6 +212,7 @@ in
       service_status.nginx = "nginx";
       service_status.tailscale = "tailscaled";
       service_status.jellyfin = "jellyfin";
+      service_status.jellyseer = "jellyseer";
       service_status.deluged = "deluged";
       service_status.sonarr = "sonarr";
       service_status.radarr = "radarr";
