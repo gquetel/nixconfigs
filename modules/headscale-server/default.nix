@@ -2,6 +2,7 @@
   lib,
   config,
   pkgs,
+  nodes,
   ...
 }:
 {
@@ -35,38 +36,44 @@
           {
             name = "deluge.mesh.gq";
             type = "A";
-            value = "100.64.0.2";
+            value = nodes.vapula.config.machine.meta.ipTailscale;
           }
           {
             name = "veste.mesh.gq";
             type = "A";
-            value = "100.64.0.2";
+            value = nodes.vapula.config.machine.meta.ipTailscale;
           }
           {
             name = "sonarr.mesh.gq";
             type = "A";
-            value = "100.64.0.2";
+            value = nodes.vapula.config.machine.meta.ipTailscale;
           }
           {
             name = "radarr.mesh.gq";
             type = "A";
-            value = "100.64.0.2";
+            value = nodes.vapula.config.machine.meta.ipTailscale;
           }
           {
             name = "ca.mesh.gq";
             type = "A";
-            value = "100.64.0.5";
+            value = nodes.garmr.config.machine.meta.ipTailscale;
           }
           {
             name = "notes.mesh.gq";
             type = "A";
-            value = "100.64.0.3";
+            value = nodes.strix.config.machine.meta.ipTailscale;
           }
 
           {
             name = "dex.mesh.gq";
             type = "A";
-            value = "100.64.0.3";
+            value = nodes.strix.config.machine.meta.ipTailscale;
+          }
+
+          {
+            name = config.grafana.domain;
+            type = "A";
+            value = nodes.garmr.config.machine.meta.ipTailscale;
           }
         ];
       };

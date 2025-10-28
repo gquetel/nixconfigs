@@ -1,5 +1,6 @@
 {
   config,
+  nodes,
   pkgs,
   ...
 }:
@@ -15,6 +16,9 @@
     ../../modules/headscale-server
     ../../modules/step-ca
     ../../modules/servers
+    ../../modules/grafana
+    ../../modules/prometheus
+   ../../modules/prometheus-ne
     # ../../modules/systemd-resolved
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
@@ -39,6 +43,9 @@
   console.keyMap = "fr";
 
   # ---------------- My config  ----------------
+  machine.meta = {
+    ipTailscale = "100.64.0.5";
+  };
 
   users.users.gquetel = {
     isNormalUser = true;
@@ -65,9 +72,9 @@
   };
   # FIXME: When booting the machine, nginx will check as ca.mesh.gq for certificates, nginx is started before
   # tailscale / headscale, hence it does not find ca.mesh.gq. There might be a better workaround.
-  networking.hosts = {
-    "127.0.0.1" = [ "ca.mesh.gq" ];
-  };
+  # networking.hosts = {
+  #   "127.0.0.1" = [ "ca.mesh.gq" ];
+  # };
 
   # ---------------- Networking  ----------------
   # systemd-networkd should be prefered over "scripted networking". Refs:
@@ -171,6 +178,8 @@
       service_status.nginx = "nginx";
       service_status.headscale = "headscale";
       service_status.tailscale = "tailscaled";
+      service_status.prometheus = "prometheus";
+      service_status.prometheus_node_exporter = "prometheus-node-exporter";
       service_status.step-ca = "step-ca";
       filesystems.root = "/";
       last_login.gquetel = 3;
@@ -179,6 +188,16 @@
       fail_2_ban.jails = [ "sshd" ];
     };
   };
+
+  grafana.enable = true;
+  prometheus.enable = true;
+
+  prometheus_ne = {
+    enable = true;
+    #FIXME: Enable prometheus node exporter after tailscale so that ipTailscale is up. 
+    addr = "0.0.0.0";
+  };
+
   # ---------------- age secrets ----------------
   age.secrets.step-ca-pwd.file = ../../secrets/step-ca.pwd.age;
 

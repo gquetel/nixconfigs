@@ -54,6 +54,9 @@
   };
 
   # ---------------- My config  ----------------
+    machine.meta = {
+    ipTailscale = "100.64.0.4";
+  };
   # Allows to build for aarch64.
   # https://colmena.cli.rs/unstable/examples/multi-arch.html
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];

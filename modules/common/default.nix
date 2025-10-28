@@ -18,6 +18,21 @@ in
     };
   };
 
+  options.machine.meta = lib.mkOption {
+    description = "Machine metadata";
+
+    type = lib.types.submodule {
+      # We allow for freeform options.
+      # https://nixos.org/manual/nixos/stable/#sec-freeform-modules
+      freeformType = with lib.types; attrsOf str;
+
+      options.ipTailscale = lib.mkOption {
+        type = lib.types.str;
+        default = null;
+      };
+    };
+  };
+
   config = {
     security.pki.certificates = [
       # custom step-ca root public certificate file.

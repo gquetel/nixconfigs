@@ -27,6 +27,8 @@ in
     ../../modules/mediaserver
     ../../modules/headscale-client
     ../../modules/servers
+    ../../modules/prometheus-ne
+
     # ../../modules/systemd-resolved
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
@@ -51,6 +53,9 @@ in
   console.keyMap = "fr";
 
   # ---------------- My config  ----------------
+  machine.meta = {
+    ipTailscale = "100.64.0.2";
+  };
 
   users.users.gquetel = {
     isNormalUser = true;
@@ -111,7 +116,6 @@ in
 
   systemd.network = {
     enable = true;
-
     networks."10-wired" = {
       # Match device name.
       matchConfig.Name = "enp0s31f6";
@@ -208,6 +212,7 @@ in
       service_status.nginx = "nginx";
       service_status.tailscale = "tailscaled";
       service_status.jellyfin = "jellyfin";
+      service_status.jellyseer = "jellyseer";
       service_status.deluged = "deluged";
       service_status.sonarr = "sonarr";
       service_status.radarr = "radarr";
@@ -220,6 +225,11 @@ in
       last_login.gquetel = 3;
       fail_2_ban.jails = [ "sshd" ];
     };
+  };
+
+  prometheus_ne = {
+    enable = true;
+    addr = config.machine.meta.ipTailscale;
   };
   # ---------------- age secrets ----------------
 

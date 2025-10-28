@@ -18,6 +18,8 @@
     ../../modules/gitlab-runner
     ../../modules/outline
     ../../modules/servers
+    ../../modules/prometheus-ne
+
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
 
@@ -28,7 +30,9 @@
   console.keyMap = "fr";
 
   # ---------------- My config  ----------------
-
+  machine.meta = {
+    ipTailscale = "100.64.0.3";
+  };
   # Changed passwords will be reset according to the users.users configuration.
   users.mutableUsers = false;
 
@@ -257,13 +261,19 @@
       service_status.nginx = "nginx";
       service_status.gitlab-runner = "gitlab-runner";
       service_status.outline = "outline";
-
+      service_status.prometheus_node_exporter = "prometheus-node-exporter";
+      
       filesystems.root = "/";
       last_login.gquetel = 3;
       filesystems.boot = "/boot";
       memory.swap_pos = "none";
       fail_2_ban.jails = [ "sshd" ];
     };
+  };
+
+  prometheus_ne = {
+    enable = true;
+    addr = config.machine.meta.ipTailscale;
   };
 
   # This option defines the first version of NixOS you have installed on this particular machine,

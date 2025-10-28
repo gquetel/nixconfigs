@@ -45,7 +45,6 @@ rec {
         hydra = import ./machines/hydra;
         garmr = import ./machines/garmr;
         vapula = import ./machines/vapula;
-
       };
 
 }
