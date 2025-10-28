@@ -43,6 +43,9 @@
   console.keyMap = "fr";
 
   # ---------------- My config  ----------------
+  machine.meta = {
+    ipTailscale = "100.64.0.5";
+  };
 
   users.users.gquetel = {
     isNormalUser = true;

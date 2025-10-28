@@ -1,4 +1,4 @@
-{ lib, config, ... }:
+{ lib, config, nodes, ... }:
 
 with lib;
 
@@ -44,12 +44,12 @@ in
       enableACME = true;
       listen = [
         {
-          addr = "100.64.0.5";
+          addr = nodes.garmr.config.machine.meta.ipTailscale;
           port = 443;
           ssl = true;
         }
         {
-          addr = "100.64.0.5";
+          addr = nodes.garmr.config.machine.meta.ipTailscale;
           port = 80;
         }
       ];

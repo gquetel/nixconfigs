@@ -1,6 +1,7 @@
 {
   lib,
   config,
+  nodes,
   pkgs,
   ...
 }:
@@ -124,12 +125,12 @@
     enableACME = true;
     listen = [
       {
-        addr = "100.64.0.2";
+        addr = nodes.vapula.config.machine.meta.ipTailscale;
         port = 443;
         ssl = true;
       }
       {
-        addr = "100.64.0.2";
+        addr = nodes.vapula.config.machine.meta.ipTailscale;
         port = 80;
       }
     ];
@@ -148,12 +149,12 @@
     enableACME = true;
     listen = [
       {
-        addr = "100.64.0.2";
+        addr = nodes.vapula.config.machine.meta.ipTailscale;
         port = 443;
         ssl = true;
       }
       {
-        addr = "100.64.0.2";
+        addr = nodes.vapula.config.machine.meta.ipTailscale;
         port = 80;
       }
     ];
@@ -172,12 +173,12 @@
     enableACME = true;
     listen = [
       {
-        addr = "100.64.0.2";
+        addr = nodes.vapula.config.machine.meta.ipTailscale;
         port = 443;
         ssl = true;
       }
       {
-        addr = "100.64.0.2";
+        addr = nodes.vapula.config.machine.meta.ipTailscale;
         port = 80;
       }
     ];
@@ -196,12 +197,12 @@
     enableACME = true;
     listen = [
       {
-        addr = "100.64.0.2";
+        addr = nodes.vapula.config.machine.meta.ipTailscale;
         port = 443;
         ssl = true;
       }
       {
-        addr = "100.64.0.2";
+        addr = nodes.vapula.config.machine.meta.ipTailscale;
         port = 80;
       }
     ];

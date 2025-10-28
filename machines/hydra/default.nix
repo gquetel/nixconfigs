@@ -77,6 +77,9 @@
   };
 
   # ---------------- My config  ----------------
+  machine.meta = {
+    ipTailscale = "100.64.0.1";
+  };
 
   deployment = {
     allowLocalDeployment = true;

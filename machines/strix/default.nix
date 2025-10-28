@@ -28,7 +28,9 @@
   console.keyMap = "fr";
 
   # ---------------- My config  ----------------
-
+  machine.meta = {
+    ipTailscale = "100.64.0.3";
+  };
   # Changed passwords will be reset according to the users.users configuration.
   users.mutableUsers = false;
 

@@ -2,6 +2,7 @@
   lib,
   config,
   pkgs,
+  nodes,
   builtins,
   ...
 }:
@@ -44,12 +45,12 @@ in
     enableACME = true;
     listen = [
       {
-        addr = "100.64.0.3";
+        addr = nodes.strix.config.machine.meta.ipTailscale;
         port = 443;
         ssl = true;
       }
       {
-        addr = "100.64.0.3";
+        addr = nodes.strix.config.machine.meta.ipTailscale;
         port = 80;
       }
     ];
@@ -58,7 +59,6 @@ in
       # Required, else break editing:
       # https://github.com/outline/outline/discussions/3546
       proxyWebsockets = true;
-
 
       extraConfig = ''
         allow 100.64.0.0/10;
@@ -104,12 +104,12 @@ in
     enableACME = true;
     listen = [
       {
-        addr = "100.64.0.3";
+        addr = nodes.strix.config.machine.meta.ipTailscale;
         port = 443;
         ssl = true;
       }
       {
-        addr = "100.64.0.3";
+        addr = nodes.strix.config.machine.meta.ipTailscale;
         port = 80;
       }
     ];
