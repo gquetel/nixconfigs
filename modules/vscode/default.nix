@@ -14,9 +14,9 @@ in
   # TODO: Replace gquetel by something else ? Option ?
   users.users.gquetel = {
     packages = ([
-      (unstable.vscode-with-extensions.override {
+      (pkgs.vscode-with-extensions.override {
         vscodeExtensions =
-          with unstable.vscode-extensions;
+          with pkgs.vscode-extensions;
           [
             bbenoist.nix
             daohong-emilio.yash
@@ -37,7 +37,7 @@ in
             visualstudioexptteam.vscodeintellicode
             yzhang.markdown-all-in-one
           ]
-          ++ unstable.vscode-utils.extensionsFromVscodeMarketplace ([
+          ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace ([
             {
               # https://github.com/NixOS/nixpkgs/pull/387839/commits/4886e147e1b285057228cbd7ce2348cf8fb4cb45
               # Manual change until hash mismatch is fixed in unstable.
