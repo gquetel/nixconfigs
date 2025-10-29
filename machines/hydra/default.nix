@@ -116,6 +116,7 @@
         tinymist
         typst
         typstfmt
+        vlc
         zotero
         zoom-us
       ]
@@ -137,6 +138,11 @@
     "149.112.112.112"
   ];
   # ---------------- System Packages  ----------------
+  environment.systemPackages = with pkgs; [
+    gnome-tweaks
+    gpu-screen-recorder-gtk
+  ];
+  programs.gpu-screen-recorder.enable = true;
 
   # ---------------- Custom modules ----------------
 

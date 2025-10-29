@@ -134,6 +134,7 @@
         tinymist
         typst
         typstfmt
+        vlc
         zoom-us
         zotero
       ]
