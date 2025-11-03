@@ -103,10 +103,8 @@
       # Routes define where to route a packet (Gateway) given a destination range.
       routes = [
         {
-          routeConfig = {
             Gateway = "192.168.1.1";
             Destination = "0.0.0.0/0";
-          };
         }
       ];
       # make routing on this interface a dependency for network-online.target
@@ -146,10 +144,13 @@
   # -  https://nginx.org/en/docs/http/ngx_http_realip_module.html
   # - https://github.com/JulienMalka/snowfield/blob/f3e41b53c459fc4bda0d0773851dc0753e6e27ae/profiles/behind-sniproxy.nix#L10
 
-  #      ------------ Nginx ------------
+  # ------------ Nginx ------------
   services.nginx = {
     enable = true;
     logError = "/var/log/nginx/error.log error";
+    # Set headers for the proxied server such as X-Forwarded-For.  
+    # See, code for modified headers: 
+    # https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/web-servers/nginx/default.nix
     recommendedProxySettings = true;
 
     appendHttpConfig = ''
@@ -171,7 +172,6 @@
       map $ssl_preread_server_name $targetBackend {
          movies.gquetel.fr   [2a01:cb00:1d3a:1100::7]:444;
          dmd.gquetel.fr   [2a01:cb00:1d3a:1100::7]:444;
-
          mesh.gquetel.fr   [2a01:cb00:1d3a:1100::5]:444;
          
          default [::1]:444;

@@ -69,12 +69,14 @@
   };
 
   # ----------------- Nginx reverse proxy -----------------
-
+  # Don't forget to add 127.0.0.1 to known proxies in Jellyfin's config 
+  # see https://jellyfin.org/docs/general/post-install/networking/reverse-proxy/.
   services.nginx.virtualHosts."movies.gquetel.fr" = {
     forceSSL = true;
     enableACME = true;
     locations."/" = {
       proxyPass = "http://127.0.0.1:8096";
+      proxyWebsockets = true;
     };
     listen = [
       {

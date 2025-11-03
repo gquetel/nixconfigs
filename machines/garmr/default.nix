@@ -18,7 +18,7 @@
     ../../modules/servers
     ../../modules/grafana
     ../../modules/prometheus
-   ../../modules/prometheus-ne
+    ../../modules/prometheus-ne
     # ../../modules/systemd-resolved
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
@@ -109,10 +109,8 @@
       # Routes define where to route a packet (Gateway) given a destination range.
       routes = [
         {
-          routeConfig = {
-            Gateway = "192.168.1.1";
-            Destination = "0.0.0.0/0";
-          };
+          Gateway = "192.168.1.1";
+          Destination = "0.0.0.0/0";
         }
       ];
       # make routing on this interface a dependency for network-online.target
@@ -153,6 +151,9 @@
   services.nginx = {
     enable = true;
     logError = "/var/log/nginx/error.log error";
+    # Set headers for the proxied server such as X-Forwarded-For.
+    # See, code for modified headers:
+    # https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/web-servers/nginx/default.nix
     recommendedProxySettings = true;
 
     appendHttpConfig = ''
@@ -194,8 +195,7 @@
 
   prometheus_ne = {
     enable = true;
-    #FIXME: Enable prometheus node exporter after tailscale so that ipTailscale is up. 
-    addr = "0.0.0.0";
+    addr = config.machine.meta.ipTailscale;
   };
 
   # ---------------- age secrets ----------------

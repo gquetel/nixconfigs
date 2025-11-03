@@ -1,4 +1,9 @@
-{ lib, config, ... }:
+{
+  lib,
+  config,
+  systemd,
+  ...
+}:
 
 with lib;
 
@@ -36,6 +41,16 @@ in
           listenAddress = cfg.addr;
         };
       };
+    };
+
+    # We want to listen on tailscale Ip. We wait that the service is Up.
+    # Requires makes it that the service is only started once tailscaled is running.
+    systemd.services.prometheus = {
+      after = [
+        "network.target"
+        "tailscaled.service"
+      ];
+      requires = [ "tailscaled.service" ];
     };
 
   };

@@ -139,10 +139,8 @@ in
       # Routes define where to route a packet (Gateway) given a destination range.
       routes = [
         {
-          routeConfig = {
-            Gateway = "192.168.1.1";
-            Destination = "0.0.0.0/0";
-          };
+          Gateway = "192.168.1.1";
+          Destination = "0.0.0.0/0";
         }
       ];
       # make routing on this interface a dependency for network-online.target
@@ -180,6 +178,9 @@ in
   services.nginx = {
     enable = true;
     logError = "/var/log/nginx/error.log error";
+    # Set headers for the proxied server such as X-Forwarded-For.
+    # See, code for modified headers:
+    # https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/web-servers/nginx/default.nix
     recommendedProxySettings = true;
 
     appendHttpConfig = ''
@@ -212,7 +213,7 @@ in
       service_status.nginx = "nginx";
       service_status.tailscale = "tailscaled";
       service_status.jellyfin = "jellyfin";
-      service_status.jellyseer = "jellyseer";
+      service_status.jellyseerr = "jellyseerr";
       service_status.deluged = "deluged";
       service_status.sonarr = "sonarr";
       service_status.radarr = "radarr";
