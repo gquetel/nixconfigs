@@ -1,9 +1,4 @@
-{
-  lib,
-  config,
-  nodes,
-  ...
-}:
+{ lib, config, nodes, ... }:
 
 with lib;
 
@@ -39,13 +34,11 @@ in
   config = mkIf cfg.enable {
     services.grafana = {
       enable = true;
-      settings.servers = {
-        domain = cfg.domain;
-        port = cfg.port;
-        addr = cfg.addr;
-      };
+      domain = cfg.domain;
+      port = cfg.port;
+      addr = cfg.addr;
     };
-
+    
     services.nginx.virtualHosts.${cfg.domain} = {
       forceSSL = true;
       enableACME = true;
