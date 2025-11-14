@@ -45,7 +45,7 @@
   };
 
   services.deluge = {
-    enable = true;
+    enable = false;
     authFile = "/home/mediaserver/.deluge-info";
     user = "mediaserver";
     group = "mediaserver";

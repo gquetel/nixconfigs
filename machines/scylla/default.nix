@@ -130,6 +130,7 @@
         signal-desktop
         spotify
         texliveFull
+        tex-fmt # TODO keep ? 
         thunderbird
         tinymist
         typst
