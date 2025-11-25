@@ -8,7 +8,7 @@
     ../../modules/firefox
     ../../modules/fonts
     ../../modules/headscale-client
-    # ../../modules/languagetool
+    ../../modules/languagetool
     ../../modules/vscode
     ../../modules/emacs
     "${(import ../../npins).agenix}/modules/age.nix"

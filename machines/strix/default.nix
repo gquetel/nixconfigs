@@ -97,7 +97,7 @@
       # static IPv4 or IPv6 addresses and their prefix length
       addresses = [
         { Address = "192.168.1.33/24"; }
-        { Address = "2a01:cb00:1d3a:1100::0003/64"; }
+        { Address = "2a01:cb00:253:ed00::0003/64"; }
       ];
 
       # Routes define where to route a packet (Gateway) given a destination range.
@@ -162,7 +162,7 @@
       access_log /var/log/nginx/access.log vcombined;
 
       #  Defines trusted addresses that are known to send correct replacement addresses
-      set_real_ip_from 2a01:cb00:1d3a:1100::/64;
+      set_real_ip_from 2a01:cb00:253:ed00::/64;
 
       # Defines the request header field whose value will be used to replace the client address.
       real_ip_header proxy_protocol;
@@ -170,9 +170,9 @@
 
     streamConfig = ''
       map $ssl_preread_server_name $targetBackend {
-         movies.gquetel.fr   [2a01:cb00:1d3a:1100::7]:444;
-         dmd.gquetel.fr   [2a01:cb00:1d3a:1100::7]:444;
-         mesh.gquetel.fr   [2a01:cb00:1d3a:1100::5]:444;
+         movies.gquetel.fr   [2a01:cb00:253:ed00::7]:444;
+         dmd.gquetel.fr   [2a01:cb00:253:ed00::7]:444;
+         mesh.gquetel.fr   [2a01:cb00:253:ed00::5]:444;
          
          default [::1]:444;
       }

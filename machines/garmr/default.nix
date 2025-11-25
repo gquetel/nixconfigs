@@ -92,7 +92,7 @@
       # static IPv4 or IPv6 addresses and their prefix length
       addresses = [
         { Address = "192.168.1.28/24"; }
-        { Address = "2a01:cb00:1d3a:1100::0005/64"; }
+        { Address = "2a01:cb00:253:ed00::0005/64"; }
       ];
 
       # TODO: Single variable holding DNS servers provided to resolved
@@ -164,7 +164,7 @@
 
       access_log /var/log/nginx/access.log vcombined;
       #  Defines trusted addresses that are known to send correct replacement addresses
-      set_real_ip_from 2a01:cb00:1d3a:1100::/64;
+      set_real_ip_from 2a01:cb00:253:ed00::/64;
 
       # Defines the request header field whose value will be used to replace the client address.
       real_ip_header proxy_protocol;
