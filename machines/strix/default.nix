@@ -189,6 +189,19 @@
     '';
   };
 
+  # This allows to route HTTP ACME requests to vapula.
+  services.nginx.virtualHosts."dmd.gquetel.fr" = {
+    listen = [{ addr = "0.0.0.0"; port = 80; }];
+    locations."/".proxyPass = "http://[2a01:cb00:253:ed00::7]";
+  };
+
+  # This allows to route HTTP ACME requests to garmr.
+  services.nginx.virtualHosts."mesh.gquetel.fr" = {
+    listen = [{ addr = "0.0.0.0"; port = 80; }];
+    locations."/".proxyPass = "http://[2a01:cb00:253:ed00::5]";
+  };
+  
+
   security.acme = {
     acceptTerms = true;
     defaults.email = "gregor.quetel@gquetel.fr";

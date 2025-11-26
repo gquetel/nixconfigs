@@ -69,7 +69,7 @@
   };
 
   # ----------------- Nginx reverse proxy -----------------
-  # Don't forget to add 127.0.0.1 to known proxies in Jellyfin's config 
+  # Don't forget to add 127.0.0.1 to known proxies in Jellyfin's config
   # see https://jellyfin.org/docs/general/post-install/networking/reverse-proxy/.
   services.nginx.virtualHosts."movies.gquetel.fr" = {
     forceSSL = true;
@@ -114,6 +114,11 @@
         addr = "[::]";
         port = 443;
         ssl = true;
+      }
+      # Allows ACME requests in.
+      {
+        addr = "[::]";
+        port = 80;
       }
       {
         addr = "0.0.0.0";

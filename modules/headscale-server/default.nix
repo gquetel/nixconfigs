@@ -105,6 +105,11 @@
         port = 443;
         ssl = true;
       }
+      # Allows ACME requests in.
+      {
+        addr = "[::]";
+        port = 80;
+      }
       {
         addr = "0.0.0.0";
         port = 80;
