@@ -20,12 +20,11 @@ in
           [
             bbenoist.nix
             daohong-emilio.yash
-            github.copilot
             james-yu.latex-workshop
             jnoortheen.nix-ide
             mechatroner.rainbow-csv
             ms-python.black-formatter
-            # ms-python.python
+            ms-python.python
             ms-python.vscode-pylance
             ms-toolsai.jupyter
             ms-toolsai.jupyter-renderers
@@ -38,14 +37,6 @@ in
             yzhang.markdown-all-in-one
           ]
           ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace ([
-            {
-              # https://github.com/NixOS/nixpkgs/pull/387839/commits/4886e147e1b285057228cbd7ce2348cf8fb4cb45
-              # Manual change until hash mismatch is fixed in unstable.
-              name = "python";
-              publisher = "ms-python";
-              hash = "sha256-f573A/7s8jVfH1f3ZYZSTftrfBs6iyMWewhorX4Z0Nc=";
-              version = "2025.2.0";
-            }
             {
               name = "vscode-edit-csv";
               publisher = "janisdd";
