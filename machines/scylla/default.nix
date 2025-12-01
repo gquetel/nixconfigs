@@ -134,7 +134,7 @@
         thunderbird
         tinymist
         typst
-        typstfmt
+        typstyle
         vlc
         zoom-us
         zotero

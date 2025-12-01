@@ -1,19 +1,17 @@
 {
   "pins": {
     "agenix": {
-      "type": "GitRelease",
+      "type": "Git",
       "repository": {
-        "type": "Git",
-        "url": "https://github.com/ryantm/agenix.git"
+        "type": "GitHub",
+        "owner": "ryantm",
+        "repo": "agenix"
       },
-      "pre_releases": false,
-      "version_upper_bound": null,
-      "release_prefix": null,
+      "branch": "main",
       "submodules": false,
-      "version": "0.15.0",
-      "revision": "564595d0ad4be7277e07fa63b5a991b3c645655d",
-      "url": null,
-      "hash": "01dhrghwa7zw93cybvx4gnrskqk97b004nfxgsys0736823956la"
+      "revision": "fcdea223397448d35d9b31f798479227e80183f6",
+      "url": "https://github.com/ryantm/agenix/archive/fcdea223397448d35d9b31f798479227e80183f6.tar.gz",
+      "hash": "1d4m7hsq727q7ndjqmgyl8vkbkqjwps962ygmv2mcc5dbqzgn963"
     },
     "colmena": {
       "type": "GitRelease",
@@ -78,9 +76,9 @@
       },
       "branch": "nixos-unstable",
       "submodules": false,
-      "revision": "5ae3b07d8d6527c42f17c876e404993199144b6a",
-      "url": "https://github.com/nixos/nixpkgs/archive/5ae3b07d8d6527c42f17c876e404993199144b6a.tar.gz",
-      "hash": "1zb5ca8jqavb19j7g06a41jg6bvpr20b9lihvham6qywhgaqprz9"
+      "revision": "2d293cbfa5a793b4c50d17c05ef9e385b90edf6c",
+      "url": "https://github.com/nixos/nixpkgs/archive/2d293cbfa5a793b4c50d17c05ef9e385b90edf6c.tar.gz",
+      "hash": "03n6v687rkbjriah1bn9m8ysc1bq5b0y82lmy01352j7i17yx7d6"
     }
   },
   "version": 5
