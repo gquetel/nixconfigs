@@ -24,6 +24,7 @@ in
         "uptime"
         "service_status"
         "fail_2_ban"
+        "global"
       ];
     };
 

@@ -26,8 +26,9 @@
         # than server_url according to [2]
         base_domain = "mesh.gq";
 
-        # Force the usage of Headscale DNS configuration.
-        override_local_dns = true;
+        # Force the usage of Headscale DNS configuration. We don't need that, the 
+        # nodes can use their own DNS rather than headscale one. 
+        override_local_dns = false;
         magic_dns = true;
 
         # Extra DNS records hardcoded to route to the correct
