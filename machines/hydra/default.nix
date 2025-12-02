@@ -126,17 +126,25 @@
   };
 
   # ---------------- Networking  ----------------
-  networking.hostName = "hydra";
-  networking.networkmanager.enable = true;
+  networking = {
+    hostName = "hydra";
+    networkmanager = {
+      enable = true;
+      plugins = [
+        pkgs.networkmanager-openvpn
+      ];
+    };
 
-  networking.nameservers = [
-    # Cloudflare
-    "1.1.1.1"
-    "1.0.0.1"
-    # Quad9
-    "9.9.9.9"
-    "149.112.112.112"
-  ];
+    nameservers = [
+      # Cloudflare
+      "1.1.1.1"
+      "1.0.0.1"
+      # Quad9
+      "9.9.9.9"
+      "149.112.112.112"
+    ];
+  };
+
   # ---------------- System Packages  ----------------
   environment.systemPackages = with pkgs; [
     gnome-tweaks

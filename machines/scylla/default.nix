@@ -54,7 +54,7 @@
   };
 
   # ---------------- My config  ----------------
-    machine.meta = {
+  machine.meta = {
     ipTailscale = "100.64.0.4";
   };
   # Allows to build for aarch64.
@@ -69,28 +69,31 @@
   virtualisation.docker.enable = true;
 
   # ---------------- Networking  ----------------
-  # From the doc is seems that systemd-networkd might not be suited for laptops with
-  networking.networkmanager.enable = true;
-  networking.hostName = "scylla";
-  # We disablel systemd-resolved because it somehow fucks up the
-  # access to cluster machines @ Télécom.
 
-  # Procrastination websites to ban.
-  networking.extraHosts = ''
-    127.0.0.1 reddit.com
-    127.0.0.1 www.reddit.com
-    127.0.0.1 x.com
-  '';
+  networking = {
+    hostName = "scylla";
+    networkmanager = {
+      enable = true;
+      plugins = [
+        pkgs.networkmanager-openvpn
+      ];
+    };
+    # Procrastination websites to ban.
+    extraHosts = ''
+      127.0.0.1 reddit.com
+      127.0.0.1 www.reddit.com
+      127.0.0.1 x.com
+    '';
+    nameservers = [
+      "80.67.169.12"
+      "1.1.1.1"
+      "9.9.9.9"
 
-  networking.nameservers = [
-    "80.67.169.12"
-    "1.1.1.1"
-    "9.9.9.9"
-
-    "80.67.169.40"
-    "1.0.0.1"
-    "149.112.112.112"
-  ];
+      "80.67.169.40"
+      "1.0.0.1"
+      "149.112.112.112"
+    ];
+  };
 
   # ---------------- Drivers ----------------
   # GPU
@@ -130,7 +133,7 @@
         signal-desktop
         spotify
         texliveFull
-        tex-fmt # TODO keep ? 
+        tex-fmt # TODO keep ?
         thunderbird
         tinymist
         typst
