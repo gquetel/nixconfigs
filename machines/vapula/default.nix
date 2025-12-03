@@ -25,9 +25,9 @@ in
     ../../modules/fail2ban
     ../../modules/fish
     ../../modules/mediaserver
-    ../../modules/headscale-client
+    ../../modules/tailscale
     ../../modules/servers
-    ../../modules/prometheus-ne
+    ../../modules/prometheus-exporters
 
     # ../../modules/systemd-resolved
     "${(import ../../npins).agenix}/modules/age.nix"
@@ -198,6 +198,9 @@ in
       real_ip_header proxy_protocol;
     '';
   };
+  systemd.services.nginx.requires = [
+    "tailscaled.service"
+  ];
 
   security.acme = {
     acceptTerms = true;
@@ -228,9 +231,14 @@ in
     };
   };
 
-  prometheus_ne = {
-    enable = true;
-    addr = config.machine.meta.ipTailscale;
+  prometheus_exporter = {
+    node = {
+      enable = true;
+      addr = config.machine.meta.ipTailscale;
+    };
+    nginx = {
+      enable = true;
+    };
   };
   # ---------------- age secrets ----------------
 

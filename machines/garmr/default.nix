@@ -12,13 +12,13 @@
     ../../modules/common
     ../../modules/fail2ban
     ../../modules/fish
-    ../../modules/headscale-client
-    ../../modules/headscale-server
+    ../../modules/tailscale
+    ../../modules/headscale
     ../../modules/step-ca
     ../../modules/servers
     ../../modules/grafana
     ../../modules/prometheus
-    ../../modules/prometheus-ne
+    ../../modules/prometheus-exporters
     # ../../modules/systemd-resolved
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
@@ -170,7 +170,9 @@
       real_ip_header proxy_protocol;
     '';
   };
-
+  systemd.services.nginx.requires = [
+    "tailscaled.service"
+  ];
   # ---------------- Modules ----------------
   servers.motd = {
     enable = true;
@@ -193,9 +195,14 @@
   grafana.enable = true;
   prometheus.enable = true;
 
-  prometheus_ne = {
-    enable = true;
-    addr = config.machine.meta.ipTailscale;
+  prometheus_exporter = {
+    node = {
+      enable = true;
+      addr = config.machine.meta.ipTailscale;
+    };
+    nginx = {
+      enable = true;
+    };
   };
 
   # ---------------- age secrets ----------------

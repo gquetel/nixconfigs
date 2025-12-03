@@ -11,7 +11,7 @@
     ../../modules/firefox
     ../../modules/fish
     ../../modules/fonts
-    ../../modules/headscale-client
+    ../../modules/tailscale
     # ../../modules/systemd-resolved
     ../../modules/vscode
     ../../modules/languagetool

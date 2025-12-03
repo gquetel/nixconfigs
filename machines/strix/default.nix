@@ -12,13 +12,13 @@
     ../../modules/fish
     ../../modules/fonts
     ../../modules/common
-    ../../modules/headscale-client
+    ../../modules/tailscale
     ../../modules/fail2ban
     # ../../modules/systemd-resolved
     ../../modules/gitlab-runner
     ../../modules/outline
     ../../modules/servers
-    ../../modules/prometheus-ne
+    ../../modules/prometheus-exporters
 
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
@@ -103,8 +103,8 @@
       # Routes define where to route a packet (Gateway) given a destination range.
       routes = [
         {
-            Gateway = "192.168.1.1";
-            Destination = "0.0.0.0/0";
+          Gateway = "192.168.1.1";
+          Destination = "0.0.0.0/0";
         }
       ];
       # make routing on this interface a dependency for network-online.target
@@ -148,8 +148,8 @@
   services.nginx = {
     enable = true;
     logError = "/var/log/nginx/error.log error";
-    # Set headers for the proxied server such as X-Forwarded-For.  
-    # See, code for modified headers: 
+    # Set headers for the proxied server such as X-Forwarded-For.
+    # See, code for modified headers:
     # https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/web-servers/nginx/default.nix
     recommendedProxySettings = true;
 
@@ -188,19 +188,31 @@
       }
     '';
   };
+  systemd.services.nginx.requires = [
+    "tailscaled.service"
+  ];
 
   # This allows to route HTTP ACME requests to vapula.
   services.nginx.virtualHosts."dmd.gquetel.fr" = {
-    listen = [{ addr = "0.0.0.0"; port = 80; }];
+    listen = [
+      {
+        addr = "0.0.0.0";
+        port = 80;
+      }
+    ];
     locations."/".proxyPass = "http://[2a01:cb00:253:ed00::7]";
   };
 
   # This allows to route HTTP ACME requests to garmr.
   services.nginx.virtualHosts."mesh.gquetel.fr" = {
-    listen = [{ addr = "0.0.0.0"; port = 80; }];
+    listen = [
+      {
+        addr = "0.0.0.0";
+        port = 80;
+      }
+    ];
     locations."/".proxyPass = "http://[2a01:cb00:253:ed00::5]";
   };
-  
 
   security.acme = {
     acceptTerms = true;
@@ -275,7 +287,7 @@
       service_status.gitlab-runner = "gitlab-runner";
       service_status.outline = "outline";
       service_status.prometheus_node_exporter = "prometheus-node-exporter";
-      
+
       filesystems.root = "/";
       last_login.gquetel = 3;
       filesystems.boot = "/boot";
@@ -284,9 +296,14 @@
     };
   };
 
-  prometheus_ne = {
-    enable = true;
-    addr = config.machine.meta.ipTailscale;
+  prometheus_exporter = {
+    node = {
+      enable = true;
+      addr = config.machine.meta.ipTailscale;
+    };
+    nginx = {
+      enable = true;
+    };
   };
 
   # This option defines the first version of NixOS you have installed on this particular machine,

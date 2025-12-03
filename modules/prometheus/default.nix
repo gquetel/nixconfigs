@@ -10,11 +10,17 @@ with lib;
 let
   cfg = config.prometheus;
 
-  # Array of targets, built from hosts with prometheus_ne enabled
-  # or false is required for machines that does not declare prometheus_ne.
+  # Array of targets, built from hosts with prometheus_exporter.node enabled
+  # or false is required for machines that does not declare prometheus_exporter.node.
   prometheusNodeTargets = lib.mapAttrsToList (
-    name: node: "${node.config.machine.meta.ipTailscale}:${toString node.config.prometheus_ne.port}"
-  ) (lib.filterAttrs (name: node: node.config.prometheus_ne.enable or false) nodes);
+    name: node:
+    "${node.config.machine.meta.ipTailscale}:${toString node.config.prometheus_exporter.node.port}"
+  ) (lib.filterAttrs (name: node: node.config.prometheus_exporter.node.enable or false) nodes);
+
+  nginxNodeTargets = lib.mapAttrsToList (
+    name: node:
+    "${node.config.machine.meta.ipTailscale}:${toString node.config.prometheus_exporter.nginx.port}"
+  ) (lib.filterAttrs (name: node: node.config.prometheus_exporter.nginx.enable or false) nodes);
 
 in
 {
@@ -46,8 +52,12 @@ in
             }
           ];
         }
+        {
+          job_name = "nginx";
+          scrape_interval = "60s";
+          static_configs = [ { targets = nginxNodeTargets; } ];
+        }
       ];
-
     };
   };
 }

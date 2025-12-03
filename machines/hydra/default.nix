@@ -7,7 +7,7 @@
     ../../modules/fish
     ../../modules/firefox
     ../../modules/fonts
-    ../../modules/headscale-client
+    ../../modules/tailscale
     ../../modules/languagetool
     ../../modules/vscode
     ../../modules/emacs
