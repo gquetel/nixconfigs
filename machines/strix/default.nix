@@ -188,9 +188,10 @@
       }
     '';
   };
-  systemd.services.nginx.requires = [
-    "tailscaled.service"
-  ];
+  systemd.services.nginx = {
+    after = [ "tailscale-online.service" ];
+    requires = [ "tailscale-online.service" ];
+  };
 
   # This allows to route HTTP ACME requests to vapula.
   services.nginx.virtualHosts."dmd.gquetel.fr" = {

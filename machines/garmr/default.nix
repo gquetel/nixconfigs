@@ -170,9 +170,10 @@
       real_ip_header proxy_protocol;
     '';
   };
-  systemd.services.nginx.requires = [
-    "tailscaled.service"
-  ];
+  systemd.services.nginx = {
+    after = [ "tailscale-online.service" ];
+    requires = [ "tailscale-online.service" ];
+  };
   # ---------------- Modules ----------------
   servers.motd = {
     enable = true;

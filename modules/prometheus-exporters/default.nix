@@ -86,11 +86,8 @@ in
       };
 
       systemd.services.prometheus-nginx-exporter = {
-        requires = [
-          "network.target"
-          "tailscaled.service"
-          "nginx.service"
-        ];
+        after = [ "tailscale-online.service" ];
+        requires = [ "tailscale-online.service" ];
       };
 
       # Enable NGINX stub_status if not already configured
