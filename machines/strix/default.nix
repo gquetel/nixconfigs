@@ -77,6 +77,7 @@
 
   networking.useNetworkd = true;
 
+  # allowedIPs = [ "10.100.45.4/32" ];
   systemd.network = {
     enable = true;
 
@@ -120,6 +121,13 @@
   age.secrets.gquetel-strix.file = ../../secrets/gquetel-strix.age;
   age.secrets.thesis-artefacts = {
     file = ../../secrets/thesis-artefacts.age;
+    mode = "770";
+    owner = "nginx";
+    group = "nginx";
+  };
+
+  age.secrets.tmp = {
+    file = ../../secrets/temporary.age;
     mode = "770";
     owner = "nginx";
     group = "nginx";
@@ -241,6 +249,37 @@
       }
     ];
     root = "/var/www/html/gquetel.fr";
+  };
+
+  # Tmp VHOST, still password protected
+  services.nginx.virtualHosts."temporary.gquetel.fr" = {
+    forceSSL = true;
+    enableACME = true;
+    listen = [
+      {
+        addr = "[::]";
+        port = 444;
+        ssl = true;
+        proxyProtocol = true;
+      }
+      {
+        addr = "[::]";
+        port = 443;
+        ssl = true;
+      }
+      {
+        addr = "0.0.0.0";
+        port = 80;
+      }
+    ];
+    root = "/var/www/tmp";
+    locations."/" = {
+      extraConfig = ''
+        auth_basic "Fichiers temporaires personels";
+        auth_basic_user_file ${config.age.secrets.tmp.path} ;
+        autoindex on;
+      '';
+    };
   };
 
   # VHost on which pdf artefacts are hosted.
