@@ -45,7 +45,7 @@
   };
 
   services.deluge = {
-    enable = false;
+    enable = true;
     authFile = "/home/mediaserver/.deluge-info";
     user = "mediaserver";
     group = "mediaserver";
@@ -59,6 +59,8 @@
       max_active_seeding = 50;
       max_active_downloading = 10;
       max_active_limit = 60;
+      outgoing_interface = "wg0";
+      listen_interface = "wg0";
     };
   };
 

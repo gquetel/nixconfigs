@@ -32,4 +32,9 @@ in
   # Secrets for garmr machine
   "step-ca.pwd.age".publicKeys = [ system-garmr ] ++ users;
 
+  # Secrets for vapula machine
+  # Wireguard, public key = zoDZGWMPZ+QGAh8Ml9OospRJRlaoaWVFpU7EkdJv3XU=
+  # private key can be decrypted using agenix -d wireguard-pvkey.age
+  "wireguard-pvkey.age".publicKeys = [ system-vapula ] ++ users;
+
 }

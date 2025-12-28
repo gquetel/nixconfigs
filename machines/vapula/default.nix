@@ -28,6 +28,7 @@ in
     ../../modules/tailscale
     ../../modules/servers
     ../../modules/prometheus-exporters
+    ../../modules/wireguard-client
 
     # ../../modules/systemd-resolved
     "${(import ../../npins).agenix}/modules/age.nix"
@@ -209,6 +210,8 @@ in
   };
 
   # ---------------- Modules ----------------
+  wg0.enable = true;
+
   common.useLatestKernel = false; # We use a kernel version that supports zfs
   servers.motd = {
     enable = true;
