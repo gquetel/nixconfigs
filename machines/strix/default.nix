@@ -18,6 +18,7 @@
     ../../modules/gitlab-runner
     ../../modules/outline
     ../../modules/servers
+    ../../modules/plausible
     ../../modules/prometheus-exporters
 
     "${(import ../../npins).agenix}/modules/age.nix"
@@ -318,6 +319,7 @@
   };
 
   # ---------------- Modules ----------------
+  plausible.enable = true;
   servers.motd = {
     enable = true;
     settings = {
