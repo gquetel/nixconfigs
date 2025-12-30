@@ -23,7 +23,7 @@ jobs:
 
       - name: Commit and push if changed
         run: |
-          if git diff --quiet docs; then
+          if git diff --quiet docs/; then
             exit 0
           fi
 

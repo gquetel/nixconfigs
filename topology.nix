@@ -22,6 +22,7 @@
 
   nodes.router = config.lib.topology.mkRouter "Router" {
     info = "Livebox 5";
+    image = ./docs/_machines/livebox5.png;
     interfaceGroups = [
       [
         "eth1" # Hydra
