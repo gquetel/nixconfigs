@@ -35,6 +35,7 @@ in
             valentjn.vscode-ltex
             visualstudioexptteam.vscodeintellicode
             yzhang.markdown-all-in-one
+            github.vscode-github-actions
           ]
           ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace ([
             {

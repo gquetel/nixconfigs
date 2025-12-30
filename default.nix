@@ -3,6 +3,10 @@ let
   nixpkgs = inputs.nixpkgs;
   disko = import "${inputs.disko}/module.nix";
   colmenaModules = import "${inputs.colmena}/src/nix/hive/options.nix";
+
+  nix-topology-overlay = import "${inputs.nix-topology}/pkgs/default.nix";
+  nix-topology-module = import "${inputs.nix-topology}/nixos/module.nix";
+
   pkgs = import inputs.nixpkgs { };
 in
 rec {
@@ -15,6 +19,7 @@ rec {
   }
   // builtins.mapAttrs (_: v: { imports = v._module.args.modules; }) nixosConfigurations;
 
+  # Output of this derivation: NixOS System Configurations.
   nixosConfigurations =
     builtins.mapAttrs
       (
@@ -28,11 +33,13 @@ rec {
           modules = [
             value
             disko
+            nix-topology-module
             {
               nixpkgs.overlays = [
                 (final: prev: {
                   unstable = import inputs.unstable { config.allowUnfree = true; };
                 })
+                nix-topology-overlay
               ];
             }
           ];
@@ -47,4 +54,19 @@ rec {
         vapula = import ./machines/vapula;
       };
 
+  topologyPkgs = import inputs.nixpkgs {
+    system = "x86_64-linux";
+    overlays = [ nix-topology-overlay ];
+  };
+
+  topology = import inputs.nix-topology {
+    pkgs = topologyPkgs;
+    modules = [
+      {
+        nixosConfigurations = nixosConfigurations;
+      }
+      ./topology.nix
+
+    ];
+  };
 }

@@ -1,0 +1,34 @@
+name: "Update Nix Topology Diagram"
+# From: https://github.com/marketplace/actions/install-nix
+on:
+  push:
+    branches:
+      - main
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      # We checkout the repo
+      - uses: actions/checkout@v5
+      # We install Nix
+      - uses: cachix/install-nix-action@v31
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+      # We run the diagram generation
+      - run: |
+          nix-build -A topology.config
+          ls -la
+          cp result/main.svg docs/topology.svg
+          cp result/network.svg docs/network.svg
+
+      - name: Commit and push if changed
+        run: |
+          if git diff --quiet docs; then
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/*
+          git commit -m "chores: Update Nix topology diagram"
+          git push

@@ -7,6 +7,15 @@ A repository containing the configurations of my machines running NixOS. Existin
 - [garmr](./machines/garmr/): a ThinkCenter hosting a Headscale server a step-ca powered Certificate Authority, a Grafana and Prometheus instance.  
 - [vapula](./machines/vapula/): a ThinkCenter acting as mediaserver with zfs disks.
 
+### Topology 
+These diagrams show the topology of my home network (the main overview, and a network overview).
+
+![Main topology overview](./docs/main.svg)
+
+![Network topology overview](./docs/network.svg)
+
+
 Here are some nix-specific packages that might interest you, that are used in this repository: 
 - [agenix](https://github.com/ryantm/agenix): To encrypt and manage secrets according to specific SSH keys.
 - [colmena](https://github.com/zhaofengli/colmena): A neat configuration deployment tool. This is a wrapper around your usual configuration deployment. It supports parallel deployment and is great to quickly update the Thinkcenters.
+- [nix-topology](https://github.com/oddlama/nix-topology): To generate topology diagrams from a NixOS configuration.
