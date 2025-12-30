@@ -124,7 +124,6 @@
         black
         drawio
         element-desktop
-        hugo
         intel-gpu-tools
         nix-init
         nixfmt-rfc-style
