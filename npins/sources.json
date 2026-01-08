@@ -45,6 +45,19 @@
       "url": "https://api.github.com/repos/nix-community/disko/tarball/v1.12.0",
       "hash": "0wbx518d2x54yn4xh98cgm65wvj0gpy6nia6ra7ns4j63hx14fkq"
     },
+    "home-manager": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "nix-community",
+        "repo": "home-manager"
+      },
+      "branch": "master",
+      "submodules": false,
+      "revision": "af7f14ddf770e269bb67cea19708198e618b5c75",
+      "url": "https://github.com/nix-community/home-manager/archive/af7f14ddf770e269bb67cea19708198e618b5c75.tar.gz",
+      "hash": "02zn05k56gcry88v79wspnabjjhg28mcic82n0ap783nymrn3gfq"
+    },
     "nix-topology": {
       "type": "Git",
       "repository": {
