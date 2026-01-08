@@ -1,21 +1,27 @@
-## NixOS Config
+# NixOS Configuration
 
-A repository containing the configurations of my machines running NixOS. Existing machines are: 
-- [hydra](./machines/hydra/): an old gaming desktop, today used for remote work. No fancy software are installed, it mostly consists of those used for research (Zotero,Oobsidian, typst, ...)  
-- [scylla](./machines/scylla/): a laptop for work, no fancy config here either, same installed software programs as hydra.
-- [strix](./machines/strix/): a ThinkCenter acting as a webserver, also host a gitlab-runner and an outline instance.
-- [garmr](./machines/garmr/): a ThinkCenter hosting a Headscale server a step-ca powered Certificate Authority, a Grafana and Prometheus instance.  
-- [vapula](./machines/vapula/): a ThinkCenter acting as mediaserver with zfs disks.
+This repository contains the NixOS configurations for my machines. Each host is defined declaratively and managed from this repository.
+
+### Machines 
+
+- [hydra](./machines/hydra/): An older gaming desktop, today used for remote work. The setup is minimal and focuses on research-related tools such as Zotero, Obsidian, and Typst. 
+- [scylla](./machines/scylla/): A work laptop with a similarly minimal configuration. It shares most of its installed software with hydra.
+- [strix](./machines/strix/): A ThinkCentre used as a web server and SNI proxy. It also hosts an Outline instance, Plausible analytics, and a GitLab Runner.
+- [garmr](./machines/garmr/): A ThinkCentre running infrastructure services, including Headscale, step-ca (certificate authority), and monitoring with Grafana and Prometheus.
+- [vapula](./machines/vapula/): A ThinkCentre acting as a media server, backed by ZFS storage.
 
 ### Topology 
-These diagrams show the topology of my home network (the main overview, and a network overview).
+These diagrams show the topology of my home network, including a main overview, and a network-specific layout.
 
 ![Main topology overview](./docs/main.svg)
 
 ![Network topology overview](./docs/network.svg)
 
 
+## Nix Resources Used
+
 Here are some nix-specific packages that might interest you, that are used in this repository: 
-- [agenix](https://github.com/ryantm/agenix): To encrypt and manage secrets according to specific SSH keys.
-- [colmena](https://github.com/zhaofengli/colmena): A neat configuration deployment tool. This is a wrapper around your usual configuration deployment. It supports parallel deployment and is great to quickly update the Thinkcenters.
-- [nix-topology](https://github.com/oddlama/nix-topology): To generate topology diagrams from a NixOS configuration.
+- [agenix](https://github.com/ryantm/agenix): Used to encrypt and manage secrets based on SSH keys.
+- [colmena](https://github.com/zhaofengli/colmena): A deployment tool for NixOS configurations. It supports parallel deployments and is well suited for managing multiple machines such as the ThinkCentres.
+- [nix-topology](https://github.com/oddlama/nix-topology): Generates network topology diagrams directly from NixOS configurations.
+- [npins](https://github.com/andir/npins) A dependency-pinning tool for Nix projects.

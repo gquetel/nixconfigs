@@ -4,6 +4,8 @@ let
   disko = import "${inputs.disko}/module.nix";
   colmenaModules = import "${inputs.colmena}/src/nix/hive/options.nix";
 
+  # See: https://github.com/oddlama/nix-topology
+  # We don't use flakes, we import the nix-topology overlay and module as follows:
   nix-topology-overlay = import "${inputs.nix-topology}/pkgs/default.nix";
   nix-topology-module = import "${inputs.nix-topology}/nixos/module.nix";
 
@@ -54,6 +56,7 @@ rec {
         vapula = import ./machines/vapula;
       };
 
+  # I am unsure, this is required way to do declare topology.
   topologyPkgs = import inputs.nixpkgs {
     system = "x86_64-linux";
     overlays = [ nix-topology-overlay ];
