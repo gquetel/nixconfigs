@@ -9,7 +9,7 @@
     ../../modules/fonts
     ../../modules/tailscale
     ../../modules/languagetool
-    ../../modules/vscode
+    ../../modules/home-manager
     ../../modules/emacs
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
@@ -153,6 +153,7 @@
   programs.gpu-screen-recorder.enable = true;
 
   # ---------------- Custom modules ----------------
+  hm.enable = true;
 
   # ---------------- Custom services  ----------------
   virtualisation.docker = {

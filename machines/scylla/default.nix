@@ -12,8 +12,7 @@
     ../../modules/fish
     ../../modules/fonts
     ../../modules/tailscale
-    # ../../modules/systemd-resolved
-    ../../modules/vscode
+    ../../modules/home-manager
     ../../modules/languagetool
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
@@ -79,11 +78,11 @@
       ];
     };
     # Procrastination websites to ban.
-    # extraHosts = ''
-      # 127.0.0.1 reddit.com
-      # 127.0.0.1 www.reddit.com
-      # 127.0.0.1 x.com
-    # '';
+    extraHosts = ''
+      127.0.0.1 reddit.com
+      127.0.0.1 www.reddit.com
+      127.0.0.1 x.com
+    '';
     nameservers = [
       "80.67.169.12"
       "1.1.1.1"
@@ -118,36 +117,10 @@
       "wheel"
       "docker"
     ];
-    packages =
-      with pkgs;
-      [
-        black
-        drawio
-        element-desktop
-        intel-gpu-tools
-        nix-init
-        nixfmt-rfc-style
-        obsidian
-        openvpn
-        signal-desktop
-        spotify
-        texliveFull
-        tex-fmt # TODO keep ?
-        thunderbird
-        tinymist
-        typst
-        typstyle
-        vlc
-        zoom-us
-        zotero
-      ]
-      ++ [
-        (pkgs.callPackage "${(import ../../npins).agenix}/pkgs/agenix.nix" { })
-      ];
   };
 
   # ---------------- Custom modules ----------------
-
+  hm.enable = true;
   # ---------------- Custom services  ----------------
   environment.systemPackages = with pkgs; [
     gnome-tweaks
