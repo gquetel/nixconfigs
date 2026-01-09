@@ -29,7 +29,7 @@ in
   "gitlab-runner.env.age".publicKeys = [ system-strix ] ++ users;
   "dex-outline-secret.age".publicKeys = [ system-strix ] ++ users;
   "plausible-secret-key-base.age".publicKeys = [ system-strix ] ++ users;
-  
+
   # Secrets for garmr machine
   "step-ca.pwd.age".publicKeys = [ system-garmr ] ++ users;
 

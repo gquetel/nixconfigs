@@ -35,10 +35,11 @@ in
             openvpn
             signal-desktop
             spotify
-            texliveFull
             tex-fmt # TODO keep ?
+            texliveFull
             thunderbird
             tinymist
+            treefmt
             typst
             typstyle
             vlc

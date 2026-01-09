@@ -6,7 +6,7 @@ let
 in
 pkgs.mkShell {
   nativeBuildInputs = [
-    nixos-anywhere    
+    nixos-anywhere
     pkgs.colmena
     pkgs.npins
     agenix

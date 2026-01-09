@@ -35,7 +35,7 @@ in
     age.secrets.wireguard.file = ../../secrets/wireguard-pvkey.age;
 
     networking.wireguard.interfaces.wg0 = {
-      ips = cfg.ip; 
+      ips = cfg.ip;
       allowedIPsAsRoutes = false;
 
       privateKeyFile = config.age.secrets.wireguard.path;
@@ -44,7 +44,7 @@ in
 
       peers = [
         {
-          
+
           publicKey = "oYsN1Qy+a7dwVOKapN5s5KJOmhSflLHZqh+GLMeNpHw=";
           allowedIPs = [ "0.0.0.0/0" ];
           endpoint = "[2001:0bc8:3d24::45]:51821";

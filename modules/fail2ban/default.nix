@@ -6,7 +6,7 @@
 }:
 
 {
-  
+
   services.fail2ban = {
     enable = true;
     maxretry = 5;
@@ -15,5 +15,5 @@
   };
 
   # Required by fail2ban
-  services.openssh.settings.LogLevel = "VERBOSE"; 
+  services.openssh.settings.LogLevel = "VERBOSE";
 }

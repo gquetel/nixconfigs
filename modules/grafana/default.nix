@@ -1,4 +1,9 @@
-{ lib, config, nodes, ... }:
+{
+  lib,
+  config,
+  nodes,
+  ...
+}:
 
 with lib;
 
@@ -38,7 +43,7 @@ in
       port = cfg.port;
       addr = cfg.addr;
     };
-    
+
     services.nginx.virtualHosts.${cfg.domain} = {
       forceSSL = true;
       enableACME = true;
