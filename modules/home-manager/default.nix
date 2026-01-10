@@ -30,7 +30,7 @@ in
             element-desktop
             intel-gpu-tools
             nix-init
-            nixfmt-rfc-style
+            nixfmt
             obsidian
             openvpn
             signal-desktop
