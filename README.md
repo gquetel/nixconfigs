@@ -13,7 +13,7 @@ This repository contains the NixOS configurations for my machines. Each host is 
 ### Topology 
 These diagrams show the topology of my home network, including a main overview, and a network-specific layout.
 
-![Main topology overview](./docs/main.svg)
+![Main topology overview](./docs/topology.svg)
 
 ![Network topology overview](./docs/network.svg)
 
