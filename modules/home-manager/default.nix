@@ -27,7 +27,6 @@ in
           [
             black
             claude-code
-            claude-monitor
             drawio
             element-desktop
             intel-gpu-tools
