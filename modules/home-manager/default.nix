@@ -26,6 +26,8 @@ in
           with pkgs;
           [
             black
+            claude-code
+            claude-monitor
             drawio
             element-desktop
             intel-gpu-tools
@@ -91,6 +93,8 @@ in
               with pkgs.vscode-extensions;
               [
                 daohong-emilio.yash
+                github.copilot-chat
+                github.vscode-github-actions
                 james-yu.latex-workshop
                 jnoortheen.nix-ide
                 mechatroner.rainbow-csv
@@ -99,15 +103,14 @@ in
                 ms-python.vscode-pylance
                 ms-toolsai.jupyter
                 ms-toolsai.jupyter-renderers
+                ms-vscode-remote.remote-ssh
                 ms-vscode.cpptools
                 myriad-dreamin.tinymist
                 njpwerner.autodocstring
                 redhat.vscode-yaml
+                tamasfe.even-better-toml
                 valentjn.vscode-ltex
-                visualstudioexptteam.vscodeintellicode
                 yzhang.markdown-all-in-one
-                github.vscode-github-actions
-                ms-vscode-remote.remote-ssh
               ]
               ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace ([
                 {
@@ -121,6 +124,12 @@ in
                   publisher = "dhrumil";
                   hash = "sha256-6rGOyUtRqjxMBZSG+npOcZnmafIz8uQbyr0+qJW5T34=";
                   version = "0.1.0";
+                }
+                {
+                  name = "claude-code";
+                  publisher = "anthropic";
+                  version = "2.1.11"; 
+                  sha256 = "sha256-zqCILYNwBudsEv7+7ZV1YQoPJi30kj5w8suXqAPKORo="; 
                 }
               ]);
           };
