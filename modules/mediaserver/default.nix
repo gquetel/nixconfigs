@@ -42,6 +42,7 @@
     enable = true;
     user = "mediaserver";
     group = "mediaserver";
+    package = pkgs.unstable.jackett;
   };
 
   services.deluge = {
