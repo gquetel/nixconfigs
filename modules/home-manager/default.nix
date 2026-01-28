@@ -42,7 +42,7 @@ in
             treefmt
             typst
             typstyle
-            unstable.claude-code 
+            unstable.claude-code
             vlc
             zoom-us
             zotero
@@ -50,6 +50,25 @@ in
           ++ [
             (pkgs.callPackage "${(import ../../npins).agenix}/pkgs/agenix.nix" { })
           ];
+        programs.kitty = {
+          enable = true;
+          # Use names from: https://github.com/kovidgoyal/kitty-themes/tree/master/themes
+          # TODO: Have something that looks similar to  vscode theme.
+          themeFile = "Belafonte_Day";
+        };
+        # https://discourse.nixos.org/t/nixos-options-to-configure-gnome-keyboard-shortcuts/7275/4
+        dconf.settings = {
+          "org/gnome/settings-daemon/plugins/media-keys" = {
+            custom-keybindings = [
+              "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
+            ];
+          };
+          "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
+            binding = "<Primary><Alt>t";
+            command = "kitty";
+            name = "open-terminal";
+          };
+        };
 
         # Let Home Manager install and manage itself.
         programs.home-manager.enable = true;
