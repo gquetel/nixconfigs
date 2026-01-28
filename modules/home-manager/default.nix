@@ -26,7 +26,6 @@ in
           with pkgs;
           [
             black
-            claude-code
             drawio
             element-desktop
             intel-gpu-tools
@@ -43,6 +42,7 @@ in
             treefmt
             typst
             typstyle
+            unstable.claude-code 
             vlc
             zoom-us
             zotero
@@ -127,8 +127,8 @@ in
                 {
                   name = "claude-code";
                   publisher = "anthropic";
-                  version = "2.1.11"; 
-                  sha256 = "sha256-zqCILYNwBudsEv7+7ZV1YQoPJi30kj5w8suXqAPKORo="; 
+                  version = "2.1.11";
+                  sha256 = "sha256-zqCILYNwBudsEv7+7ZV1YQoPJi30kj5w8suXqAPKORo=";
                 }
               ]);
           };
