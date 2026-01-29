@@ -61,6 +61,7 @@ rec {
         hydra = import ./machines/hydra;
         garmr = import ./machines/garmr;
         vapula = import ./machines/vapula;
+        charybdis = import ./machines/charybdis;
       };
 
   # nix-topology expects a pkgs argument that already have a nix-topology overlay.
