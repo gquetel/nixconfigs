@@ -53,14 +53,14 @@
   };
 
   # TODO: Fix this
-  # hardware.nvidia = {
-  #   open = false; # setting to true break correct display.
+   hardware.nvidia = {
+     open = false; # setting to true break correct display.
   #   prime = {
   #     intelBusId = "PCI:0:2:0";
   #     nvidiaBusId = "PCI:1:0:0";
   #     sync.enable = true;
   #   };
-  # };
+   };
 
   services.xserver = {
     enable = true;
@@ -130,7 +130,7 @@
 
   # ---------------- Networking  ----------------
   networking = {
-    hostName = "hydra";
+    hostName = "charybdis";
     networkmanager = {
       enable = true;
       plugins = [
