@@ -200,6 +200,7 @@ in
             "github.copilot.nextEditSuggestions.enabled" = true;
             "editor.wordWrapColumn" = 90;
             "editor.wordWrap" = "bounded";
+            "editor.fontFamily" = "'Hack', 'Droid Sans Mono', 'monospace', monospace";
           };
         };
 
