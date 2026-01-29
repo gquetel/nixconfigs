@@ -54,7 +54,10 @@ in
           enable = true;
           # Use names from: https://github.com/kovidgoyal/kitty-themes/tree/master/themes
           # TODO: Have something that looks similar to  vscode theme.
-          themeFile = "Belafonte_Day";
+          themeFile = "Seafoam_Pastel";
+          keybindings = {
+            "ctrl+shift+t" = "new_tab_with_cwd";
+          };
         };
         # https://discourse.nixos.org/t/nixos-options-to-configure-gnome-keyboard-shortcuts/7275/4
         dconf.settings = {
