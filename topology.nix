@@ -25,14 +25,14 @@
     image = ./docs/_machines/livebox5.png;
     interfaceGroups = [
       [
-        "eth1" # Hydra
+        "eth1" # Charybdis
         "eth2" # Switch
         "wifi"
       ]
       [ "fiber0" ]
     ];
     connections.eth1 = config.lib.topology.mkConnection "netgear" "eth0";
-    connections.eth2 = config.lib.topology.mkConnection "hydra" "enp0s31f6";
+    connections.eth2 = config.lib.topology.mkConnection "charybdis" "enp0s31f6";
     connections.wifi = config.lib.topology.mkConnection "scylla" "wlp0s20f3";
     interfaces.eth1.network = "lan";
     interfaces.eth2.network = "lan";
@@ -61,7 +61,7 @@
 
   };
 
-  nodes.hydra = {
+  nodes.charybdis = {
     interfaces.enp0s31f6 = {
       addresses = [ "192.168.1.71" ]; # Random value, uses DHCP
     };

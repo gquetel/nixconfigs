@@ -5,8 +5,8 @@ let
   system-garmr = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINyVDTeg/odX9AQso1e9yyFXUNwrxIU/XQGMmHJHZ59X root@garmr";
   system-vapula = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJS3TWYs0F4beUVQHE4XXBi+0jqI/stwN7FVx6AK9E/Q root@nixos";
 
-  gquetel-hydra = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIABgZ5qqnOl8LXcq2m/xaaKZlEB/ORDwIwaFSXJDs2eR gquetel@hydra";
   gquetel-scylla = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICK/iZJoWOdOasaD28jedexzjVc4tHosDTEYFIG/i9Fc gquetel@scylla";
+  gquetel-charybdis = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGI/nKCR/pq8yHrDdlQ3ml1jcio0Npxm5D7vJlG4QaDi gquetel@charybdis";
 
   servers = [
     system-strix
@@ -14,8 +14,8 @@ let
     system-vapula
   ];
   users = [
-    gquetel-hydra
     gquetel-scylla
+    gquetel-charybdis
   ];
 in
 {

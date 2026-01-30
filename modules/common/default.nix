@@ -88,7 +88,7 @@ in
     # sudo nix-channel --update
     # - [1] https://discourse.nixos.org/t/command-not-found-unable-to-open-database/3807
     programs.command-not-found.enable = true;
-    
+
     # https://wiki.nixos.org/wiki/Fonts#Configuring_fonts
     fonts = {
       enableDefaultPackages = true;
@@ -101,9 +101,18 @@ in
 
       fontconfig = {
         defaultFonts = {
-          serif = [ "Noto Serif" "Noto Color Emoji" ];
-          sansSerif = [ "Noto Sans" "Noto Color Emoji" ];
-          monospace = [ "hack-font" "Noto Color Emoji" ];
+          serif = [
+            "Noto Serif"
+            "Noto Color Emoji"
+          ];
+          sansSerif = [
+            "Noto Sans"
+            "Noto Color Emoji"
+          ];
+          monospace = [
+            "hack-font"
+            "Noto Color Emoji"
+          ];
         };
       };
     };

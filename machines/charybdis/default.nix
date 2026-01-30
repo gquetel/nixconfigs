@@ -8,7 +8,7 @@
     ../../modules/firefox
     ../../modules/fonts
     ../../modules/tailscale
-    ../../modules/languagetool
+    # ../../modules/languagetool
     ../../modules/home-manager
     ../../modules/emacs
     "${(import ../../npins).agenix}/modules/age.nix"
@@ -33,31 +33,19 @@
   };
 
   # ---------------- Display ----------------
-  # This computer possess 2 GPUs: A 1050Ti, and an integrated iHD 630
-  # - The NVIDIA card still receive driver updates, which can be enabled using this doc:
-  # https://wiki.nixos.org/wiki/NVIDIA
-  # - To enable the iGPU, I had to enable it in the BIOS of the computer.
-
-  # Only then "lspci -d ::03xx" is able to find both:
-  # 00:02.0 Display controller: Intel Corporation HD Graphics 630 (rev 04)
-  # 01:00.0 VGA compatible controller: NVIDIA Corporation GP107 [GeForce GTX 1050 Ti] (rev a1)
-
-  # From there, i can setup PRIME to solely use the GPU for intensive tasks, and the
-  # iGPU for window management.
-  # TODO: This currently does not work. While both GPUs can be accessed, X server uses
-  # the NVIDIA card.
+  # Single GPU setup: RTX 3060 Ti (no iGPU, AMD Ryzen CPU)
+  # lspci -d ::03xx:
+  # 0a:00.0 VGA compatible controller: NVIDIA Corporation GA104 [GeForce RTX 3060 Ti Lite Hash Rate] (rev a1)
 
   hardware.graphics = {
     enable = true;
   };
 
   hardware.nvidia = {
-    open = false; # setting to true break correct display.
-    prime = {
-      intelBusId = "PCI:0:2:0";
-      nvidiaBusId = "PCI:1:0:0";
-      sync.enable = true;
-    };
+    open = true; # Recommended for Turing+
+    modesetting.enable = true;
+    powerManagement.enable = true;
+    nvidiaSettings = true;
   };
 
   services.xserver = {
@@ -69,16 +57,13 @@
       variant = "azerty";
     };
 
-    videoDrivers = [
-      "nvidia"
-      # modesetting is needed for offloading, otherwise the X-server is run on the nvidia card
-      "modesetting"
-    ];
+    videoDrivers = [ "nvidia" ];
   };
 
   # ---------------- My config  ----------------
   machine.meta = {
-    ipTailscale = "100.64.0.1";
+    # TODO: Update
+    ipTailscale = "100.64.0.9";
   };
 
   deployment = {
@@ -94,40 +79,15 @@
       "docker" # Run docker without sudo.
     ];
 
-    packages =
-      with pkgs;
-      [
-        discord
-        drawio
-        element-desktop
-        gnome-tweaks
-        atlauncher
-        prismlauncher
-        hmcl
-        nixfmt-rfc-style
-        obsidian
-        openvpn
-        python311
-        signal-desktop
-        spotify
-        texliveFull
-        tmux
-        thunderbird
-        tinymist
-        typst
-        typstyle
-        vlc
-        zotero
-        zoom-us
-      ]
-      ++ [
-        (pkgs.callPackage "${(import ../../npins).agenix}/pkgs/agenix.nix" { })
-      ];
+    packages = with pkgs; [
+      steam-run
+    ];
+
   };
 
   # ---------------- Networking  ----------------
   networking = {
-    hostName = "hydra";
+    hostName = "charybdis";
     networkmanager = {
       enable = true;
       plugins = [
@@ -151,6 +111,11 @@
     gpu-screen-recorder-gtk
   ];
   programs.gpu-screen-recorder.enable = true;
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = false;
+    dedicatedServer.openFirewall = false;
+  };
 
   # ---------------- Custom modules ----------------
   hm.enable = true;
