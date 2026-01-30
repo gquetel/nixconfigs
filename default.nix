@@ -58,7 +58,6 @@ rec {
       {
         scylla = import ./machines/scylla;
         strix = import ./machines/strix;
-        hydra = import ./machines/hydra;
         garmr = import ./machines/garmr;
         vapula = import ./machines/vapula;
         charybdis = import ./machines/charybdis;

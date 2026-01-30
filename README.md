@@ -4,8 +4,8 @@ This repository contains the NixOS configurations for my machines. Each host is 
 
 ### Machines 
 
-- [hydra](./machines/hydra/): An older gaming desktop, today used for remote work. The setup is minimal and focuses on research-related tools such as Zotero, Obsidian, and Typst. 
-- [scylla](./machines/scylla/): A work laptop with a similarly minimal configuration. It shares most of its installed software with hydra.
+- [charybdis](./machines/charybdis/): A gaming desktop with an AMD Ryzen CPU and RTX 3060 Ti, also used for remote work. The setup includes Steam, Docker, and research-related tools.
+- [scylla](./machines/scylla/): A work laptop with minimal configuration and research-related tools.
 - [strix](./machines/strix/): A ThinkCentre used as a web server and SNI proxy. It also hosts an Outline instance, Plausible analytics, and a GitLab Runner.
 - [garmr](./machines/garmr/): A ThinkCentre running infrastructure services, including Headscale, step-ca (certificate authority), and monitoring with Grafana and Prometheus.
 - [vapula](./machines/vapula/): A ThinkCentre acting as a media server, backed by ZFS storage.
