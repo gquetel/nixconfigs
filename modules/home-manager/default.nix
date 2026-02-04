@@ -26,6 +26,7 @@ in
           with pkgs;
           [
             black
+            discord
             drawio
             element-desktop
             intel-gpu-tools
