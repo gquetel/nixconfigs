@@ -81,6 +81,7 @@
     };
   };
   security.acme.acceptTerms = true;
+  security.acme.defaults.renewInterval = "hourly";
 
   # Certificate for this Vhost will be located under: /var/lib/acme/ca.mesh.gq
   services.nginx.virtualHosts."ca.mesh.gq" = {
@@ -114,7 +115,7 @@
   # Attribute set of certificates to get signed and renewed.
   security.acme.certs."ca.mesh.gq" = {
     # ACME Directory Resource URI: CA API URI.
-    server = "https://ca.mesh.gq/acme/acme/directory";
+    server = "https://100.64.0.5:6060/acme/acme/directory";
     webroot = "/var/lib/acme/acme-challenge";
   };
 
