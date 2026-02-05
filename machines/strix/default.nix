@@ -20,6 +20,7 @@
     ../../modules/servers
     ../../modules/plausible
     ../../modules/prometheus-exporters
+    ../../modules/outline-export
 
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
@@ -132,6 +133,10 @@
     mode = "770";
     owner = "nginx";
     group = "nginx";
+  };
+
+  age.secrets.outline-export-token = {
+    file = ../../secrets/outline-export-token.age;
   };
 
   # ----------------- Drivers -----------------
@@ -319,6 +324,15 @@
   };
 
   # ---------------- Modules ----------------
+  services.outline-export = {
+    enable = true;
+    url = "https://notes.mesh.gq";
+    tokenFile = config.age.secrets.outline-export-token.path;
+    exportPath = "/var/lib/outline-export";
+    format = "markdown";
+    extract = true;
+  };
+
   plausible.enable = true;
   servers.motd = {
     enable = true;
