@@ -24,6 +24,12 @@
   # 3 - Make sure the user step-ca has access to all files:
   #     chown -R step-ca:step-ca /var/lib/step-ca-data/
 
+  # step-ca binds to a Tailscale IP, so we need to wait for Tailscale to be online.
+  systemd.services.step-ca = {
+    after = [ "tailscale-online.service" ];
+    requires = [ "tailscale-online.service" ];
+  };
+
   services.step-ca = {
     enable = true;
     # Is required. Address and port of step CA, overrides settings.address.
@@ -80,6 +86,12 @@
       };
     };
   };
+  # nginx vhosts also bind to a Tailscale IP.
+  systemd.services.nginx = {
+    after = [ "tailscale-online.service" ];
+    requires = [ "tailscale-online.service" ];
+  };
+
   security.acme.acceptTerms = true;
   security.acme.defaults.renewInterval = "hourly";
 

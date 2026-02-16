@@ -69,10 +69,8 @@ in
         # We want to listen on tailscale Ip. We wait that the service is Up.
         # Requires makes it that the service is only started once tailscaled is running.
         systemd.services.prometheus = {
-          requires = [
-            "network.target"
-            "tailscaled.service"
-          ];
+          after = [ "tailscale-online.service" ];
+          requires = [ "tailscale-online.service" ];
         };
       }
     )
