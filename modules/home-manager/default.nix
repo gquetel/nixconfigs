@@ -43,13 +43,13 @@ in
             treefmt
             typst
             typstyle
-            unstable.claude-code
             vlc
             zoom-us
             zotero
           ]
           ++ [
             (pkgs.callPackage "${(import ../../npins).agenix}/pkgs/agenix.nix" { })
+            (pkgs.callPackage ../../packages/claude-code { })
           ];
         programs.kitty = {
           enable = true;
