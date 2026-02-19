@@ -10,7 +10,6 @@
     ../../modules/tailscale
     # ../../modules/languagetool
     ../../modules/home-manager
-    ../../modules/emacs
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
 
