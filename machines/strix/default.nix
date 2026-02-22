@@ -47,8 +47,11 @@
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICK/iZJoWOdOasaD28jedexzjVc4tHosDTEYFIG/i9Fc gquetel@scylla"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGI/nKCR/pq8yHrDdlQ3ml1jcio0Npxm5D7vJlG4QaDi gquetel@charybdis"
+      # TODO: Make this login to a separate user.
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMj/R2lRH0XRspKGInAI/glUtV0EodRT2fRzW2cC4M3g github-deploy-key"
     ];
   };
+  
 
   users.users.root = {
     description = "System administrator";
@@ -252,7 +255,6 @@
     root = "/var/www/html/gquetel.fr";
   };
 
-  # Tmp VHOST, still password protected
   services.nginx.virtualHosts."temporary.gquetel.fr" = {
     forceSSL = true;
     enableACME = true;
@@ -316,6 +318,29 @@
         autoindex on;
       '';
     };
+  };
+
+  services.nginx.virtualHosts."secscholar.gquetel.fr" = {
+    forceSSL = true;
+    enableACME = true;
+    listen = [
+      {
+        addr = "[::]";
+        port = 444;
+        ssl = true;
+        proxyProtocol = true;
+      }
+      {
+        addr = "[::]";
+        port = 443;
+        ssl = true;
+      }
+      {
+        addr = "0.0.0.0";
+        port = 80;
+      }
+    ];
+    root = "/var/www/html/secscholar";
   };
 
   # ---------------- Modules ----------------
