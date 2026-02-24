@@ -51,7 +51,6 @@
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMj/R2lRH0XRspKGInAI/glUtV0EodRT2fRzW2cC4M3g github-deploy-key"
     ];
   };
-  
 
   users.users.root = {
     description = "System administrator";
@@ -320,6 +319,30 @@
     };
   };
 
+  services.nginx.virtualHosts."scholarsec.gquetel.fr" = {
+    forceSSL = true;
+    enableACME = true;
+    listen = [
+      {
+        addr = "[::]";
+        port = 444;
+        ssl = true;
+        proxyProtocol = true;
+      }
+      {
+        addr = "[::]";
+        port = 443;
+        ssl = true;
+      }
+      {
+        addr = "0.0.0.0";
+        port = 80;
+      }
+    ];
+    root = "/var/www/html/scholarsec";
+  };
+
+  # Redirect old domain name to new one
   services.nginx.virtualHosts."secscholar.gquetel.fr" = {
     forceSSL = true;
     enableACME = true;
@@ -340,7 +363,7 @@
         port = 80;
       }
     ];
-    root = "/var/www/html/secscholar";
+    globalRedirect = "scholarsec.gquetel.fr";
   };
 
   # ---------------- Modules ----------------
