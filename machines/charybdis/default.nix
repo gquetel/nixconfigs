@@ -65,6 +65,10 @@
     ipTailscale = "100.64.0.9";
   };
 
+  # Use stable kernel for better NVIDIA driver compatibility
+  common.useLatestKernel = false;
+  boot.kernelPackages = pkgs.linuxPackages;
+
   deployment = {
     allowLocalDeployment = true;
     targetHost = null; # Disable SSH colmena deployment.
