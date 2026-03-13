@@ -194,8 +194,7 @@ in
               "editor.wordWrap" = "bounded";
             };
             "[latex]" = {
-              "editor.wordWrap" = "off";
-              "editor.wordWrapColumn" = 90;
+              "editor.wordWrap" = "bounded";
             };
             "terminal.integrated.fontFamily" = "monospace";
             "latex-workshop.latex.outDir" = "%DIR%/output";
