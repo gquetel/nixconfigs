@@ -22,6 +22,35 @@ in
     home-manager.users.gquetel =
       { pkgs, ... }:
       {
+        home.file =
+          let
+            addons = pkgs.callPackage ../../packages/zotero-addons/default.nix { };
+            extensionsEnv = pkgs.buildEnv {
+              name = "zotero-extensions";
+              paths = with addons; [
+                zotero-better-bibtex
+                zotmoov
+              ];
+            };
+          in
+          {
+            ".zotero/zotero/profiles.ini".text = ''
+              [Profile0]
+              Name=default
+              IsRelative=1
+              Path=default
+              Default=1
+
+              [General]
+              StartWithLastProfile=1
+            '';
+            ".zotero/zotero/default/extensions" = {
+              source = "${extensionsEnv}/share/zotero/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}";
+              recursive = true;
+              force = true;
+            };
+          };
+
         home.packages =
           with pkgs;
           [
@@ -45,7 +74,7 @@ in
             typstyle
             vlc
             zoom-us
-            zotero
+            pkgs.unstable.zotero # For version 8+
           ]
           ++ [
             (pkgs.callPackage "${(import ../../npins).agenix}/pkgs/agenix.nix" { })
