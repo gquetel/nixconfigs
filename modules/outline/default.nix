@@ -15,6 +15,7 @@ in
   # From: https://wiki.nixos.org/wiki/Outline
   services.outline = {
     enable = true;
+    package = pkgs.unstable.outline;
     publicUrl = "https://${outlineUrl}";
     port = 9292;
     forceHttps = false; # Break stuff when set to true.
