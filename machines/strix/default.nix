@@ -19,6 +19,7 @@
     ../../modules/outline
     ../../modules/servers
     ../../modules/plausible
+    ../../modules/mlflow
     ../../modules/prometheus-exporters
 
     "${(import ../../npins).agenix}/modules/age.nix"
@@ -110,6 +111,16 @@
           Gateway = "192.168.1.1";
           Destination = "0.0.0.0/0";
         }
+        # Theses makes sure that when redirecting traffic, we use this IP and
+        # not the privacy preserving ones.
+        {
+          Destination = "2a01:cb00:253:ed00::5/128";
+          PreferredSource = "2a01:cb00:253:ed00::3";
+        }
+        {
+          Destination = "2a01:cb00:253:ed00::7/128";
+          PreferredSource = "2a01:cb00:253:ed00::3";
+        }
       ];
       # make routing on this interface a dependency for network-online.target
       linkConfig.RequiredForOnline = "routable";
@@ -172,8 +183,10 @@
 
       access_log /var/log/nginx/access.log vcombined;
 
-      #  Defines trusted addresses that are known to send correct replacement addresses
+      #  Defines addresses that are known to send correct replacement addresses
       set_real_ip_from 2a01:cb00:253:ed00::/64;
+      set_real_ip_from ::1;
+
 
       # Defines the request header field whose value will be used to replace the client address.
       real_ip_header proxy_protocol;

@@ -110,8 +110,11 @@ in
       22
       80
       443
-      444
     ];
+    # Make port 444 only accessible from strix to prevent PROXY protocol spoofing
+    firewall.extraCommands = ''
+      ip6tables -A nixos-fw -p tcp --dport 444 -s 2a01:cb00:253:ed00::3 -j nixos-fw-accept
+    '';
     useNetworkd = true;
   };
 
