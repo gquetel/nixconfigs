@@ -113,7 +113,7 @@
         }
         # Theses makes sure that when redirecting traffic, we use this IP and
         # not the privacy preserving ones.
-        {
+        { 
           Destination = "2a01:cb00:253:ed00::5/128";
           PreferredSource = "2a01:cb00:253:ed00::3";
         }
@@ -391,6 +391,7 @@
 
   # ---------------- Modules ----------------
   plausible.enable = true;
+  mlflow.enable = false;
   servers.motd = {
     enable = true;
     settings = {
