@@ -19,6 +19,7 @@
     ../../modules/outline
     ../../modules/servers
     ../../modules/plausible
+    ../../modules/mlflow
     ../../modules/prometheus-exporters
 
     "${(import ../../npins).agenix}/modules/age.nix"
@@ -320,6 +321,7 @@
 
   # ---------------- Modules ----------------
   plausible.enable = true;
+  mlflow.enable = false;
   servers.motd = {
     enable = true;
     settings = {
@@ -328,6 +330,7 @@
       service_status.nginx = "nginx";
       service_status.gitlab-runner = "gitlab-runner";
       service_status.outline = "outline";
+      service_status.mlflow = "mlflow";
       service_status.prometheus_node_exporter = "prometheus-node-exporter";
 
       filesystems.root = "/";

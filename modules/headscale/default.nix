@@ -71,6 +71,12 @@
             value = nodes.strix.config.machine.meta.ipTailscale;
           }
 
+          # {
+          #   name = "mlflow.mesh.gq";
+          #   type = "A";
+          #   value = nodes.strix.config.machine.meta.ipTailscale;
+          # }
+
           {
             name = config.grafana.domain;
             type = "A";
