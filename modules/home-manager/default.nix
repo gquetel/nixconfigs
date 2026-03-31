@@ -144,7 +144,6 @@ in
               with pkgs.vscode-extensions;
               [
                 daohong-emilio.yash
-                github.copilot-chat
                 github.vscode-github-actions
                 james-yu.latex-workshop
                 jnoortheen.nix-ide
@@ -229,7 +228,6 @@ in
             "latex-workshop.latex.outDir" = "%DIR%/output";
             "ltex.language" = "en-GB";
             "ltex.languageToolHttpServerUri" = "http://localhost:8787/";
-            "github.copilot.nextEditSuggestions.enabled" = true;
             "editor.wordWrapColumn" = 90;
             "editor.wordWrap" = "bounded";
             "editor.fontFamily" = "'Hack', 'Droid Sans Mono', 'monospace', monospace";
