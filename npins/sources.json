@@ -54,9 +54,9 @@
       },
       "branch": "release-25.11",
       "submodules": false,
-      "revision": "a0bb0d11514f92b639514220114ac8063c72d0a3",
-      "url": "https://github.com/nix-community/home-manager/archive/a0bb0d11514f92b639514220114ac8063c72d0a3.tar.gz",
-      "hash": "12fzldyirydka2d3cspcfbrxy7aqlqq19ry3ihhs13rp53pv3s3m"
+      "revision": "0d02ec1d0a05f88ef9e74b516842900c41f0f2fe",
+      "url": "https://github.com/nix-community/home-manager/archive/0d02ec1d0a05f88ef9e74b516842900c41f0f2fe.tar.gz",
+      "hash": "16mcnqpcgl3s2frq9if6vb8rpnfkmfxkz5kkkjwlf769wsqqg3i9"
     },
     "nix-topology": {
       "type": "Git",
@@ -90,8 +90,21 @@
     "nixpkgs": {
       "type": "Channel",
       "name": "nixos-25.11",
-      "url": "https://releases.nixos.org/nixos/25.11/nixos-25.11.8107.1073dad219cb/nixexprs.tar.xz",
-      "hash": "00mrs8fcnsk1s7vd8piq7j5rlrfngnfzy8mfskv9qd3ldcyjqj3i"
+      "url": "https://releases.nixos.org/nixos/25.11/nixos-25.11.8919.d96b37bbeb98/nixexprs.tar.xz",
+      "hash": "0ixgv3ma5nswayzdv83zlcbsyki091smr0gl37gf8gwngimbbvr5"
+    },
+    "nixpkgs-nix-fix": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "nixos",
+        "repo": "nixpkgs"
+      },
+      "branch": "nixos-unstable",
+      "submodules": false,
+      "revision": "86a34582a075f93bd76076f48ee181bb8c1954ef",
+      "url": "https://github.com/nixos/nixpkgs/archive/86a34582a075f93bd76076f48ee181bb8c1954ef.tar.gz",
+      "hash": "0fnsz5imrs59bgpc63wzi725rc62j0rvnf27nlml1yv62khspin7"
     },
     "unstable": {
       "type": "Git",
@@ -102,9 +115,9 @@
       },
       "branch": "nixos-unstable",
       "submodules": false,
-      "revision": "8110df5ad7abf5d4c0f6fb0f8f978390e77f9685",
-      "url": "https://github.com/nixos/nixpkgs/archive/8110df5ad7abf5d4c0f6fb0f8f978390e77f9685.tar.gz",
-      "hash": "0y28hhfxx1w06qrvwdxiwpm7rzplmsm255y49nkn40y82vn38x0g"
+      "revision": "68d8aa3d661f0e6bd5862291b5bb263b2a6595c9",
+      "url": "https://github.com/nixos/nixpkgs/archive/68d8aa3d661f0e6bd5862291b5bb263b2a6595c9.tar.gz",
+      "hash": "0p22chwcyksj099af40210i299jvmp33757qmm1nfma872k8pwmw"
     }
   },
   "version": 5
