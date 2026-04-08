@@ -67,6 +67,18 @@
 
   virtualisation.docker.enable = true;
 
+  # https://nix.dev/guides/faq#how-to-run-non-nix-executables
+  # For https://github.com/Jellyfin2Samsung/Samsung-Jellyfin-Installer
+  programs.nix-ld.enable = false;
+  programs.nix-ld.libraries = with pkgs; [
+    xorg.libSM
+    xorg.libICE
+    xorg.libX11
+    icu
+    fontconfig
+    mesa
+  ];
+
   # ---------------- Networking  ----------------
 
   networking = {
