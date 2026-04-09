@@ -69,13 +69,21 @@ in
     # Temporary: pin nix to a specific nixpkgs commit that includes the 2.31.4 security fix.
     # https://github.com/NixOS/nixpkgs/pull/507730
     # Remove once nixos-25.11 or unstable picks it up.
-    nix.package = (import inputs.nixpkgs-nix-fix { }).nix;
+    # nix.package = (import inputs.nixpkgs-nix-fix { }).nix;
 
     # Enable both flakes and nix-command
-    nix.settings.experimental-features = [
-      "nix-command"
-      "flakes"
-    ];
+    nix.settings = {
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
+      substituters = [
+        "https://cuda-maintainers.cachix.org"
+      ];
+      trusted-public-keys = [
+        "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
+      ];
+    };
 
     # Automatic garbe collection
     nix.gc = {
