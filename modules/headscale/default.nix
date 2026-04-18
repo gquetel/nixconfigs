@@ -107,11 +107,6 @@
         ssl = true;
         proxyProtocol = true;
       }
-      {
-        addr = "[::]";
-        port = 443;
-        ssl = true;
-      }
       # Allows ACME requests in.
       {
         addr = "[::]";

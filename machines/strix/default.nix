@@ -184,7 +184,7 @@
       access_log /var/log/nginx/access.log vcombined;
 
       #  Defines addresses that are known to send correct replacement addresses
-      set_real_ip_from 2a01:cb00:253:ed00::/64;
+      set_real_ip_from 2a01:cb00:253:ed00::3;
       set_real_ip_from ::1;
 
 
@@ -217,7 +217,8 @@
     requires = [ "tailscale-online.service" ];
   };
 
-  # This allows to route HTTP ACME requests to vapula.
+  # Route only ACME HTTP-01 challenge requests to vapula; everything else on
+  # port 80 for these hostnames is rejected to limit backend HTTP exposure.
   services.nginx.virtualHosts."dmd.gquetel.fr" = {
     listen = [
       {
@@ -225,7 +226,8 @@
         port = 80;
       }
     ];
-    locations."/".proxyPass = "http://[2a01:cb00:253:ed00::7]";
+    locations."/.well-known/acme-challenge/".proxyPass = "http://[2a01:cb00:253:ed00::7]";
+    locations."/".return = "404";
   };
 
   services.nginx.virtualHosts."movies.gquetel.fr" = {
@@ -235,10 +237,11 @@
         port = 80;
       }
     ];
-    locations."/".proxyPass = "http://[2a01:cb00:253:ed00::7]";
+    locations."/.well-known/acme-challenge/".proxyPass = "http://[2a01:cb00:253:ed00::7]";
+    locations."/".return = "404";
   };
 
-  # This allows to route HTTP ACME requests to garmr.
+  # Route only ACME HTTP-01 challenge requests to garmr.
   services.nginx.virtualHosts."mesh.gquetel.fr" = {
     listen = [
       {
@@ -246,7 +249,8 @@
         port = 80;
       }
     ];
-    locations."/".proxyPass = "http://[2a01:cb00:253:ed00::5]";
+    locations."/.well-known/acme-challenge/".proxyPass = "http://[2a01:cb00:253:ed00::5]";
+    locations."/".return = "404";
   };
 
   security.acme = {

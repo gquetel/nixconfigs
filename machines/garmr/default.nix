@@ -131,10 +131,12 @@
     firewall.allowedTCPPorts = [
       22
       80
-      443
     ];
-    # Make port 444 only accessible from strix to prevent PROXY protocol spoofing
+    # Ports 443 and 444 are only reachable from strix (SNI proxy) over IPv6.
+    # All public HTTPS traffic must transit strix; direct connections to this
+    # backend's TLS ports from the LAN or the internet are dropped.
     firewall.extraCommands = ''
+      ip6tables -A nixos-fw -p tcp --dport 443 -s 2a01:cb00:253:ed00::3 -j nixos-fw-accept
       ip6tables -A nixos-fw -p tcp --dport 444 -s 2a01:cb00:253:ed00::3 -j nixos-fw-accept
     '';
   };
@@ -167,7 +169,7 @@
 
       access_log /var/log/nginx/access.log vcombined;
       #  Defines trusted addresses that are known to send correct replacement addresses
-      set_real_ip_from 2a01:cb00:253:ed00::/64;
+      set_real_ip_from 2a01:cb00:253:ed00::3;
 
       # Defines the request header field whose value will be used to replace the client address.
       real_ip_header proxy_protocol;
