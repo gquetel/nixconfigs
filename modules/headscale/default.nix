@@ -107,6 +107,16 @@
         ssl = true;
         proxyProtocol = true;
       }
+      # Plain TLS without PROXY protocol. Headscale must remain directly
+      # reachable from strix over the LAN because strix's nginx (which runs the
+      # SNI proxy) depends on tailscale-online, and Tailscale needs headscale to
+      # be up first — creating a deadlock if all paths go through the SNI proxy.
+      # The firewall on garmr restricts port 443 to strix's IPv6 only.
+      {
+        addr = "[::]";
+        port = 443;
+        ssl = true;
+      }
       # Allows ACME requests in.
       {
         addr = "[::]";
