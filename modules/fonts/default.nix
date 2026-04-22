@@ -18,6 +18,10 @@ in
       cantarell-fonts
     ];
     enableDefaultPackages = true;
+    fontconfig.defaultFonts = {
+      monospace = [ "Source Code Pro" ];
+      sansSerif = [ "Inter" ];
+    };
   };
 
 }
