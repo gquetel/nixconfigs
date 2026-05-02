@@ -395,7 +395,7 @@
 
   # ---------------- Modules ----------------
   plausible.enable = true;
-  mlflow.enable = false;
+  mlflow.enable = true;
   servers.motd = {
     enable = true;
     settings = {
@@ -405,6 +405,7 @@
       service_status.gitlab-runner = "gitlab-runner";
       service_status.outline = "outline";
       service_status.prometheus_node_exporter = "prometheus-node-exporter";
+      service_status.mlflow  = "mlflow";
 
       filesystems.root = "/";
       last_login.gquetel = 3;

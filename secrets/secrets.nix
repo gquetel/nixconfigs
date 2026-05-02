@@ -28,6 +28,8 @@ in
   "temporary.age".publicKeys = [ system-strix ] ++ users;
   "gitlab-runner.env.age".publicKeys = [ system-strix ] ++ users;
   "dex-outline-secret.age".publicKeys = [ system-strix ] ++ users;
+  "dex-mlflow-secret.age".publicKeys = [ system-strix ] ++ users;
+  "mlflow-session-key.age".publicKeys = [ system-strix ] ++ users;
   "plausible-secret-key-base.age".publicKeys = [ system-strix ] ++ users;
 
   # Secrets for garmr machine

@@ -73,6 +73,7 @@ in
   # Maybe: https://github.com/outline/outline/discussions/2089
   # To fix dex failure
   services.dex = {
+    # TODO: Move dex to its own module
     enable = true;
     settings = {
       issuer = "https://${dexUrl}";
@@ -85,6 +86,12 @@ in
           name = "Outline Client";
           redirectURIs = [ "https://${outlineUrl}/auth/oidc.callback" ];
           secretFile = config.age.secrets.dex-outline-secret.path;
+        }
+        {
+          id = "mlflow";
+          name = "MLflow Client";
+          redirectURIs = [ "https://mlflow.mesh.gq/callback" ];
+          secretFile = config.age.secrets.dex-mlflow-secret.path;
         }
       ];
       staticPasswords = [
