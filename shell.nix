@@ -9,6 +9,7 @@ pkgs.mkShell {
     nixos-anywhere
     pkgs.colmena
     pkgs.npins
+    pkgs.openssl # To generate agenix secrets.
     agenix
   ];
 }
