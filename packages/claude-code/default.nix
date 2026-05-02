@@ -1,43 +1,60 @@
 {
   lib,
-  stdenv,
-  buildNpmPackage,
-  fetchzip,
+  stdenvNoCC,
+  fetchurl,
+  installShellFiles,
+  makeBinaryWrapper,
+  autoPatchelfHook,
+  procps,
+  bubblewrap,
+  socat,
   versionCheckHook,
   writableTmpDirAsHomeHook,
-  bubblewrap,
-  procps,
-  socat,
 }:
-buildNpmPackage (finalAttrs: {
+let
+  stdenv = stdenvNoCC;
+  baseUrl = "https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases";
+  manifest = lib.importJSON ./manifest.json;
+  platformKey =
+    let
+      systemMap = {
+        "x86_64-linux" = "linux-x64";
+        "aarch64-linux" = "linux-arm64";
+        "x86_64-darwin" = "darwin-x64";
+        "aarch64-darwin" = "darwin-arm64";
+      };
+    in
+    systemMap.${stdenv.hostPlatform.system};
+  platformManifestEntry = manifest.platforms.${platformKey};
+in
+stdenv.mkDerivation (finalAttrs: {
   pname = "claude-code";
-  version = "2.1.109";
+  inherit (manifest) version;
 
-  src = fetchzip {
-    url = "https://registry.npmjs.org/@anthropic-ai/claude-code/-/claude-code-${finalAttrs.version}.tgz";
-    hash = "sha256-tzqFLTe8lh2Qxs0Uo1L/QAVR7uYhRNU1ekErHNUSdsA=";
+  src = fetchurl {
+    url = "${baseUrl}/${finalAttrs.version}/${platformKey}/claude";
+    sha256 = platformManifestEntry.checksum;
   };
 
-  npmDepsHash = "sha256-0OmDTLDjPZrMcqVWlTwgkYUmfmv9DygBDl+kXu9we10=";
+  dontUnpack = true;
+  dontBuild = true;
+  dontStrip = true;
+
+  nativeBuildInputs = [
+    installShellFiles
+    makeBinaryWrapper
+  ] ++ lib.optionals stdenv.hostPlatform.isElf [ autoPatchelfHook ];
 
   strictDeps = true;
 
-  postPatch = ''
-    cp ${./package-lock.json} package-lock.json
+  installPhase = ''
+    runHook preInstall
 
-    substituteInPlace cli.js \
-          --replace-fail '#!/bin/sh' '#!/usr/bin/env sh'
-  '';
+    installBin $src
 
-  dontNpmBuild = true;
-
-  env.AUTHORIZED = "1";
-
-  postInstall = ''
     wrapProgram $out/bin/claude \
       --set DISABLE_AUTOUPDATER 1 \
       --set DISABLE_INSTALLATION_CHECKS 1 \
-      --unset DEV \
       --prefix PATH : ${
         lib.makeBinPath (
           [
@@ -49,20 +66,25 @@ buildNpmPackage (finalAttrs: {
           ]
         )
       }
+
+    runHook postInstall
   '';
 
+  versionCheckProgram = "${placeholder "out"}/bin/claude";
   doInstallCheck = true;
   nativeInstallCheckInputs = [
     writableTmpDirAsHomeHook
     versionCheckHook
   ];
   versionCheckKeepEnvironment = [ "HOME" ];
+  versionCheckProgramArg = "--version";
 
   meta = {
     description = "Agentic coding tool that lives in your terminal, understands your codebase, and helps you code faster";
     homepage = "https://github.com/anthropics/claude-code";
     downloadPage = "https://www.npmjs.com/package/@anthropic-ai/claude-code";
     license = lib.licenses.unfree;
+    sourceProvenance = with lib.sourceTypes; [ binaryNativeCode ];
     mainProgram = "claude";
   };
 })
