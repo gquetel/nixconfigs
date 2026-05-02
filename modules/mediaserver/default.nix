@@ -57,11 +57,12 @@
       download_location = "/mmedia/deluge/";
       enabled_plugins = [ "Label" ];
       allow_remote = true;
-      max_active_seeding = 50;
+      max_active_seeding = 200;
       max_active_downloading = 10;
-      max_active_limit = 60;
+      max_active_limit = 200;
       outgoing_interface = "wg0";
       listen_interface = "wg0";
+      listen_ports = [56881 56881];
     };
   };
 
