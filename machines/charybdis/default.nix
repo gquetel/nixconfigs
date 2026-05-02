@@ -66,6 +66,7 @@
   };
 
   # Use stable kernel for better NVIDIA driver compatibility
+  
   common.useLatestKernel = false;
   boot.kernelPackages = pkgs.linuxPackages;
 
@@ -84,6 +85,7 @@
 
     packages = with pkgs; [
       steam-run
+      hmcl
     ];
 
   };
