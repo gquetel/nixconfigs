@@ -1,35 +1,36 @@
 { lib, config, pkgs, nodes, ... }:
 # Module to self-host a mlflow server. 
 
-
 let
   cfg = config.mlflow;
-  mlflowWheel = pkgs.python3Packages.fetchPypi {
+  # Same python package across all built packages here. 
+  pyPkgs = pkgs.unstable.python3.pkgs;
+
+  # I couldn't manage to have nixpkgs mlflow-server working so we are writing
+  # our own expression. It seems that the packaged mlflow does not include the pre-built
+  # UI. So first, we override it by fecthing its wheel and extracting the javascript UI.
+  mlflowWheel = pyPkgs.fetchPypi {
     pname = "mlflow";
-    version = pkgs.python3Packages.mlflow.version;
+    version = pyPkgs.mlflow.version;
     format = "wheel";
     dist = "py3";
     python = "py3";
-    hash = "sha256-p4oDLPU5KmCLuhpu5ZybvWsdKbLqJZjk4s56IMyvHuo=";
+    hash = "sha256-j2vxI4rAT5dmTCKd1IA4DFwlSni9s8DkM+OgOXUIsa8=";
   };
-  # I couldn't manage to have nixpkgs mlflow-server working so we are writing 
-  # our own expression. It seems that the packaged mlflow does not include the pre-built 
-  # UI. Therefore we override it by fecthing its wheel and extracting the javascript UI.
-
   mlflowUi = pkgs.runCommand "mlflow-ui" { nativeBuildInputs = [ pkgs.unzip ]; } ''
     unzip ${mlflowWheel} "mlflow/server/js/build/*" -d tmp
     mv tmp/mlflow/server/js/build $out
   '';
 
-  # Override mlflow to include the pre-built UI.
-  mlflowWithUi = pkgs.python3Packages.mlflow.overridePythonAttrs (old: {
+  # Then, we override mlflow to include the pre-built UI.
+  mlflowWithUi = pyPkgs.mlflow.overridePythonAttrs (old: {
     postInstall = (old.postInstall or "") + ''
-      mkdir -p $out/${pkgs.python3.sitePackages}/mlflow/server/js
-      cp -r ${mlflowUi} $out/${pkgs.python3.sitePackages}/mlflow/server/js/build
+      mkdir -p $out/${pkgs.unstable.python3.sitePackages}/mlflow/server/js
+      cp -r ${mlflowUi} $out/${pkgs.unstable.python3.sitePackages}/mlflow/server/js/build
     '';
   });
 
-  mlflowOidcAuth = pkgs.python3Packages.callPackage ./oidc-auth.nix { };
+  mlflowOidcAuth = pyPkgs.callPackage ./oidc-auth.nix { };
 
   # Dex's local connector emits no `groups` claim, and the plugin's fallback
   # of reading a string-valued claim corrupts the DB (it iterates the value
@@ -44,7 +45,7 @@ let
   '';
 
   # The python environment containing mlflow server and its dependencies.
-  pythonEnv = cfg.python.withPackages (ps: [
+  pythonEnv = pkgs.unstable.python3.withPackages (ps: [
     mlflowWithUi
     mlflowOidcAuth
     ps.boto3
@@ -54,7 +55,7 @@ let
 
   mlflowWrapper = pkgs.writeShellScriptBin "mlflow-wrapper" ''
     export PATH=${pythonEnv}/bin:$PATH
-    export PYTHONPATH="${mlflowGroupPlugin}:${pythonEnv}/${cfg.python.sitePackages}:$PYTHONPATH"
+    export PYTHONPATH="${mlflowGroupPlugin}:${pythonEnv}/${pkgs.unstable.python3.sitePackages}:$PYTHONPATH"
     export OIDC_CLIENT_SECRET="$(cat "$CREDENTIALS_DIRECTORY/oidc_secret")"
     export SECRET_KEY="$(cat "$CREDENTIALS_DIRECTORY/session_key")"
     exec mlflow server \
@@ -66,11 +67,6 @@ let
 in {
   options.mlflow = with lib; {
     enable = mkEnableOption "MLflow tracking server";
-    python = mkOption {
-      type = types.package;
-      default = pkgs.python3;
-      description = "Python interpreter to use for MLflow";
-    };
     host = mkOption {
       type = types.str;
       default = "127.0.0.1";
@@ -111,9 +107,8 @@ in {
         OIDC_DISCOVERY_URL = "https://dex.mesh.gq/.well-known/openid-configuration";
         OIDC_CLIENT_ID = "mlflow";
         OIDC_REDIRECT_URI = "https://mlflow.mesh.gq/callback";
-        # Space-separated per OAuth2 spec; plugin passes the value verbatim
-        # to authlib. Its own default ("openid,email,profile") is upstream-buggy.
         OIDC_SCOPE = "openid email profile";
+        MLFLOW_SERVER_ALLOWED_HOSTS = "mlflow.mesh.gq";
         OIDC_GROUP_DETECTION_PLUGIN = "mlflow_dex_groups";
         OIDC_GROUP_NAME = "mlflow-admin";
         OIDC_ADMIN_GROUP_NAME = "mlflow-admin";
@@ -134,11 +129,12 @@ in {
           "session_key:${config.age.secrets.mlflow-session-key.path}"
         ];
 
-        # Some security hardening
+        # Security hardening
         NoNewPrivileges = true;
         RestrictSUIDSGID = true;
         LockPersonality = true;
-        # ProtectSystem = "strict"; # Which exception should be added ?
+        ProtectSystem = "strict";  # Whole filesystem read-only; StateDirectory auto-whitelists /var/lib/mlflow.
+        PrivateTmp = true; # Rather than add /tmp to statedirectory, we create a service dedicated /tmp.
       };
     };
 

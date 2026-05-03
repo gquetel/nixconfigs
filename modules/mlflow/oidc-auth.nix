@@ -3,47 +3,52 @@
 , fetchPypi
 , setuptools
 , alembic
+, asgiref
 , authlib
-, cachelib
+, cachetools
+, fastapi
 , flask
-, flask-caching
-, flask-session
 , gunicorn
+, httpx
 , python-dotenv
 , requests
 , sqlalchemy
+, uvicorn
 }:
 
-# Pinned to 5.7.0 — latest release compatible with mlflow 3.3.1 (the
-# version in the repo's pinned nixpkgs). 6.x requires mlflow >= 3.8.1.
 buildPythonPackage rec {
   pname = "mlflow-oidc-auth";
-  version = "5.7.0";
+  version = "7.1.0";
   pyproject = true;
 
   src = fetchPypi {
     pname = "mlflow_oidc_auth";
     inherit version;
-    hash = "sha256-TtrlKxqix13e8n8SL9U0XIin8CmNcJPEpIEMuuoJb6M=";
+    hash = "sha256-YwDfO/9hdcqpEfo48JMdYZpl3Npo7K9ZBfbYOU8b8sk=";
   };
 
   build-system = [ setuptools ];
 
-  # mlflow-skinny is not packaged in nixpkgs; we ship full mlflow in the
-  # surrounding python env, which provides the same modules at runtime.
-  pythonRemoveDeps = [ "mlflow-skinny" ];
+  # mlflow and mlflow-skinny are provided by the surrounding python env.
+  pythonRemoveDeps = [ "mlflow" "mlflow-skinny" ];
+
+  # The pinned unstable nixpkgs ships slightly older patch versions than
+  # what pyproject.toml declares; packages are compatible at runtime.
+  pythonRelaxDeps = [ "sqlalchemy" "uvicorn" "fastapi" "asgiref" ];
 
   dependencies = [
     alembic
+    asgiref
     authlib
-    cachelib
+    cachetools
+    fastapi
     flask
-    flask-caching
-    flask-session
     gunicorn
+    httpx
     python-dotenv
     requests
     sqlalchemy
+    uvicorn
   ];
 
   pythonImportsCheck = [ "mlflow_oidc_auth" ];
