@@ -109,12 +109,14 @@ in {
         OIDC_REDIRECT_URI = "https://mlflow.mesh.gq/callback";
         OIDC_SCOPE = "openid email profile";
         MLFLOW_SERVER_ALLOWED_HOSTS = "mlflow.mesh.gq";
+        MLFLOW_SERVER_CORS_ALLOWED_ORIGINS = "https://mlflow.mesh.gq";
         OIDC_GROUP_DETECTION_PLUGIN = "mlflow_dex_groups";
         OIDC_GROUP_NAME = "mlflow-admin";
         OIDC_ADMIN_GROUP_NAME = "mlflow-admin";
         OIDC_PROVIDER_DISPLAY_NAME = "Sign in with Dex";
         AUTOMATIC_LOGIN_REDIRECT = "true";
         SESSION_COOKIE_SECURE = "true";
+        MLFLOW_DISABLE_TELEMETRY = "true";
       };
       serviceConfig = {
         ExecStart = "${mlflowWrapper}/bin/mlflow-wrapper";
@@ -135,6 +137,19 @@ in {
         LockPersonality = true;
         ProtectSystem = "strict";  # Whole filesystem read-only; StateDirectory auto-whitelists /var/lib/mlflow.
         PrivateTmp = true; # Rather than add /tmp to statedirectory, we create a service dedicated /tmp.
+        ProtectHome = true;
+        RemoveIPC = true;
+        PrivateDevices = true;
+        ProtectClock = true;
+        ProtectKernelLogs = true;
+        ProtectKernelModules = true;
+        ProtectKernelTunables = true;
+        ProtectControlGroups = true;
+        ProtectHostname = true;
+        RestrictRealtime = true;
+        RestrictNamespaces = true;
+        SystemCallArchitectures = "native";
+        CapabilityBoundingSet = "";
       };
     };
 
