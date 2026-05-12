@@ -79,6 +79,7 @@ in
           ++ [
             (pkgs.callPackage "${(import ../../npins).agenix}/pkgs/agenix.nix" { })
             (pkgs.callPackage ../../packages/claude-code { })
+            (pkgs.callPackage ../../packages/feynman { })
           ];
         programs.kitty = {
           enable = true;
