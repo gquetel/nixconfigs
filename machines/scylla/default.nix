@@ -133,6 +133,54 @@
 
   # ---------------- Custom modules ----------------
   hm.enable = true;
+
+
+  #  ---------------- Begin SLOP ---------------- 
+  # For some reason at some start-up my up/down keys stopped working correctly. 
+  # I asked claude-code to fix it and the following made the trick. I didn't take
+  # the time to check if everything added here is necessary... 
+
+  # Scylla's keyboard sends Prior/Next scancodes for the up/down arrow keys
+  # (Num Lock is active at the firmware level with no physical key to toggle it).
+  # These XKB files remap Prior→Up and Next→Down at the user session level.
+  home-manager.users.gquetel = { ... }: {
+    home.file = {
+      ".config/xkb/symbols/fixkeys".text = ''
+        partial alphanumeric_keys
+        xkb_symbols "fixkeys" {
+          key <PGUP> { [ Up,   Prior ] };
+          key <PGDN> { [ Down, Next  ] };
+        };
+      '';
+      # Include system rules first, then register the custom option
+      ".config/xkb/rules/evdev".text = ''
+        ! include %S/evdev
+
+        ! option    = symbols
+          fixkeys   = +fixkeys(fixkeys)
+      '';
+      # XML so GNOME recognises the option name
+      ".config/xkb/rules/evdev.xml".text = ''
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE xkbConfigRegistry SYSTEM "xkb.dtd">
+        <xkbConfigRegistry version="1.1">
+          <optionList>
+            <group allowMultipleSelection="true">
+              <configItem>
+                <name>fixkeys</name>
+                <description>Remap PgUp/PgDn to Up/Down arrow keys</description>
+              </configItem>
+            </group>
+          </optionList>
+        </xkbConfigRegistry>
+      '';
+    };
+    dconf.settings."org/gnome/desktop/input-sources".xkb-options = [ "fixkeys" ];
+  };
+  #  ---------------- End SLOP ---------------- 
+
+
+
   # ---------------- Custom services  ----------------
   environment.systemPackages = with pkgs; [
     gnome-tweaks
