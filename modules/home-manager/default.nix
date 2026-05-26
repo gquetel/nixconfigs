@@ -58,6 +58,7 @@ in
             discord
             drawio
             element-desktop
+            gh
             intel-gpu-tools
             nix-init
             nixfmt
