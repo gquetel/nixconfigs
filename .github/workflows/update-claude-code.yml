@@ -94,7 +94,7 @@ jobs:
           git checkout -b "$BRANCH"
           git add packages/claude-code/manifest.json
           git commit -m "chores: update claude-code to ${{ steps.version.outputs.new }}"
-          git push origin "$BRANCH"
+          git push --force-with-lease origin "$BRANCH"
 
           gh label create "auto-update" \
             --color "0075ca" \
@@ -109,14 +109,14 @@ jobs:
             cat > /tmp/pr-body.md << 'EOF'
           ## claude-code ${{ steps.version.outputs.current }} → ${{ steps.version.outputs.new }}
 
-          Automated manifest update. Build succeeded ✅ — ready to merge.
+          Automated manifest update. Build succeeded ✅. Ready to merge.
           EOF
             LABELS="auto-update"
           else
             cat > /tmp/pr-body.md << 'EOF'
           ## claude-code ${{ steps.version.outputs.current }} → ${{ steps.version.outputs.new }}
 
-          ⚠️ **Manual intervention required** — the Nix derivation failed to build after updating the manifest. Additional changes to `packages/claude-code/default.nix` may be needed.
+          ⚠️ **Manual intervention required**: the Nix derivation failed to build after updating the manifest. Additional changes to `packages/claude-code/default.nix` may be needed.
 
           The full build log is available as a [workflow artifact](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}).
           EOF
