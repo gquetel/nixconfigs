@@ -37,11 +37,18 @@ in
   # https://nixos.wiki/wiki/Grafana
 
   config = mkIf cfg.enable {
+    age.secrets.grafana-secret-key = {
+      file = ../../secrets/grafana-secret-key.age;
+      owner = "grafana";
+      group = "grafana";
+    };
+
     services.grafana = {
       enable = true;
       domain = cfg.domain;
       port = cfg.port;
       addr = cfg.addr;
+      settings.security.secret_key = "$__file{${config.age.secrets.grafana-secret-key.path}}";
     };
 
     services.nginx.virtualHosts.${cfg.domain} = {

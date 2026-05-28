@@ -52,11 +52,11 @@
         "owner": "nix-community",
         "repo": "home-manager"
       },
-      "branch": "release-25.11",
+      "branch": "release-26.05",
       "submodules": false,
-      "revision": "d1686dc7d36cbd1234cb226ad6ef97e882716acb",
-      "url": "https://github.com/nix-community/home-manager/archive/d1686dc7d36cbd1234cb226ad6ef97e882716acb.tar.gz",
-      "hash": "13sahz1mxbk7n67jvz9fi0f85ax7l6s3ffiwa6x0rfrwfwhgj7x3"
+      "revision": "b179bde238977f7d4454fc770b1a727eaf55111c",
+      "url": "https://github.com/nix-community/home-manager/archive/b179bde238977f7d4454fc770b1a727eaf55111c.tar.gz",
+      "hash": "1c8y54k6vzzar1fsbmanrv2808dyb7ngfh770cmk8a1326nhqja5"
     },
     "nix-topology": {
       "type": "Git",
@@ -89,9 +89,9 @@
     },
     "nixpkgs": {
       "type": "Channel",
-      "name": "nixos-25.11",
-      "url": "https://releases.nixos.org/nixos/25.11/nixos-25.11.10830.d7a713c0b7e4/nixexprs.tar.xz",
-      "hash": "046szh6p14ffkayjcwa5ixm8kx71s9p4giq03i6v102y91ws1b69"
+      "name": "nixos-26.05",
+      "url": "https://releases.nixos.org/nixos/26.05/nixos-26.05beta1.705e9929918b/nixexprs.tar.xz",
+      "hash": "0xpgncc6aijhmig1k1hgai4smpg22p0l61aqa6yy4vf14g84smpa"
     },
     "nixpkgs-nix-fix": {
       "type": "Git",

@@ -110,10 +110,11 @@ in
 
         programs.git = {
           enable = true;
-          userName = "gquetel";
-          userEmail = "quetel.gregor@gmail.com";
 
-          extraConfig = {
+          settings = {
+            user.name = "gquetel";
+            user.email = "quetel.gregor@gmail.com";
+
             init = {
               defaultBranch = "main";
             };
@@ -184,9 +185,8 @@ in
                   sha256 = "sha256-WYl3XezAaasLvMVwbVE/+WwwYJHk8BD7rQBXwdPXe8c=";
                 }
               ]);
-          };
 
-          userSettings = {
+            userSettings = {
             "editor.minimap.enabled" = false;
             "black-formatter.args" = [
               "--line-length=85"
@@ -233,6 +233,7 @@ in
             "editor.wordWrapColumn" = 90;
             "editor.wordWrap" = "bounded";
             "editor.fontFamily" = "'Hack', 'Droid Sans Mono', 'monospace', monospace";
+            };
           };
         };
 

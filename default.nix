@@ -33,7 +33,6 @@ rec {
         name: value:
         import "${nixpkgs}/nixos/lib/eval-config.nix" {
           lib = pkgs.lib;
-          system = "x86_64-linux";
           specialArgs = {
             inherit inputs;
           };
@@ -43,6 +42,7 @@ rec {
             nix-topology-module
             home-manager-module
             {
+              nixpkgs.hostPlatform = "x86_64-linux";
               nixpkgs.overlays = [
                 (final: prev: {
                   unstable = import inputs.unstable { config.allowUnfree = true; };

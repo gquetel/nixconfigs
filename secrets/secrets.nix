@@ -34,6 +34,7 @@ in
 
   # Secrets for garmr machine
   "step-ca.pwd.age".publicKeys = [ system-garmr ] ++ users;
+  "grafana-secret-key.age".publicKeys = [ system-garmr ] ++ users;
 
   # Secrets for vapula machine
   # Wireguard, public key = zoDZGWMPZ+QGAh8Ml9OospRJRlaoaWVFpU7EkdJv3XU=
