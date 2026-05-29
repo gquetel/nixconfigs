@@ -126,4 +126,5 @@ jobs:
           gh pr create \
             --title "chores: update claude-code to ${{ steps.version.outputs.new }}" \
             --body-file /tmp/pr-body.md \
-            --label "$LABELS"
+            --label "$LABELS" \
+            --reviewer gquetel
