@@ -396,6 +396,15 @@
   # ---------------- Modules ----------------
   plausible.enable = true;
   mlflow.enable = true;
+  # Public mTLS ingest so the off-tailnet compute cluster can push runs.
+  # Reaches this host via the SNI proxy's default branch; mTLS terminates at
+  # the per-host nginx vhost. Client certs are issued by step-ca (ca.mesh.gq);
+  # commit its public root as modules/mlflow/step-ca-root.crt (`step ca root`).
+  mlflow.ingest = {
+    enable = true;
+    clientCA = ../../modules/step-ca/roots.pem;
+    allowedCIDRs = [ "137.194.192.0/24" "100.64.0.0/10" ];
+  };
   servers.motd = {
     enable = true;
     settings = {
