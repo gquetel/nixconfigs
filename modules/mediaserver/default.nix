@@ -66,10 +66,10 @@
     };
   };
 
-  services.jellyseerr = {
+  services.seerr = {
     enable = true;
     port = 8097;
-    package = pkgs.unstable.jellyseerr;
+    package = pkgs.unstable.seerr;
   };
 
   # ----------------- Nginx reverse proxy -----------------
