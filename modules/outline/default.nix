@@ -103,6 +103,14 @@ in
           # easily generated with `$ uuidgen`
           userID = "8c7742f5-e848-46fc-ac8c-c2b6657eced6";
         }
+        {
+          # Bot used to push data to mlflow-ingest.mesh.gq
+          email = "mlflow-bot@foo.gq";
+          hash = "$2y$10$sFZWBEdZyjWbhzFMTvvk.O3mRkDYl4HJoUB.AmfNmjX.W9zgZSvZe";
+          username = "mlflow-bot";
+          userID = "8aeb94b2-305a-47ac-b509-697af055369e";
+
+        }
       ];
     };
   };

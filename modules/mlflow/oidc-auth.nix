@@ -18,13 +18,13 @@
 
 buildPythonPackage rec {
   pname = "mlflow-oidc-auth";
-  version = "7.1.0";
+  version = "7.3.1";
   pyproject = true;
 
   src = fetchPypi {
     pname = "mlflow_oidc_auth";
     inherit version;
-    hash = "sha256-YwDfO/9hdcqpEfo48JMdYZpl3Npo7K9ZBfbYOU8b8sk=";
+    hash = "sha256-qbI4sHF/BJbPA2AHi2XMmE5q+J/0lKPRWOX//uEXtRU=";
   };
 
   build-system = [ setuptools ];

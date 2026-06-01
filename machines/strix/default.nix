@@ -113,7 +113,7 @@
         }
         # Theses makes sure that when redirecting traffic, we use this IP and
         # not the privacy preserving ones.
-        { 
+        {
           Destination = "2a01:cb00:253:ed00::5/128";
           PreferredSource = "2a01:cb00:253:ed00::3";
         }
@@ -396,6 +396,20 @@
   # ---------------- Modules ----------------
   plausible.enable = true;
   mlflow.enable = true;
+  # Public mTLS ingest so the off-tailnet compute cluster can push runs.
+  # Reaches this host via the SNI proxy's default branch; mTLS terminates at
+  # the per-host nginx vhost. Client certs are issued by step-ca (ca.mesh.gq);
+  # commit its public root as modules/mlflow/step-ca-root.crt (`step ca root`).
+  mlflow.ingest = {
+    enable = true;
+    clientCA = ../../modules/step-ca/roots.pem;
+    allowedCIDRs = [
+      "137.194.144.0/20" # Telecom Paris wifi pool
+      "137.194.176.0/20" # Telecom Paris ethernet pool
+      "137.194.192.0/24" # Telecom Paris cluster machiness
+      "86.238.112.146" # Home
+    ];
+  };
   servers.motd = {
     enable = true;
     settings = {
@@ -405,7 +419,7 @@
       service_status.gitlab-runner = "gitlab-runner";
       service_status.outline = "outline";
       service_status.prometheus_node_exporter = "prometheus-node-exporter";
-      service_status.mlflow  = "mlflow";
+      service_status.mlflow = "mlflow";
 
       filesystems.root = "/";
       last_login.gquetel = 3;
