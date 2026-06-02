@@ -140,7 +140,7 @@ in
       after = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
       environment = {
-        # Required for Python's requests/urllib3 to trust dex.mesh.gq (signed by our instance of step-ca. 
+        # Required for Python's requests/urllib3 to trust dex.mesh.gq (signed by our instance of step-ca.
         SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
         REQUESTS_CA_BUNDLE = "/etc/ssl/certs/ca-certificates.crt";
         OIDC_DISCOVERY_URL = "https://dex.mesh.gq/.well-known/openid-configuration";
