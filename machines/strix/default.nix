@@ -113,7 +113,7 @@
         }
         # Theses makes sure that when redirecting traffic, we use this IP and
         # not the privacy preserving ones.
-        { 
+        {
           Destination = "2a01:cb00:253:ed00::5/128";
           PreferredSource = "2a01:cb00:253:ed00::3";
         }
@@ -403,7 +403,11 @@
   mlflow.ingest = {
     enable = true;
     clientCA = ../../modules/step-ca/roots.pem;
-    allowedCIDRs = [ "137.194.192.0/24" "100.64.0.0/10" ];
+    allowedCIDRs = [
+      "137.194.144.0/20" # Telecom Paris wifi pool
+      "137.194.176.0/20" # Telecom Paris ethernet pool
+      "137.194.192.0/24" # Telecom Paris cluster machiness
+    ];
   };
   servers.motd = {
     enable = true;
@@ -414,7 +418,7 @@
       service_status.gitlab-runner = "gitlab-runner";
       service_status.outline = "outline";
       service_status.prometheus_node_exporter = "prometheus-node-exporter";
-      service_status.mlflow  = "mlflow";
+      service_status.mlflow = "mlflow";
 
       filesystems.root = "/";
       last_login.gquetel = 3;
