@@ -73,6 +73,7 @@ in
             treefmt
             typst
             typstyle
+            uv
             vlc
             zoom-us
             pkgs.unstable.zotero # For version 8+
