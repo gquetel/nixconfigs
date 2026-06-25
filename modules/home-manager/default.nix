@@ -62,6 +62,7 @@ in
             intel-gpu-tools
             nix-init
             nixfmt
+            nixpkgs-review
             obsidian
             openvpn
             signal-desktop
