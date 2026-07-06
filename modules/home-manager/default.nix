@@ -180,12 +180,6 @@ in
                   hash = "sha256-6rGOyUtRqjxMBZSG+npOcZnmafIz8uQbyr0+qJW5T34=";
                   version = "0.1.0";
                 }
-                {
-                  name = "claude-code";
-                  publisher = "anthropic";
-                  version = "2.1.11";
-                  sha256 = "sha256-WYl3XezAaasLvMVwbVE/+WwwYJHk8BD7rQBXwdPXe8c=";
-                }
               ]);
 
             userSettings = {
