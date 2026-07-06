@@ -407,7 +407,7 @@
       "137.194.144.0/20" # Telecom Paris wifi pool
       "137.194.176.0/20" # Telecom Paris ethernet pool
       "137.194.192.0/24" # Telecom Paris cluster machines
-      "137.194.132.200/22" # Telecom Paris slurm cluster machines
+      "137.194.132.0/22" # Telecom Paris slurm cluster machines
       "86.238.112.146" # Home
     ];
   };
