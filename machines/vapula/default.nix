@@ -240,7 +240,10 @@ in
       filesystems.mmedia = "/mmedia";
       memory.swap_pos = "none";
       last_login.gquetel = 3;
-      fail_2_ban.jails = [ "sshd" ];
+      fail_2_ban.jails = [
+        "sshd"
+        "nginx-404-scan"
+      ];
     };
   };
 

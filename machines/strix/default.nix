@@ -426,7 +426,10 @@
       last_login.gquetel = 3;
       filesystems.boot = "/boot";
       memory.swap_pos = "none";
-      fail_2_ban.jails = [ "sshd" ];
+      fail_2_ban.jails = [
+        "sshd"
+        "nginx-404-scan"
+      ];
     };
   };
 
