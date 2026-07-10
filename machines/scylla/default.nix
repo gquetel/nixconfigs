@@ -122,6 +122,12 @@
     ];
   };
 
+  # For integrated camera.
+  hardware.ipu6 = {
+    enable = true;
+    platform = "ipu6ep";
+  };
+
   environment.sessionVariables = {
     LIBVA_DRIVER_NAME = "iHD";
   };
@@ -133,6 +139,7 @@
       "networkmanager"
       "wheel"
       "docker"
+      "video"
     ];
   };
 
@@ -189,6 +196,9 @@
   environment.systemPackages = with pkgs; [
     gnome-tweaks
     gpu-screen-recorder-gtk # Recording App
+    # allows to see battery usage for my logitech headset.
+    # sudo headsetcontrol -b
+    headsetcontrol
 
   ];
   programs.gpu-screen-recorder.enable = true; # For promptless recording on both CLI and GUI
