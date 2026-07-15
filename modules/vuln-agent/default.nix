@@ -9,6 +9,27 @@
 let
   cfg = config.vuln-agent;
   vmName = "vuln-agent";
+  stateDir = "/var/lib/vuln-agent/state";
+
+  # Custom script to manually run the vuln-research agent.
+  vuln-agent-run = pkgs.writeShellApplication {
+    name = "vuln-agent-run";
+    runtimeInputs = with pkgs; [ coreutils ];
+    text = ''
+      S=${stateDir}
+      if [ "''${1:-}" = "--stop" ]; then
+        rm -f "$S/stop.trigger"; : > "$S/stop.trigger"
+        echo "stop requested; the guest poller will end the session within ~30s"
+        exit 0
+      fi
+      prompt="''${*:-}"
+      # rm first in case a stale root-owned trigger lingers.
+      rm -f "$S/manual.trigger"
+      printf '%s' "$prompt" > "$S/manual.trigger"
+      echo "manual run requested (prompt=''${prompt:-<default>}); starts within ~30s, runs up to 60 min"
+      echo "watch: tail -f $S/agent.log"
+    '';
+  };
 in
 {
   imports = [
@@ -32,15 +53,15 @@ in
     # Nested KVM so the guest can run `runNixOSTest` VMs
     boot.extraModprobeConfig = "options kvm-intel nested=1";
 
-    # Host dirs the guest virtiofs-mounts :
-    #   nix-store - disk-backing for the writable store overlay (keeps builds off
-    #               the guest's RAM-tmpfs root); wiped nightly by vuln-agent-stop
-    #   state     - shim logs
-    #   secrets   - the assembled runtime env file
+    environment.systemPackages = [ vuln-agent-run ];
+
+    # Host dirs the guest virtiofs-mounts. state/ is 0775 root:wheel so wheel can
+    # drop triggers without sudo and o+rx lets the agent-user shim read
+    # manual.prompt; parent 0750 root:wheel gives wheel traversal only.
     systemd.tmpfiles.rules = [
-      "d /var/lib/vuln-agent 0750 root root -"
+      "d /var/lib/vuln-agent 0750 root wheel -"
       "d /var/lib/vuln-agent/nix-store 0755 root root -"
-      "d /var/lib/vuln-agent/state 0750 root root -"
+      "d /var/lib/vuln-agent/state 0775 root wheel -"
       "d /var/lib/vuln-agent/secrets 0750 root root -"
       "d /var/lib/vuln-agent/tailscale 0700 root root -"
     ];
@@ -74,34 +95,32 @@ in
       config = import ./guest.nix;
     };
 
-    # --- Lifecycle: VM exists only 00:00–04:15 -------------------------------
-    systemd.services."microvm@${vmName}".wantedBy = lib.mkForce [ ];
-
-    systemd.timers.vuln-agent-start = {
-      wantedBy = [ "timers.target" ];
-      timerConfig.OnCalendar = "*-*-* 00:00:00";
+    # --- Lifecycle: VM up 24/7, recycled once a day --------------------------
+    # Sessions are gated inside the guest (23:00 timer / trigger), not the VM.
+    systemd.services."microvm@${vmName}" = {
+      wantedBy = lib.mkForce [ "multi-user.target" ];
+      after = [ "vuln-agent-secrets.service" ];
+      wants = [ "vuln-agent-secrets.service" ];
     };
-    systemd.services.vuln-agent-start = {
+
+    # Daily 08:00 reset: stop → wipe the host-backed store overlay → start (a
+    # guest reboot can't wipe it; the synchronous stop unmounts the share first).
+    # Kills any live session by design.
+    systemd.timers.vuln-agent-recycle = {
+      wantedBy = [ "timers.target" ];
+      timerConfig.OnCalendar = "*-*-* 08:00:00";
+    };
+    systemd.services.vuln-agent-recycle = {
       after = [ "vuln-agent-secrets.service" ];
       wants = [ "vuln-agent-secrets.service" ];
       serviceConfig.Type = "oneshot";
-      script = "${pkgs.systemd}/bin/systemctl start microvm@${vmName}.service";
-    };
-
-    # Shortly after the shim's 04:00 message cutoff: the agent is idle by now, so
-    # reclaim the guest RAM and run the nightly store wipe.
-    systemd.timers.vuln-agent-stop = {
-      wantedBy = [ "timers.target" ];
-      timerConfig.OnCalendar = "*-*-* 04:15:00";
-    };
-    systemd.services.vuln-agent-stop = {
-      serviceConfig.Type = "oneshot";
-      # Stop the VM, then wipe the writable store overlay so agent-built paths
-      # don't accumulate unbounded. `systemctl stop` is synchronous, so the
-      # virtiofs share is unmounted before we clear its backing dir on the host.
       script = ''
         ${pkgs.systemd}/bin/systemctl stop microvm@${vmName}.service
         rm -rf /var/lib/vuln-agent/nix-store/*
+        rm -f /var/lib/vuln-agent/state/manual.trigger \
+              /var/lib/vuln-agent/state/stop.trigger \
+              /var/lib/vuln-agent/state/manual.prompt
+        ${pkgs.systemd}/bin/systemctl start microvm@${vmName}.service
       '';
     };
 

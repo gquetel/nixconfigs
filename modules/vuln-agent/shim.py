@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
 """Runner for the autonomous vulnerability-research agent.
 
-Drives Claude Code headless in a loop: each iteration runs one pass of the
-Operating Loop, then the shim decides whether to start another. Two stop
-conditions: clock cutoff or usage signal.
+Driven by systemd as `vuln-agent@<mode>.service`, where <mode> is:
 
-Config comes from the environment (see below). The agent brain lives in
-CLAUDE.md in the working directory; this script only orchestrates.
+  nightly : started by a 23:00 timer. Runs until the next 04:00 (STOP_AT spans
+            midnight from the 23:00 start). Refuses to run outside the
+            23:00-04:00 window, so a stray start can't run all day.
+  manual  : started by the guest poller when the operator drops a trigger. Runs
+            for VA_MANUAL_MIN minutes (default 60), any time of day. A manual run
+            preempts a nightly one (the poller stops nightly before starting it).
+
+Each iteration runs one pass of the Operating Loop, then the shim decides whether
+to start another. Stop conditions: the STOP_AT instant, or a usage signal from
+the stream. The agent brain lives in CLAUDE.md; this script only orchestrates.
 """
 
 from __future__ import annotations
@@ -18,7 +24,8 @@ import signal
 import subprocess
 import sys
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
+from pathlib import Path
 
 # --------------------------------------------------------------------------- #
 # Config
@@ -33,8 +40,14 @@ def _env_int(name: str, default: int) -> int:
     except ValueError:
         return default
 
-# Local time (HH:MM) on or after which no message should be sent.
-CUTOFF = _env("VA_CUTOFF", "04:00")
+MODE = _env("VA_MODE", "nightly")  # "nightly" | "manual"
+
+# Nightly window (local HH:MM). The session runs between START and END, with END
+# on the following day — i.e. the window crosses midnight (23:00 -> 04:00).
+NIGHT_START = _env("VA_NIGHT_START", "23:00")
+NIGHT_END = _env("VA_CUTOFF", "04:00")
+# Manual runs are wall-clock boxed to this many minutes instead.
+MANUAL_MIN = _env_int("VA_MANUAL_MIN", 60)
 
 # Backoff (seconds).
 WAIT_SERVER_ERR = _env_int("VA_WAIT_SERVER_ERR", 120)
@@ -43,11 +56,19 @@ WAIT_CLEAN      = _env_int("VA_WAIT_CLEAN", 5)
 CLAUDE_BIN = _env("VA_CLAUDE_BIN", "claude")
 MODEL = _env("VA_MODEL", "sonnet")
 
-RESUME_PROMPT = _env(
-    "VA_RESUME_PROMPT",
+# A manual run may carry a custom resume-prompt: the guest poller copies the
+# operator's trigger text here (root-written, agent-readable) before starting us.
+PROMPT_FILE = Path(_env("VA_PROMPT_FILE", "/work/state/manual.prompt"))
+
+DEFAULT_PROMPT = (
     "Read CLAUDE.md. Pull the active work item and its comments from Plane, "
-    "run exactly one iteration of the Operating Loop, then stop.",
+    "run exactly one iteration of the Operating Loop, then stop."
 )
+RESUME_PROMPT = _env("VA_RESUME_PROMPT", DEFAULT_PROMPT)
+
+# Absolute instant (epoch seconds) after which no new message may be sent and any
+# in-flight iteration is killed. Set in main() once the mode is known.
+STOP_AT = 0.0
 
 # --------------------------------------------------------------------------- #
 # Reactive detection patterns (checked against every streamed line)
@@ -69,22 +90,60 @@ def matches_any(line: str, patterns) -> bool:
     return any(p.search(line) for p in patterns)
 
 # --------------------------------------------------------------------------- #
-# Clock cutoff
+# Clock window / stop instant
 # --------------------------------------------------------------------------- #
 
 def local_now() -> datetime:
     return datetime.now().astimezone()
 
-def cutoff_dt() -> datetime:
-    """Instant after which no message may be sent, today in local time.
-    """
-    hh, mm = (int(x) for x in CUTOFF.split(":"))
-    return local_now().replace(hour=hh, minute=mm, second=0, microsecond=0)
+def _hhmm(s: str) -> tuple[int, int]:
+    hh, mm = (int(x) for x in s.split(":"))
+    return hh, mm
+
+def in_night_window(now: datetime | None = None) -> bool:
+    """True if `now` is inside the [NIGHT_START, NIGHT_END) window that crosses
+    midnight (e.g. 23:00 <= now, or now < 04:00)."""
+    now = now or local_now()
+    s_h, s_m = _hhmm(NIGHT_START)
+    e_h, e_m = _hhmm(NIGHT_END)
+    start = now.replace(hour=s_h, minute=s_m, second=0, microsecond=0)
+    end = now.replace(hour=e_h, minute=e_m, second=0, microsecond=0)
+    return now >= start or now < end
+
+def next_night_end() -> datetime:
+    """Next occurrence of NIGHT_END (today if still ahead, else tomorrow). From a
+    23:00 start this lands on tomorrow 04:00, giving the full 5h window."""
+    e_h, e_m = _hhmm(NIGHT_END)
+    end = local_now().replace(hour=e_h, minute=e_m, second=0, microsecond=0)
+    if local_now() >= end:
+        end += timedelta(days=1)
+    return end
+
+def compute_stop_at() -> float:
+    if MODE == "manual":
+        return time.time() + MANUAL_MIN * 60
+    return next_night_end().timestamp()
+
+def load_manual_prompt() -> None:
+    """Adopt the operator's custom resume-prompt for this manual run, if any.
+    Read-only: the poller owns the file's lifecycle (agent can't write here)."""
+    global RESUME_PROMPT
+    try:
+        txt = PROMPT_FILE.read_text().strip()
+    except (FileNotFoundError, PermissionError):
+        txt = ""
+    if txt:
+        RESUME_PROMPT = txt
+        print("[request] manual run with custom prompt", flush=True)
+    else:
+        print("[request] manual run with default prompt", flush=True)
 
 def preflight() -> tuple[bool, str]:
-    """Return (ok_to_run, reason). ok_to_run=False means stop for the night."""
-    if local_now() >= cutoff_dt():
-        return False, f"clock cutoff {CUTOFF} reached"
+    """Return (ok_to_run, reason). ok_to_run=False means stop the session."""
+    if MODE == "nightly" and not in_night_window():
+        return False, "outside night window"
+    if time.time() >= STOP_AT:
+        return False, "stop instant reached"
     return True, "ok"
 
 # --------------------------------------------------------------------------- #
@@ -147,7 +206,7 @@ def run_claude() -> str:
     """Run one iteration. Returns an exit reason:
     'usage_limit' | 'server_error' | 'clean' | 'cutoff'.
 
-    The iteration is killed at the clock cutoff, so no message is sent past it.
+    The iteration is killed at STOP_AT, so no message is sent past it.
     """
     global _child
     cmd = [
@@ -164,7 +223,6 @@ def run_claude() -> str:
     )
 
     reason = "clean"
-    cutoff_ts = cutoff_dt().timestamp()
 
     try:
         for line in _child.stdout:  # type: ignore[union-attr]
@@ -191,7 +249,7 @@ def run_claude() -> str:
             if pretty:
                 print(pretty, flush=True)
 
-            if time.time() >= cutoff_ts:
+            if time.time() >= STOP_AT:
                 reason = "cutoff"
                 _kill_child()
                 break
@@ -222,13 +280,20 @@ def _on_term(signum, frame):
     _kill_child()
 
 def main() -> int:
+    global STOP_AT
     signal.signal(signal.SIGTERM, _on_term)
     signal.signal(signal.SIGINT, _on_term)
+
+    if MODE == "manual":
+        load_manual_prompt()
+    STOP_AT = compute_stop_at()
+    print(f"[shim] mode={MODE} stop_at="
+          f"{datetime.fromtimestamp(STOP_AT).astimezone().isoformat()}", flush=True)
 
     while not _stop:
         ok, why = preflight()
         if not ok:
-            print(f"[preflight] stopping for the night: {why}", flush=True)
+            print(f"[preflight] stopping: {why}", flush=True)
             break
 
         docker_cleanup()
@@ -237,10 +302,10 @@ def main() -> int:
         if _stop:
             break
         if reason == "usage_limit":
-            print("[reactive] session/usage limit hit — stopping for the night", flush=True)
+            print("[reactive] session/usage limit hit — stopping", flush=True)
             break
         if reason == "cutoff":
-            print("[reactive] clock cutoff reached — stopping for the night", flush=True)
+            print("[reactive] stop instant reached — stopping", flush=True)
             break
         if reason == "server_error":
             print(f"[reactive] server error — backing off {WAIT_SERVER_ERR}s", flush=True)
