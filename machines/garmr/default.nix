@@ -17,6 +17,7 @@
     ../../modules/step-ca
     ../../modules/servers
     ../../modules/grafana
+    ../../modules/plane
     ../../modules/prometheus
     ../../modules/prometheus-exporters
     # ../../modules/systemd-resolved
@@ -202,6 +203,7 @@
   };
 
   grafana.enable = true;
+  plane.enable = true;
   prometheus.enable = true;
 
   prometheus_exporter = {
