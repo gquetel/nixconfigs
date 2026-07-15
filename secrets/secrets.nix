@@ -42,4 +42,11 @@ in
   # private key can be decrypted using agenix -d wireguard-pvkey.age
   "wireguard-pvkey.age".publicKeys = [ system-vapula ] ++ users;
 
+  # Expire 15 july 2027
+  "claude-oauth-token.age".publicKeys = [ system-vapula ] ++ users;
+  # Expire 15 october 2026
+  "plane-agent.env.age".publicKeys = [ system-vapula ] ++ users;
+  # Expire 15 july 2027
+  "tailscale-authkey.age".publicKeys = [ system-vapula ] ++ users;
+
 }

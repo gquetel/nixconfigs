@@ -29,6 +29,7 @@ in
     ../../modules/servers
     ../../modules/prometheus-exporters
     ../../modules/wireguard-client
+    ../../modules/vuln-agent
 
     # ../../modules/systemd-resolved
     "${(import ../../npins).agenix}/modules/age.nix"
@@ -93,6 +94,9 @@ in
 
   # https://wiki.nixos.org/wiki/ZFS
   boot.kernelPackages = latestKernelPackage;
+
+  # Bound the ZFS ARC to 12GB (we run VMs)
+  boot.kernelParams = [ "zfs.zfs_arc_max=12884901888" ]; 
 
   # Aliases mapping between disk drive color & device link identifier.
   # https://resinfo-gt.pages.in2p3.fr/zfs/doc/configuration/disques.html#le-fichier-vdev-id-conf
@@ -220,6 +224,8 @@ in
 
   # ---------------- Modules ----------------
   wg0.enable = true;
+
+  vuln-agent.enable = true;
 
   common.useLatestKernel = false; # We use a kernel version that supports zfs
   servers.motd = {
