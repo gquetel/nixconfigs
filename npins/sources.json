@@ -58,6 +58,19 @@
       "url": "https://github.com/nix-community/home-manager/archive/af2beae5f0fae0a4310cc0e6aef2572f56090353.tar.gz",
       "hash": "sha256-ESQnuNHEDChsB4IxoLRhscVahqkDWkTb+qdIz8euYt4="
     },
+    "microvm.nix": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "astro",
+        "repo": "microvm.nix"
+      },
+      "branch": "main",
+      "submodules": false,
+      "revision": "a8ddffe21a84b533b38c16cf63e9c5fda4a19743",
+      "url": "https://github.com/astro/microvm.nix/archive/a8ddffe21a84b533b38c16cf63e9c5fda4a19743.tar.gz",
+      "hash": "sha256-K7vhRb7e4Np6sti8EfcIr/YgpBEPc7owxBeETE4T3PE="
+    },
     "nix-topology": {
       "type": "Git",
       "repository": {

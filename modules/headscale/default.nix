@@ -70,6 +70,11 @@
             type = "A";
             value = nodes.strix.config.machine.meta.ipTailscale;
           }
+          {
+            name = "plane.mesh.gq";
+            type = "A";
+            value = nodes.garmr.config.machine.meta.ipTailscale;
+          }
 
           {
             name = "mlflow.mesh.gq";
