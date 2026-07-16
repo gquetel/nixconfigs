@@ -51,7 +51,7 @@ MANUAL_MIN = _env_int("VA_MANUAL_MIN", 60)
 
 # Backoff (seconds).
 WAIT_SERVER_ERR = _env_int("VA_WAIT_SERVER_ERR", 120)
-WAIT_CLEAN      = _env_int("VA_WAIT_CLEAN", 5)
+WAIT_CLEAN      = _env_int("VA_WAIT_CLEAN", 60)
 
 CLAUDE_BIN = _env("VA_CLAUDE_BIN", "claude")
 MODEL = _env("VA_MODEL", "sonnet")
@@ -96,6 +96,15 @@ def matches_any(line: str, patterns) -> bool:
 def local_now() -> datetime:
     return datetime.now().astimezone()
 
+def log(msg: str) -> None:
+    """Print a shim-originated status line, prefixed with the current time.
+
+    Reserved for the shim's own control-flow messages, not for lines relayed
+    from the Claude invocation's stdout (raw passthrough or formatted stream
+    events), which carry their own provenance and shouldn't look shim-timed.
+    """
+    print(f"[{local_now().strftime('%H:%M:%S')}] {msg}", flush=True)
+
 def _hhmm(s: str) -> tuple[int, int]:
     hh, mm = (int(x) for x in s.split(":"))
     return hh, mm
@@ -134,9 +143,9 @@ def load_manual_prompt() -> None:
         txt = ""
     if txt:
         RESUME_PROMPT = txt
-        print("[request] manual run with custom prompt", flush=True)
+        log("[request] manual run with custom prompt")
     else:
-        print("[request] manual run with default prompt", flush=True)
+        log("[request] manual run with default prompt")
 
 def preflight() -> tuple[bool, str]:
     """Return (ok_to_run, reason). ok_to_run=False means stop the session."""
@@ -168,6 +177,19 @@ def docker_cleanup() -> None:
 def _truncate(s: str, n: int = 120) -> str:
     s = " ".join(str(s).split())
     return s if len(s) <= n else s[: n - 1] + "…"
+
+def extract_model(evt: dict) -> str | None:
+    """Ground-truth model id as reported by Claude's own stream output, or None.
+
+    Read from the stream (not our --model arg) so the log reflects what actually
+    served the turn: the `system`/init event announces the resolved model, and
+    each assistant message carries the model the API returned.
+    """
+    if evt.get("type") == "system" and evt.get("model"):
+        return evt["model"]
+    if evt.get("type") == "assistant":
+        return evt.get("message", {}).get("model")
+    return None
 
 def format_stream_line(evt: dict) -> str | None:
     """Pretty one-liner for a stream-json event, or None to skip."""
@@ -217,12 +239,13 @@ def run_claude() -> str:
         "--verbose",
         RESUME_PROMPT,
     ]
-    print(f"\n=== iteration @ {local_now().isoformat()} ===", flush=True)
+    log("=== iteration start ===")
     _child = subprocess.Popen(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1
     )
 
     reason = "clean"
+    model_logged = False
 
     try:
         for line in _child.stdout:  # type: ignore[union-attr]
@@ -230,20 +253,56 @@ def run_claude() -> str:
             if not line:
                 continue
 
-            if matches_any(line, USAGE_LIMIT_PATTERNS):
-                reason = "usage_limit"
-                _kill_child()
-                break
-            if matches_any(line, SERVER_ERROR_PATTERNS):
-                reason = "server_error"
-                _kill_child()
-                break
-
             try:
                 evt = json.loads(line)
             except json.JSONDecodeError:
+
+                if matches_any(line, USAGE_LIMIT_PATTERNS):
+                    reason = "usage_limit"
+                    _kill_child()
+                    break
+                if matches_any(line, SERVER_ERROR_PATTERNS):
+                    reason = "server_error"
+                    log(f"[reactive] server_error line: {_truncate(line, 200)}")
+                    _kill_child()
+                    break
                 print(line, flush=True)
                 continue
+
+            # Usage/server-limit signals also arrive as structured events (an
+            # assistant text block, then a result event) — not just raw non-JSON
+            # lines — so scan those too, else we sail past a session-limit stop
+            # and loop straight back into the same wall. Server-error matching is
+            # scoped to failed result events so a PoC merely discussing HTTP 5xx
+            # doesn't trip it.
+            et = evt.get("type")
+            if et == "assistant":
+                txt = " ".join(
+                    b.get("text", "")
+                    for b in evt.get("message", {}).get("content", [])
+                    if b.get("type") == "text"
+                )
+                if matches_any(txt, USAGE_LIMIT_PATTERNS):
+                    reason = "usage_limit"
+                    _kill_child()
+                    break
+            elif et == "result":
+                txt = str(evt.get("result", ""))
+                if matches_any(txt, USAGE_LIMIT_PATTERNS):
+                    reason = "usage_limit"
+                    _kill_child()
+                    break
+                if evt.get("is_error") and matches_any(txt, SERVER_ERROR_PATTERNS):
+                    reason = "server_error"
+                    log(f"[reactive] server_error result: {_truncate(txt, 200)}")
+                    _kill_child()
+                    break
+
+            if not model_logged:
+                model = extract_model(evt)
+                if model:
+                    log(f"[model] serving turn with {model} (requested: {MODEL})")
+                    model_logged = True
 
             pretty = format_stream_line(evt)
             if pretty:
@@ -287,13 +346,13 @@ def main() -> int:
     if MODE == "manual":
         load_manual_prompt()
     STOP_AT = compute_stop_at()
-    print(f"[shim] mode={MODE} stop_at="
-          f"{datetime.fromtimestamp(STOP_AT).astimezone().isoformat()}", flush=True)
+    log(f"[shim] mode={MODE} stop_at="
+        f"{datetime.fromtimestamp(STOP_AT).astimezone().isoformat()}")
 
     while not _stop:
         ok, why = preflight()
         if not ok:
-            print(f"[preflight] stopping: {why}", flush=True)
+            log(f"[preflight] stopping: {why}")
             break
 
         docker_cleanup()
@@ -302,19 +361,19 @@ def main() -> int:
         if _stop:
             break
         if reason == "usage_limit":
-            print("[reactive] session/usage limit hit — stopping", flush=True)
+            log("[reactive] session/usage limit hit — stopping")
             break
         if reason == "cutoff":
-            print("[reactive] stop instant reached — stopping", flush=True)
+            log("[reactive] stop instant reached — stopping")
             break
         if reason == "server_error":
-            print(f"[reactive] server error — backing off {WAIT_SERVER_ERR}s", flush=True)
+            log(f"[reactive] server error — backing off {WAIT_SERVER_ERR}s")
             time.sleep(WAIT_SERVER_ERR)
         else:
             time.sleep(WAIT_CLEAN)
 
     docker_cleanup()
-    print("[shim] exiting", flush=True)
+    log("[shim] exiting")
     return 0
 
 if __name__ == "__main__":

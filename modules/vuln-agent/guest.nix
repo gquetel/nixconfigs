@@ -15,8 +15,7 @@ let
   stateDir = "${workDir}/state";
   secretsEnvFile = "/run/host-secrets/vuln-agent.env";
 
-  # ExecCondition ($1 = %i): skip a nightly start while a manual run is active,
-  # so manual always wins. The manual instance always proceeds.
+  # We skip a nightly start while a manual run is active, so manual always wins.
   execCondition = pkgs.writeShellScript "vuln-agent-execcond" ''
     if [ "$1" = "nightly" ] && ${pkgs.systemd}/bin/systemctl is-active --quiet vuln-agent@manual.service; then
       echo "manual session active; skipping nightly start"
@@ -92,12 +91,8 @@ in
   };
   services.resolved.enable = true;
 
-  # Trust the internal step-ca root ("garmr Root CA") so the agent can reach
-  # mesh services (plane.mesh.gq, ca.mesh.gq, …) over TLS without -k. Same root
-  # the rest of the fleet trusts via modules/common; the guest doesn't import
-  # common, so wire it in directly.
+  # Trust the internal step-ca root CA.
   security.pki.certificates = [
-    # From: http://ca.mesh.gq/roots.pem
     (builtins.readFile ../step-ca/roots.pem)
   ];
 
@@ -143,6 +138,12 @@ in
     jq
     python3
     nixos-container
+    # Common CLI tools the agent's shell reaches for while poking at upstream
+    # repos (parsing lockfiles, greping source). awk/which aren't in the default
+    # system path, so they surfaced as "command not found" mid-run.
+    gawk
+    which
+    ripgrep
   ];
 
   # The runner, templated on mode (`%i` = nightly|manual). Started on demand:
@@ -156,6 +157,7 @@ in
       git
       curl
       jq
+      python3
       docker
       nixos-container
       nix
@@ -178,7 +180,7 @@ in
       ExecCondition = "${execCondition} %i";
       # Give a pre-accepted ~/.claude.json each start to prevent headless hangs.
       ExecStartPre = [
-        "${pkgs.coreutils}/bin/install -m0644 ${./../plane/CLAUDE.md} ${workDir}/CLAUDE.md"
+        "${pkgs.coreutils}/bin/install -m0644 ${./CLAUDE.md} ${workDir}/CLAUDE.md"
         "${pkgs.coreutils}/bin/install -m0600 ${./claude.json} ${workDir}/.claude.json"
       ];
       ExecStart = "${pkgs.python3}/bin/python3 ${./shim.py}";
