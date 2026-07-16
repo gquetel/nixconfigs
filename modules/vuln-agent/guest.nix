@@ -10,7 +10,10 @@
   ...
 }:
 let
-  claude-code = pkgs.callPackage ../../packages/claude-code { };
+  llmAgents = pkgs.callPackage ../../packages/llm-agents {
+    inherit inputs;
+  };
+  claude-code = llmAgents."claude-code";
   workDir = "/work";
   stateDir = "${workDir}/state";
   secretsEnvFile = "/run/host-secrets/vuln-agent.env";
@@ -100,6 +103,12 @@ in
     experimental-features = [
       "nix-command"
       "flakes"
+    ];
+    substituters = [
+      "https://cache.numtide.com"
+    ];
+    trusted-public-keys = [
+      "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
     ];
     trusted-users = [
       "root"

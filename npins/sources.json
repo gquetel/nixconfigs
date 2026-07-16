@@ -58,6 +58,19 @@
       "url": "https://github.com/nix-community/home-manager/archive/af2beae5f0fae0a4310cc0e6aef2572f56090353.tar.gz",
       "hash": "sha256-ESQnuNHEDChsB4IxoLRhscVahqkDWkTb+qdIz8euYt4="
     },
+    "llm-agents": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "numtide",
+        "repo": "llm-agents.nix"
+      },
+      "branch": "main",
+      "submodules": false,
+      "revision": "45b0a359630126c84b1685bacf986cf7ddbb57a7",
+      "url": "https://github.com/numtide/llm-agents.nix/archive/45b0a359630126c84b1685bacf986cf7ddbb57a7.tar.gz",
+      "hash": "sha256-5X0Ivp0ClcTUH8nAqLhxWuWxgZ6QTd+s+xOpgQqucgk="
+    },
     "microvm.nix": {
       "type": "Git",
       "repository": {

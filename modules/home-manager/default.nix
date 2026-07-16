@@ -1,6 +1,7 @@
 {
   lib,
   config,
+  inputs,
   nodes,
   ...
 }:
@@ -21,6 +22,11 @@ in
 
     home-manager.users.gquetel =
       { pkgs, ... }:
+      let
+        llmAgents = pkgs.callPackage ../../packages/llm-agents {
+          inherit inputs;
+        };
+      in
       {
         home.file =
           let
@@ -81,8 +87,8 @@ in
           ]
           ++ [
             (pkgs.callPackage "${(import ../../npins).agenix}/pkgs/agenix.nix" { })
-            (pkgs.callPackage ../../packages/claude-code { })
             (pkgs.callPackage ../../packages/feynman { })
+            llmAgents."claude-code"
           ];
         programs.kitty = {
           enable = true;
