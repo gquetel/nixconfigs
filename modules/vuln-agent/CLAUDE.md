@@ -24,7 +24,7 @@ Findings are documented for the operator to review and verify independently.
   - List endpoints are cursor-paginated (`cursor`, `per_page`).
 - **Continuity via Plane** — you have no separate memory store. Plane work-item
   descriptions and comments **are** your memory across context resets and
-  compaction. Record progress there as you go.
+  compaction. It is **very important** that you record progress there as you go and between each iteration.
 
 ### Plane data model
 Work is **Workspace → Projects → Work items** (sub-items via `parent`). Two
@@ -33,12 +33,12 @@ projects: **Research Tasks** (one item per target, bug classes as sub-items) and
 
 API paths, all under `.../workspaces/$PLANE_WORKSPACE/`:
 
-| Action | Method + path |
-|---|---|
-| List projects / states / labels | `GET projects/` · `.../{id}/states/` · `.../{id}/labels/` |
-| List / create work items | `GET` · `POST projects/{id}/work-items/` |
-| Update work item | `PATCH projects/{id}/work-items/{wid}/` |
-| Add comment | `POST projects/{id}/work-items/{wid}/comments/` (body `comment_html`) |
+| Action                          | Method + path                                                         |
+| ------------------------------- | --------------------------------------------------------------------- |
+| List projects / states / labels | `GET projects/` · `.../{id}/states/` · `.../{id}/labels/`             |
+| List / create work items        | `GET` · `POST projects/{id}/work-items/`                              |
+| Update work item                | `PATCH projects/{id}/work-items/{wid}/`                               |
+| Add comment                     | `POST projects/{id}/work-items/{wid}/comments/` (body `comment_html`) |
 
 Work-item fields you set: `name`, `description_html`, `state` (a state **UUID**),
 `priority` (`urgent|high|medium|low|none`), `parent` (work-item UUID → sub-item),
@@ -179,23 +179,23 @@ the three prioritized classes above come first.
 ## Plane Board Conventions
 
 ### Research Tasks project
-| State (group) | Meaning |
-|---|---|
-| Backlog (backlog) | Queued targets |
-| In Progress (started) | Actively being researched |
-| Done (completed) | All bug classes exhausted and validated |
+| State (group)         | Meaning                                 |
+| --------------------- | --------------------------------------- |
+| Backlog (backlog)     | Queued targets                          |
+| In Progress (started) | Actively being researched               |
+| Done (completed)      | All bug classes exhausted and validated |
 
 Sub-items on each Research Task work item represent individual bug classes.
 
 ### Potential Vulnerabilities project
-| State (group) | Meaning |
-|---|---|
-| Unvalidated (unstarted) | Suspicious surface logged, not yet tested |
-| Validating (started) | PoC in progress — set this before you start |
-| True Positive (completed) | Confirmed, PoC succeeded |
-| False Positive (cancelled) | Tested, not exploitable |
-| Skipped (cancelled) | Estimated medium/low at triage — not worth validating |
-| Not Important (cancelled) | Confirmed but attacker must already hold full system admin |
+| State (group)              | Meaning                                                    |
+| -------------------------- | ---------------------------------------------------------- |
+| Unvalidated (unstarted)    | Suspicious surface logged, not yet tested                  |
+| Validating (started)       | PoC in progress — set this before you start                |
+| True Positive (completed)  | Confirmed, PoC succeeded                                   |
+| False Positive (cancelled) | Tested, not exploitable                                    |
+| Skipped (cancelled)        | Estimated medium/low at triage — not worth validating      |
+| Not Important (cancelled)  | Confirmed but attacker must already hold full system admin |
 
 Always move to `Validating` before beginning — prevents duplicate validation
 if the session is interrupted.
@@ -205,12 +205,12 @@ if the session is interrupted.
 Set the work item's `priority` field on every Potential Vulnerabilities work
 item at creation time. Use this rubric:
 
-| Priority | When |
-|---|---|
-| **urgent** | Unauthenticated attacker, no significant preconditions, severe impact (RCE, auth bypass to admin, full account takeover, mass data exfil, SSTI, unauth SSRF with body reflection, stored XSS that detonates on any user/admin viewing a normal page). |
-| **high** | Either (a) unauth with minor preconditions or moderate impact, or (b) low-privileged authenticated attacker (default member / regular signed-in user / customer / guest) achieving serious impact: stored XSS, SSRF, IDOR with cross-tenant write, priv-escalation toward admin, 2FA bypass, token theft, forced state changes against other users. **No admin action required to set up the attack.** |
-| **medium** | Low-priv with constrained impact — narrow info disclosure, policy/scope bypass, IDOR with limited damage, boundary bypass, missing security headers on a real surface. Also: serious bugs whose preconditions are non-trivial but realistic (e.g. victim click within 30s + integration log access). |
-| **low** | Defense-in-depth, niche or unlikely preconditions, very limited blast radius even when exploited, theoretical hardening issues, self-XSS only. |
+| Priority   | When                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **urgent** | Unauthenticated attacker, no significant preconditions, severe impact (RCE, auth bypass to admin, full account takeover, mass data exfil, SSTI, unauth SSRF with body reflection, stored XSS that detonates on any user/admin viewing a normal page).                                                                                                                                                  |
+| **high**   | Either (a) unauth with minor preconditions or moderate impact, or (b) low-privileged authenticated attacker (default member / regular signed-in user / customer / guest) achieving serious impact: stored XSS, SSRF, IDOR with cross-tenant write, priv-escalation toward admin, 2FA bypass, token theft, forced state changes against other users. **No admin action required to set up the attack.** |
+| **medium** | Low-priv with constrained impact — narrow info disclosure, policy/scope bypass, IDOR with limited damage, boundary bypass, missing security headers on a real surface. Also: serious bugs whose preconditions are non-trivial but realistic (e.g. victim click within 30s + integration log access).                                                                                                   |
+| **low**    | Defense-in-depth, niche or unlikely preconditions, very limited blast radius even when exploited, theoretical hardening issues, self-XSS only.                                                                                                                                                                                                                                                         |
 
 #### Decision rules
 
@@ -257,7 +257,7 @@ independent manual review by the operator):
 - The self-contained reproduction, attached as a file. Always privilege a  **`runNixOSTest` `.nix`** approach, 
   if you don't manage to build the PoC using Nix, instead provide the Docker command. 
 - PoC steps written so they can be reproduced without context
-- Attach PoC script as a file if substantial
+- Attach PoC scripts in the work item if True Positive
 - Raw output / proof of exploitation
 - True Positive or False Positive verdict with reasoning
 

@@ -55,21 +55,31 @@ in
 
     environment.systemPackages = [ vuln-agent-run ];
 
-    # Host dirs the guest virtiofs-mounts. state/ is 0775 root:wheel so wheel can
-    # drop triggers without sudo and o+rx lets the agent-user shim read
-    # manual.prompt; parent 0750 root:wheel gives wheel traversal only.
     systemd.tmpfiles.rules = [
       "d /var/lib/vuln-agent 0750 root wheel -"
       "d /var/lib/vuln-agent/nix-store 0755 root root -"
       "d /var/lib/vuln-agent/state 0775 root wheel -"
       "d /var/lib/vuln-agent/secrets 0750 root root -"
       "d /var/lib/vuln-agent/tailscale 0700 root root -"
+      "d /var/lib/vuln-agent/disk 0700 microvm kvm -"
+      "a+ /var/lib/vuln-agent - - - - u:microvm:x"
     ];
 
-    # Assemble the guest env file from the decrypted age secrets. Kept out of the
-    # store; only the guest reads it.
-    # It contains: Claude OAuth + Plane + Tailscale creds.
+    # We rotate the agent's append-only stream log 
+    services.logrotate.enable = true;
+    services.logrotate.settings."/var/lib/vuln-agent/state/agent.log" = {
+      su = "root root";
+      frequency = "daily";
+      rotate = 14;
+      compress = true;
+      delaycompress = true;
+      copytruncate = true;
+      missingok = true;
+      notifempty = true;
+    };
 
+    # Assemble the guest env file from the decrypted age secrets. Kept out of the
+    # store; only the guest reads it.  It contains: Claude OAuth + Plane + Tailscale creds.
     systemd.services.vuln-agent-secrets = {
       wantedBy = [ "multi-user.target" ];
       after = [ "agenix-install-secrets.service" ];
@@ -95,20 +105,16 @@ in
       config = import ./guest.nix;
     };
 
-    # --- Lifecycle: VM up 24/7, recycled once a day --------------------------
-    # Sessions are gated inside the guest (23:00 timer / trigger), not the VM.
+    # The VM runs 24/7, and is wiped down every monday morning.
     systemd.services."microvm@${vmName}" = {
       wantedBy = lib.mkForce [ "multi-user.target" ];
       after = [ "vuln-agent-secrets.service" ];
       wants = [ "vuln-agent-secrets.service" ];
     };
 
-    # Daily 08:00 reset: stop → wipe the host-backed store overlay → start (a
-    # guest reboot can't wipe it; the synchronous stop unmounts the share first).
-    # Kills any live session by design.
     systemd.timers.vuln-agent-recycle = {
       wantedBy = [ "timers.target" ];
-      timerConfig.OnCalendar = "*-*-* 08:00:00";
+      timerConfig.OnCalendar = "Mon *-*-* 08:00:00";
     };
     systemd.services.vuln-agent-recycle = {
       after = [ "vuln-agent-secrets.service" ];
@@ -117,6 +123,7 @@ in
       script = ''
         ${pkgs.systemd}/bin/systemctl stop microvm@${vmName}.service
         rm -rf /var/lib/vuln-agent/nix-store/*
+        rm -f /var/lib/vuln-agent/disk/root.img
         rm -f /var/lib/vuln-agent/state/manual.trigger \
               /var/lib/vuln-agent/state/stop.trigger \
               /var/lib/vuln-agent/state/manual.prompt

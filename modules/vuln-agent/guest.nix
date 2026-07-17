@@ -41,10 +41,20 @@ in
       }
     ];
 
-    # Regarding /nix/store,  a read-only lower layer holds the store the VM boots 
-    # from, and agent-built paths land in a read-write upper layer.
-    # That upper layer is disk-backed by the nix-cache share below and wiped every night.
+    # Regarding /nix/store,  a read-only lower layer holds the store the VM boots
+    # from, and agent-built paths land in a read-write 50GB upper layer.
     writableStoreOverlay = "/nix/.rw-store";
+
+    volumes = [
+      {
+        image = "/var/lib/vuln-agent/disk/root.img";
+        mountPoint = "/";
+        label = "root";
+        fsType = "ext4";
+        size = 51200;
+      }
+    ];
+
     shares = [
       {
         source = "/var/lib/vuln-agent/nix-store";
@@ -147,12 +157,6 @@ in
     jq
     python3
     nixos-container
-    # Common CLI tools the agent's shell reaches for while poking at upstream
-    # repos (parsing lockfiles, greping source). awk/which aren't in the default
-    # system path, so they surfaced as "command not found" mid-run.
-    gawk
-    which
-    ripgrep
   ];
 
   # The runner, templated on mode (`%i` = nightly|manual). Started on demand:
@@ -170,6 +174,11 @@ in
       docker
       nixos-container
       nix
+      # The service PATH excludes /run/current-system/sw/bin, so CLI tools the
+      # agent shells out to must be listed here or they are "command not found".
+      gawk
+      which
+      ripgrep
     ];
     serviceConfig = {
       Type = "simple";
@@ -195,7 +204,7 @@ in
       ExecStart = "${pkgs.python3}/bin/python3 ${./shim.py}";
       StandardOutput = "append:${stateDir}/agent.log";
       StandardError = "inherit";
-      RuntimeMaxSec = "6h";  # backstop; the shim's STOP_AT ends it well before
+      RuntimeMaxSec = "6h"; # backstop; the shim's STOP_AT ends it well before
       Restart = "no";
     };
   };
@@ -223,7 +232,10 @@ in
   systemd.services.vuln-agent-control = {
     description = "Poll the shared state dir for operator run/stop triggers";
     serviceConfig.Type = "oneshot";
-    path = with pkgs; [ systemd coreutils ];
+    path = with pkgs; [
+      systemd
+      coreutils
+    ];
     script = ''
       S=${stateDir}
       # manual request -> stage prompt, preempt nightly, start manual, consume trigger.
