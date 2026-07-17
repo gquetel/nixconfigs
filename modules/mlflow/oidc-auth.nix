@@ -1,19 +1,20 @@
-{ lib
-, buildPythonPackage
-, fetchPypi
-, setuptools
-, alembic
-, asgiref
-, authlib
-, cachetools
-, fastapi
-, flask
-, gunicorn
-, httpx
-, python-dotenv
-, requests
-, sqlalchemy
-, uvicorn
+{
+  lib,
+  buildPythonPackage,
+  fetchPypi,
+  setuptools,
+  alembic,
+  asgiref,
+  authlib,
+  cachetools,
+  fastapi,
+  flask,
+  gunicorn,
+  httpx,
+  python-dotenv,
+  requests,
+  sqlalchemy,
+  uvicorn,
 }:
 
 buildPythonPackage rec {
@@ -30,11 +31,19 @@ buildPythonPackage rec {
   build-system = [ setuptools ];
 
   # mlflow and mlflow-skinny are provided by the surrounding python env.
-  pythonRemoveDeps = [ "mlflow" "mlflow-skinny" ];
+  pythonRemoveDeps = [
+    "mlflow"
+    "mlflow-skinny"
+  ];
 
   # The pinned unstable nixpkgs ships slightly older patch versions than
   # what pyproject.toml declares; packages are compatible at runtime.
-  pythonRelaxDeps = [ "sqlalchemy" "uvicorn" "fastapi" "asgiref" ];
+  pythonRelaxDeps = [
+    "sqlalchemy"
+    "uvicorn"
+    "fastapi"
+    "asgiref"
+  ];
 
   dependencies = [
     alembic

@@ -10,13 +10,35 @@ let
   cfg = config.vuln-agent;
   vmName = "vuln-agent";
   stateDir = "/var/lib/vuln-agent/state";
+  metricsDir = "/var/lib/vuln-agent/metrics";
+  agentRuntime = inputs.vuln-agent-runtime;
 
   # Custom script to manually run the vuln-research agent.
   vuln-agent-run = pkgs.writeShellApplication {
     name = "vuln-agent-run";
-    runtimeInputs = with pkgs; [ coreutils ];
+    runtimeInputs = with pkgs; [
+      coreutils
+      jq
+    ];
     text = ''
       S=${stateDir}
+      if [ "''${1:-}" = "--status" ]; then
+        if [ ! -f "$S/status.json" ]; then
+          echo "no status recorded yet (agent hasn't started since the last recycle)"
+          exit 0
+        fi
+        jq -r '
+          "mode:             " + .mode,
+          "state:            " + .state,
+          "updated_at:       " + .updated_at,
+          "started_at:       " + (.started_at // "-"),
+          "stop_at:          " + (.stop_at // "-"),
+          "last_heartbeat:   " + (.last_heartbeat // "-"),
+          "last_exit_reason: " + (.last_exit_reason // "-"),
+          "last_exit_at:     " + (.last_exit_at // "-")
+        ' "$S/status.json"
+        exit 0
+      fi
       if [ "''${1:-}" = "--stop" ]; then
         rm -f "$S/stop.trigger"; : > "$S/stop.trigger"
         echo "stop requested; the guest poller will end the session within ~30s"
@@ -62,10 +84,35 @@ in
       "d /var/lib/vuln-agent/secrets 0750 root root -"
       "d /var/lib/vuln-agent/tailscale 0700 root root -"
       "d /var/lib/vuln-agent/disk 0700 microvm kvm -"
+      "d /var/lib/vuln-agent/metrics 0755 root root -"
       "a+ /var/lib/vuln-agent - - - - u:microvm:x"
     ];
 
-    # We rotate the agent's append-only stream log 
+    # Refresh the textfile-collector metric every 30s, matching the guest
+    # poller's own trigger-file poll interval.
+    systemd.timers.vuln-agent-metrics = {
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnBootSec = "30s";
+        OnUnitActiveSec = "30s";
+        Unit = "vuln-agent-metrics.service";
+      };
+    };
+    systemd.services.vuln-agent-metrics = {
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = "${pkgs.python3}/bin/python3 ${agentRuntime}/vuln_agent.py metrics ${stateDir}/status.json ${metricsDir}/vuln_agent.prom";
+      };
+    };
+
+    # Textfile collector: exposes the metrics above through the node exporter
+    # already enabled on this host (machines/vapula/default.nix).
+    services.prometheus.exporters.node = {
+      enabledCollectors = [ "textfile" ];
+      extraFlags = [ "--collector.textfile.directory=${metricsDir}" ];
+    };
+
+    # We rotate the agent's append-only stream log
     services.logrotate.enable = true;
     services.logrotate.settings."/var/lib/vuln-agent/state/agent.log" = {
       su = "root root";

@@ -189,52 +189,52 @@ in
               ]);
 
             userSettings = {
-            "editor.minimap.enabled" = false;
-            "black-formatter.args" = [
-              "--line-length=85"
-            ];
-            "editor.rulers" = [
-              85
-            ];
-            "redhat.telemetry.enabled" = false;
-            "[typst]" = {
-              "editor.wordSeparators" = "`~!@#$%^&*()=+[{]}\\|;:'\",.<>/?";
-              "editor.wordWrap" = "bounded";
-            };
-            "[typst-code]" = {
-              "editor.wordSeparators" = "`~!@#$%^&*()=+[{]}\\|;:'\",.<>/?";
-            };
-            "workbench.colorTheme" = "Sand (Light)";
-            "[python]" = {
-              "editor.defaultFormatter" = "ms-python.black-formatter";
-              "editor.wordWrap" = "off";
+              "editor.minimap.enabled" = false;
+              "black-formatter.args" = [
+                "--line-length=85"
+              ];
+              "editor.rulers" = [
+                85
+              ];
+              "redhat.telemetry.enabled" = false;
+              "[typst]" = {
+                "editor.wordSeparators" = "`~!@#$%^&*()=+[{]}\\|;:'\",.<>/?";
+                "editor.wordWrap" = "bounded";
+              };
+              "[typst-code]" = {
+                "editor.wordSeparators" = "`~!@#$%^&*()=+[{]}\\|;:'\",.<>/?";
+              };
+              "workbench.colorTheme" = "Sand (Light)";
+              "[python]" = {
+                "editor.defaultFormatter" = "ms-python.black-formatter";
+                "editor.wordWrap" = "off";
+                "editor.wordWrapColumn" = 90;
+              };
+              "notebook.output.textLineLimit" = 90;
+              "latex-workshop.latex.autoBuild.run" = "onSave";
+              "window.customTitleBarVisibility" = "windowed";
+              "github.copilot.enable" = {
+                "*" = false;
+              };
+              "git.openRepositoryInParentFolders" = "never";
+              "python.defaultInterpreterPath" = "\${CUSTOM_INTERPRETER_PATH}";
+              "latex-workshop.formatting.latex" = "tex-fmt";
+              "[csv]" = {
+                "editor.wordWrap" = "on";
+              };
+              "[tex]" = {
+                "editor.wordWrap" = "bounded";
+              };
+              "[latex]" = {
+                "editor.wordWrap" = "bounded";
+              };
+              "terminal.integrated.fontFamily" = "monospace";
+              "latex-workshop.latex.outDir" = "%DIR%/output";
+              "ltex.language" = "en-GB";
+              "ltex.languageToolHttpServerUri" = "http://localhost:8787/";
               "editor.wordWrapColumn" = 90;
-            };
-            "notebook.output.textLineLimit" = 90;
-            "latex-workshop.latex.autoBuild.run" = "onSave";
-            "window.customTitleBarVisibility" = "windowed";
-            "github.copilot.enable" = {
-              "*" = false;
-            };
-            "git.openRepositoryInParentFolders" = "never";
-            "python.defaultInterpreterPath" = "\${CUSTOM_INTERPRETER_PATH}";
-            "latex-workshop.formatting.latex" = "tex-fmt";
-            "[csv]" = {
-              "editor.wordWrap" = "on";
-            };
-            "[tex]" = {
               "editor.wordWrap" = "bounded";
-            };
-            "[latex]" = {
-              "editor.wordWrap" = "bounded";
-            };
-            "terminal.integrated.fontFamily" = "monospace";
-            "latex-workshop.latex.outDir" = "%DIR%/output";
-            "ltex.language" = "en-GB";
-            "ltex.languageToolHttpServerUri" = "http://localhost:8787/";
-            "editor.wordWrapColumn" = 90;
-            "editor.wordWrap" = "bounded";
-            "editor.fontFamily" = "'Hack', 'Droid Sans Mono', 'monospace', monospace";
+              "editor.fontFamily" = "'Hack', 'Droid Sans Mono', 'monospace', monospace";
             };
           };
         };

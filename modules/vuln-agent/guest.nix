@@ -17,15 +17,73 @@ let
   workDir = "/work";
   stateDir = "${workDir}/state";
   secretsEnvFile = "/run/host-secrets/vuln-agent.env";
+  agentRuntime = inputs.vuln-agent-runtime;
 
-  # We skip a nightly start while a manual run is active, so manual always wins.
-  execCondition = pkgs.writeShellScript "vuln-agent-execcond" ''
-    if [ "$1" = "nightly" ] && ${pkgs.systemd}/bin/systemctl is-active --quiet vuln-agent@manual.service; then
-      echo "manual session active; skipping nightly start"
+  # Some designe requirements for the agent:
+  # - Run during the night during 23 and 04:00
+  # - Run manual runs that run for an hour during any time of the day
+  # - Precedence of manual run over nightly ones (nightly ones are trigerred after)
+
+  # We prevent the nightly start if a manual is already active
+  nightlyGuard = pkgs.writeShellScript "vuln-agent-nightly-guard" ''
+    if ${pkgs.systemd}/bin/systemctl is-active --quiet vuln-agent-manual.service; then
+      echo "manual session active; skipping nightly start" >&2
       exit 1
     fi
     exit 0
   '';
+
+  resumeNightly = pkgs.writeShellScript "vuln-agent-resume-nightly" ''
+    if [ -e "${stateDir}/stop.trigger" ]; then
+      exit 0
+    fi
+    ${pkgs.systemd}/bin/systemctl start --no-block vuln-agent-nightly.service
+  '';
+
+  mkRunner =
+    {
+      mode,
+      runArgs,
+      extraServiceConfig ? { },
+    }:
+    {
+      description = "Autonomous vulnerability-research runner (${mode})";
+      after = [ "network-online.target" ];
+      wants = [ "network-online.target" ];
+      path = with pkgs; [
+        claude-code
+        git
+        curl
+        jq
+        python3
+        docker
+        nixos-container
+        nix
+        gawk
+        which
+        ripgrep
+      ];
+      serviceConfig = {
+        Type = "simple";
+        User = "agent";
+        WorkingDirectory = workDir;
+        EnvironmentFile = secretsEnvFile;
+        ExecStartPre = [
+          "${pkgs.coreutils}/bin/install -m0644 ${agentRuntime}/CLAUDE.md ${workDir}/CLAUDE.md"
+          "${pkgs.coreutils}/bin/install -m0600 ${agentRuntime}/claude.json ${workDir}/.claude.json"
+        ];
+        ExecStart = "${pkgs.python3}/bin/python3 ${agentRuntime}/vuln_agent.py run --mode ${mode} ${runArgs}";
+        StandardOutput = "append:${stateDir}/agent.log";
+        StandardError = "inherit";
+        RuntimeMaxSec = "6h";
+        Restart = "on-failure";
+        RestartSec = "30s";
+        # if it crashes 5x within 10 min, something is most likely broken, we give up.
+        StartLimitIntervalSec = "10min";
+        StartLimitBurst = 5;
+      }
+      // extraServiceConfig;
+    };
 in
 {
   # --------------------------- microVM shell -------------------------------- #
@@ -159,68 +217,27 @@ in
     nixos-container
   ];
 
-  # The runner, templated on mode (`%i` = nightly|manual). Started on demand:
-  # @nightly by the 23:00 timer, @manual by the control poller on an operator trigger.
-  systemd.services."vuln-agent@" = {
-    description = "Autonomous vulnerability-research runner (%i)";
-    after = [ "network-online.target" ];
-    wants = [ "network-online.target" ];
-    path = with pkgs; [
-      claude-code
-      git
-      curl
-      jq
-      python3
-      docker
-      nixos-container
-      nix
-      # The service PATH excludes /run/current-system/sw/bin, so CLI tools the
-      # agent shells out to must be listed here or they are "command not found".
-      gawk
-      which
-      ripgrep
-    ];
-    serviceConfig = {
-      Type = "simple";
-      User = "agent";
-      WorkingDirectory = workDir;
-      EnvironmentFile = secretsEnvFile;
-
-      # nightly: 23:00 -> 04:00 window (resets the 5h usage window by ~09:00).
-      # manual: a 60-min wall-clock box.
-      Environment = [
-        "VA_MODE=%i"
-        "VA_NIGHT_START=23:00"
-        "VA_CUTOFF=04:00"
-        "VA_MANUAL_MIN=60"
-      ];
-      # A nightly session yields to an in-progress manual run (manual preempts).
-      ExecCondition = "${execCondition} %i";
-      # Give a pre-accepted ~/.claude.json each start to prevent headless hangs.
-      ExecStartPre = [
-        "${pkgs.coreutils}/bin/install -m0644 ${./CLAUDE.md} ${workDir}/CLAUDE.md"
-        "${pkgs.coreutils}/bin/install -m0600 ${./claude.json} ${workDir}/.claude.json"
-      ];
-      ExecStart = "${pkgs.python3}/bin/python3 ${./shim.py}";
-      StandardOutput = "append:${stateDir}/agent.log";
-      StandardError = "inherit";
-      RuntimeMaxSec = "6h"; # backstop; the shim's STOP_AT ends it well before
-      Restart = "no";
-    };
+  systemd.services.vuln-agent-nightly = mkRunner {
+    mode = "nightly";
+    runArgs = "--night-start 23:00 --cutoff 04:00";
+    extraServiceConfig.ExecCondition = "${nightlyGuard}";
+  };
+  systemd.services.vuln-agent-manual = mkRunner {
+    mode = "manual";
+    runArgs = "--manual-min 60";
+    # On stop, hand the remaining night window back to nightly
+    extraServiceConfig.ExecStopPost = "+${resumeNightly}";
   };
 
-  # Nightly auto-start at 23:00. The shim's STOP_AT ends the session at 04:00.
   systemd.timers.vuln-agent-nightly = {
     wantedBy = [ "timers.target" ];
     timerConfig = {
       OnCalendar = "*-*-* 23:00:00";
-      Unit = "vuln-agent@nightly.service";
+      Unit = "vuln-agent-nightly.service";
       Persistent = false;
     };
   };
 
-  # Control poller: 30s poll of the state dir for operator triggers. Polling
-  # (not a .path unit) because inotify doesn't see host-side virtiofs writes.
   systemd.timers.vuln-agent-control = {
     wantedBy = [ "timers.target" ];
     timerConfig = {
@@ -240,16 +257,16 @@ in
       S=${stateDir}
       # manual request -> stage prompt, preempt nightly, start manual, consume trigger.
       if [ -e "$S/manual.trigger" ]; then
-        if ! systemctl is-active --quiet vuln-agent@manual.service; then
+        if ! systemctl is-active --quiet vuln-agent-manual.service; then
           cp -f "$S/manual.trigger" "$S/manual.prompt"
-          systemctl stop vuln-agent@nightly.service 2>/dev/null || true
-          systemctl start --no-block vuln-agent@manual.service
+          systemctl stop vuln-agent-nightly.service 2>/dev/null || true
+          systemctl start --no-block vuln-agent-manual.service
         fi
         rm -f "$S/manual.trigger"
       fi
       # stop request -> end whichever session is running.
       if [ -e "$S/stop.trigger" ]; then
-        systemctl stop vuln-agent@manual.service vuln-agent@nightly.service 2>/dev/null || true
+        systemctl stop vuln-agent-manual.service vuln-agent-nightly.service 2>/dev/null || true
         rm -f "$S/stop.trigger"
       fi
     '';

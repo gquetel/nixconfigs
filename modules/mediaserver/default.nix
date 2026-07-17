@@ -62,7 +62,10 @@
       max_active_limit = 200;
       outgoing_interface = "wg0";
       listen_interface = "wg0";
-      listen_ports = [56881 56881];
+      listen_ports = [
+        56881
+        56881
+      ];
     };
   };
 

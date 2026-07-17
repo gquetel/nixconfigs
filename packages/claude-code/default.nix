@@ -43,7 +43,8 @@ stdenv.mkDerivation (finalAttrs: {
   nativeBuildInputs = [
     installShellFiles
     makeBinaryWrapper
-  ] ++ lib.optionals stdenv.hostPlatform.isElf [ autoPatchelfHook ];
+  ]
+  ++ lib.optionals stdenv.hostPlatform.isElf [ autoPatchelfHook ];
 
   strictDeps = true;
 

@@ -96,7 +96,7 @@ in
   boot.kernelPackages = latestKernelPackage;
 
   # Bound the ZFS ARC to 12GB (we run VMs)
-  boot.kernelParams = [ "zfs.zfs_arc_max=12884901888" ]; 
+  boot.kernelParams = [ "zfs.zfs_arc_max=12884901888" ];
 
   # Aliases mapping between disk drive color & device link identifier.
   # https://resinfo-gt.pages.in2p3.fr/zfs/doc/configuration/disques.html#le-fichier-vdev-id-conf
