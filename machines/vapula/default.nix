@@ -29,7 +29,7 @@ in
     ../../modules/servers
     ../../modules/prometheus-exporters
     ../../modules/wireguard-client
-    ../../modules/vuln-agent
+    ../../modules/autonomous-agent
 
     # ../../modules/systemd-resolved
     "${(import ../../npins).agenix}/modules/age.nix"
@@ -225,7 +225,14 @@ in
   # ---------------- Modules ----------------
   wg0.enable = true;
 
-  vuln-agent.enable = true;
+  autonomous-agent = {
+    enable = false;
+    nightlyProfile = "vuln";
+    profiles = [
+      "vuln"
+      "sqliad-litt-review"
+    ];
+  };
 
   common.useLatestKernel = false; # We use a kernel version that supports zfs
   servers.motd = {

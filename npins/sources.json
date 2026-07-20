@@ -13,6 +13,19 @@
       "url": "https://github.com/ryantm/agenix/archive/b027ee29d959fda4b60b57566d64c98a202e0feb.tar.gz",
       "hash": "sha256-9VnK6Oqai65puVJ4WYtCTvlJeXxMzAp/69HhQuTdl/I="
     },
+    "agent-runtime": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "gquetel",
+        "repo": "agent-runtime"
+      },
+      "branch": "main",
+      "submodules": false,
+      "revision": "eea69b3a63a5b14fe2799777f5f23ab5d65312b9",
+      "url": "https://github.com/gquetel/agent-runtime/archive/eea69b3a63a5b14fe2799777f5f23ab5d65312b9.tar.gz",
+      "hash": "sha256-D6x6NHQgWaHqTDOgFqjqYmykGWfvdl+9po/oGcLk8ME="
+    },
     "colmena": {
       "type": "GitRelease",
       "repository": {
@@ -144,19 +157,6 @@
       "revision": "61b7c44c4073f0b827768aff0049561b5110ea5a",
       "url": "https://github.com/nixos/nixpkgs/archive/61b7c44c4073f0b827768aff0049561b5110ea5a.tar.gz",
       "hash": "sha256-12KrbMiWLcf8m7pCvAtZh1ZrgF85ZXDXvfR/fWTKy84="
-    },
-    "vuln-agent-runtime": {
-      "type": "Git",
-      "repository": {
-        "type": "GitHub",
-        "owner": "gquetel",
-        "repo": "vuln-agent"
-      },
-      "branch": "main",
-      "submodules": false,
-      "revision": "fbc832a725cab797ba7832cf53242fab98d56b52",
-      "url": "https://github.com/gquetel/vuln-agent/archive/fbc832a725cab797ba7832cf53242fab98d56b52.tar.gz",
-      "hash": "sha256-NPnBJxD3RngkWm/MWz5rJSX0c79AFni45iN90iuZXWE="
     }
   },
   "version": 7

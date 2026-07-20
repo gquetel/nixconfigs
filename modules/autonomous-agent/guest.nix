@@ -1,12 +1,14 @@
-# Guest NixOS config for the vulnerability-research microVM.
+# Guest NixOS config for the autonomous agent microVM.
 {
   config,
   lib,
   pkgs,
   inputs,
-  vmName ? "vuln-agent",
+  vmName ? "autonomous-agent",
+  tapName ? "vm-agent",
   vcpu,
   mem,
+  nightlyProfile ? "vuln",
   ...
 }:
 let
@@ -16,28 +18,27 @@ let
   claude-code = llmAgents."claude-code";
   workDir = "/work";
   stateDir = "${workDir}/state";
-  secretsEnvFile = "/run/host-secrets/vuln-agent.env";
-  agentRuntime = inputs.vuln-agent-runtime;
+  secretsEnvFile = "/run/host-secrets/autonomous-agent.env";
+  agentRuntime = inputs.agent-runtime;
 
   # Some designe requirements for the agent:
   # - Run during the night during 23 and 04:00
   # - Run manual runs that run for an hour during any time of the day
   # - Precedence of manual run over nightly ones (nightly ones are trigerred after)
-
   # We prevent the nightly start if a manual is already active
-  nightlyGuard = pkgs.writeShellScript "vuln-agent-nightly-guard" ''
-    if ${pkgs.systemd}/bin/systemctl is-active --quiet vuln-agent-manual.service; then
+  nightlyGuard = pkgs.writeShellScript "autonomous-agent-nightly-guard" ''
+    if ${pkgs.systemd}/bin/systemctl is-active --quiet autonomous-agent-manual.service; then
       echo "manual session active; skipping nightly start" >&2
       exit 1
     fi
     exit 0
   '';
 
-  resumeNightly = pkgs.writeShellScript "vuln-agent-resume-nightly" ''
+  resumeNightly = pkgs.writeShellScript "autonomous-agent-resume-nightly" ''
     if [ -e "${stateDir}/stop.trigger" ]; then
       exit 0
     fi
-    ${pkgs.systemd}/bin/systemctl start --no-block vuln-agent-nightly.service
+    ${pkgs.systemd}/bin/systemctl start --no-block autonomous-agent-nightly.service
   '';
 
   mkRunner =
@@ -47,7 +48,7 @@ let
       extraServiceConfig ? { },
     }:
     {
-      description = "Autonomous vulnerability-research runner (${mode})";
+      description = "Autonomous agent runner (${mode})";
       after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
       path = with pkgs; [
@@ -69,10 +70,9 @@ let
         WorkingDirectory = workDir;
         EnvironmentFile = secretsEnvFile;
         ExecStartPre = [
-          "${pkgs.coreutils}/bin/install -m0644 ${agentRuntime}/CLAUDE.md ${workDir}/CLAUDE.md"
           "${pkgs.coreutils}/bin/install -m0600 ${agentRuntime}/claude.json ${workDir}/.claude.json"
         ];
-        ExecStart = "${pkgs.python3}/bin/python3 ${agentRuntime}/vuln_agent.py run --mode ${mode} ${runArgs}";
+        ExecStart = "${pkgs.python3}/bin/python3 ${agentRuntime}/autonomous_agent.py run --mode ${mode} ${runArgs}";
         StandardOutput = "append:${stateDir}/agent.log";
         StandardError = "inherit";
         RuntimeMaxSec = "6h";
@@ -94,7 +94,7 @@ in
     interfaces = [
       {
         type = "tap";
-        id = "vm-${vmName}";
+        id = tapName;
         mac = "02:00:00:00:aa:01";
       }
     ];
@@ -105,7 +105,7 @@ in
 
     volumes = [
       {
-        image = "/var/lib/vuln-agent/disk/root.img";
+        image = "/var/lib/autonomous-agent/disk/root.img";
         mountPoint = "/";
         label = "root";
         fsType = "ext4";
@@ -115,25 +115,25 @@ in
 
     shares = [
       {
-        source = "/var/lib/vuln-agent/nix-store";
+        source = "/var/lib/autonomous-agent/nix-store";
         mountPoint = "/nix/.rw-store";
         tag = "nix-cache";
         proto = "virtiofs";
       }
       {
-        source = "/var/lib/vuln-agent/state";
+        source = "/var/lib/autonomous-agent/state";
         mountPoint = stateDir;
         tag = "state";
         proto = "virtiofs";
       }
       {
-        source = "/var/lib/vuln-agent/secrets";
+        source = "/var/lib/autonomous-agent/secrets";
         mountPoint = "/run/host-secrets";
         tag = "secrets";
         proto = "virtiofs";
       }
       {
-        source = "/var/lib/vuln-agent/tailscale";
+        source = "/var/lib/autonomous-agent/tailscale";
         mountPoint = "/var/lib/tailscale";
         tag = "tsstate";
         proto = "virtiofs";
@@ -217,36 +217,36 @@ in
     nixos-container
   ];
 
-  systemd.services.vuln-agent-nightly = mkRunner {
+  systemd.services.autonomous-agent-nightly = mkRunner {
     mode = "nightly";
-    runArgs = "--night-start 23:00 --cutoff 04:00";
+    runArgs = "--night-start 23:00 --cutoff 04:00 --profile-file ${stateDir}/nightly.profile --default-profile ${nightlyProfile}";
     extraServiceConfig.ExecCondition = "${nightlyGuard}";
   };
-  systemd.services.vuln-agent-manual = mkRunner {
+  systemd.services.autonomous-agent-manual = mkRunner {
     mode = "manual";
-    runArgs = "--manual-min 60";
+    runArgs = "--manual-min 60 --profile-file ${stateDir}/manual.profile --default-profile ${nightlyProfile}";
     # On stop, hand the remaining night window back to nightly
     extraServiceConfig.ExecStopPost = "+${resumeNightly}";
   };
 
-  systemd.timers.vuln-agent-nightly = {
+  systemd.timers.autonomous-agent-nightly = {
     wantedBy = [ "timers.target" ];
     timerConfig = {
       OnCalendar = "*-*-* 23:00:00";
-      Unit = "vuln-agent-nightly.service";
+      Unit = "autonomous-agent-nightly.service";
       Persistent = false;
     };
   };
 
-  systemd.timers.vuln-agent-control = {
+  systemd.timers.autonomous-agent-control = {
     wantedBy = [ "timers.target" ];
     timerConfig = {
       OnBootSec = "1min";
       OnUnitActiveSec = "30s";
-      Unit = "vuln-agent-control.service";
+      Unit = "autonomous-agent-control.service";
     };
   };
-  systemd.services.vuln-agent-control = {
+  systemd.services.autonomous-agent-control = {
     description = "Poll the shared state dir for operator run/stop triggers";
     serviceConfig.Type = "oneshot";
     path = with pkgs; [
@@ -255,18 +255,20 @@ in
     ];
     script = ''
       S=${stateDir}
-      # manual request -> stage prompt, preempt nightly, start manual, consume trigger.
+      # manual request -> stage profile + prompt, preempt nightly, start manual,
+      # consume trigger. Trigger line 1 is the profile; the rest is the prompt.
       if [ -e "$S/manual.trigger" ]; then
-        if ! systemctl is-active --quiet vuln-agent-manual.service; then
-          cp -f "$S/manual.trigger" "$S/manual.prompt"
-          systemctl stop vuln-agent-nightly.service 2>/dev/null || true
-          systemctl start --no-block vuln-agent-manual.service
+        if ! systemctl is-active --quiet autonomous-agent-manual.service; then
+          head -n1 "$S/manual.trigger" > "$S/manual.profile"
+          tail -n +2 "$S/manual.trigger" > "$S/manual.prompt"
+          systemctl stop autonomous-agent-nightly.service 2>/dev/null || true
+          systemctl start --no-block autonomous-agent-manual.service
         fi
         rm -f "$S/manual.trigger"
       fi
       # stop request -> end whichever session is running.
       if [ -e "$S/stop.trigger" ]; then
-        systemctl stop vuln-agent-manual.service vuln-agent-nightly.service 2>/dev/null || true
+        systemctl stop autonomous-agent-manual.service autonomous-agent-nightly.service 2>/dev/null || true
         rm -f "$S/stop.trigger"
       fi
     '';
