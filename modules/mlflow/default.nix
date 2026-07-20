@@ -9,8 +9,22 @@
 
 let
   cfg = config.mlflow;
+  # mlflow's python set with two build fixes not yet in unstable:
+  #  - skops' card tests promote a matplotlib boxplot `vert=` deprecation
+  #    warning to an error; skip its suite (it is a transitive dep only).
+  #  - mlflow's metadata caps pandas<3, but unstable ships pandas 3; relax it.
+  # packageOverrides (+ self) so mlflow's transitive skops uses the patched one.
+  python = pkgs.unstable.python3.override {
+    self = python;
+    packageOverrides = pyfinal: pyprev: {
+      skops = pyprev.skops.overridePythonAttrs { doCheck = false; };
+      mlflow = pyprev.mlflow.overridePythonAttrs (old: {
+        pythonRelaxDeps = (old.pythonRelaxDeps or [ ]) ++ [ "pandas" ];
+      });
+    };
+  };
   # Same python package across all built packages here.
-  pyPkgs = pkgs.unstable.python3.pkgs;
+  pyPkgs = python.pkgs;
 
   mlflowOidcAuth = pyPkgs.callPackage ./oidc-auth.nix { };
 
@@ -60,7 +74,7 @@ let
   # and both ship the same `mlflow` console-script wrapper (bin/.mlflow-wrapped),
   # which collides in buildEnv.
   pythonEnv =
-    (pkgs.unstable.python3.withPackages (ps: [
+    (python.withPackages (ps: [
       pyPkgs.mlflow
       mlflowOidcAuth
       ps.boto3
@@ -71,7 +85,7 @@ let
 
   mlflowWrapper = pkgs.writeShellScriptBin "mlflow-wrapper" ''
     export PATH=${pythonEnv}/bin:$PATH
-    export PYTHONPATH="${mlflowGroupPlugin}:${pythonEnv}/${pkgs.unstable.python3.sitePackages}:$PYTHONPATH"
+    export PYTHONPATH="${mlflowGroupPlugin}:${pythonEnv}/${python.sitePackages}:$PYTHONPATH"
     export OIDC_CLIENT_SECRET="$(cat "$CREDENTIALS_DIRECTORY/oidc_secret")"
     export SECRET_KEY="$(cat "$CREDENTIALS_DIRECTORY/session_key")"
     exec mlflow server \
