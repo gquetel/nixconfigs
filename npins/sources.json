@@ -22,9 +22,9 @@
       },
       "branch": "main",
       "submodules": false,
-      "revision": "eea69b3a63a5b14fe2799777f5f23ab5d65312b9",
-      "url": "https://github.com/gquetel/agent-runtime/archive/eea69b3a63a5b14fe2799777f5f23ab5d65312b9.tar.gz",
-      "hash": "sha256-D6x6NHQgWaHqTDOgFqjqYmykGWfvdl+9po/oGcLk8ME="
+      "revision": "cef58f2b3de290ba5a1aa39b8659a0e2332b8cc4",
+      "url": "https://github.com/gquetel/agent-runtime/archive/cef58f2b3de290ba5a1aa39b8659a0e2332b8cc4.tar.gz",
+      "hash": "sha256-ktFTzvi6sqzI6XsrXDAjK/byMSfjYSojpIsOwf+Yd2U="
     },
     "colmena": {
       "type": "GitRelease",

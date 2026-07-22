@@ -226,11 +226,11 @@ in
   wg0.enable = true;
 
   autonomous-agent = {
-    enable = false;
-    nightlyProfile = "vuln";
+    enable = true;
+    nightlyProfile = "thesis-citations";
     profiles = [
       "vuln"
-      "sqliad-litt-review"
+      "thesis-citations"
     ];
   };
 

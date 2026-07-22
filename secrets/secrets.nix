@@ -49,4 +49,9 @@ in
   # Expire 15 july 2027
   "tailscale-authkey.age".publicKeys = [ system-vapula ] ++ users;
 
+  # Zotero Web API key, read-only, for the thesis-citations agent profile.
+  "zotero-agent.env.age".publicKeys = [ system-vapula ] ++ users;
+  # GitLab deploy token (read_repository only) for cloning quetel_phd_latex.
+  "thesis-repo-token.env.age".publicKeys = [ system-vapula ] ++ users;
+
 }

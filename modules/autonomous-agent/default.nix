@@ -172,10 +172,12 @@ in
       script = ''
         set -eu
         umask 077
-        # Runner env: Claude OAuth + Plane only.
+        # Runner env: Claude OAuth + Plane + Zotero (read-only) + thesis repo deploy token.
         {
           printf 'CLAUDE_CODE_OAUTH_TOKEN=%s\n' "$(cat ${config.age.secrets.claude-oauth-token.path})"
           cat ${config.age.secrets."plane-agent.env".path}
+          cat ${config.age.secrets."zotero-agent.env".path}
+          cat ${config.age.secrets."thesis-repo-token.env".path}
         } > /var/lib/autonomous-agent/secrets/autonomous-agent.env
         # Bare Tailscale authkey file.
         cat ${config.age.secrets.tailscale-authkey.path} > /var/lib/autonomous-agent/secrets/tailscale.authkey
@@ -278,5 +280,7 @@ in
     age.secrets.claude-oauth-token.file = ../../secrets/claude-oauth-token.age;
     age.secrets."plane-agent.env".file = ../../secrets/plane-agent.env.age;
     age.secrets.tailscale-authkey.file = ../../secrets/tailscale-authkey.age;
+    age.secrets."zotero-agent.env".file = ../../secrets/zotero-agent.env.age;
+    age.secrets."thesis-repo-token.env".file = ../../secrets/thesis-repo-token.env.age;
   };
 }
