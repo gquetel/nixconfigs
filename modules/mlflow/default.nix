@@ -9,21 +9,8 @@
 
 let
   cfg = config.mlflow;
-  # mlflow's python set with two build fixes not yet in unstable:
-  #  - skops' card tests promote a matplotlib boxplot `vert=` deprecation
-  #    warning to an error; skip its suite (it is a transitive dep only).
-  #  - mlflow's metadata caps pandas<3, but unstable ships pandas 3; relax it.
-  # packageOverrides (+ self) so mlflow's transitive skops uses the patched one.
-  python = pkgs.unstable.python3.override {
-    self = python;
-    packageOverrides = pyfinal: pyprev: {
-      skops = pyprev.skops.overridePythonAttrs { doCheck = false; };
-      mlflow = pyprev.mlflow.overridePythonAttrs (old: {
-        pythonRelaxDeps = (old.pythonRelaxDeps or [ ]) ++ [ "pandas" ];
-      });
-    };
-  };
   # Same python package across all built packages here.
+  python = pkgs.unstable.python3;
   pyPkgs = python.pkgs;
 
   mlflowOidcAuth = pyPkgs.callPackage ./oidc-auth.nix { };
