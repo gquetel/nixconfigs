@@ -226,7 +226,7 @@ in
   wg0.enable = true;
 
   autonomous-agent = {
-    enable = true;
+    enable = false;
     nightlyProfile = "thesis-citations";
     profiles = [
       "vuln"

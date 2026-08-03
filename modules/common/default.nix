@@ -52,11 +52,6 @@ in
       clock24 = true;
     };
 
-    # Temporary: pin nix to a specific nixpkgs commit that includes the 2.31.4 security fix.
-    # https://github.com/NixOS/nixpkgs/pull/507730
-    # Remove once nixos-25.11 or unstable picks it up.
-    # nix.package = (import inputs.nixpkgs-nix-fix { }).nix;
-
     # Enable both flakes and nix-command
     nix.settings = {
       experimental-features = [

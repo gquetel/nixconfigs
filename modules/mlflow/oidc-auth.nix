@@ -30,19 +30,24 @@ buildPythonPackage rec {
 
   build-system = [ setuptools ];
 
+  # __init__.py reads the version from this env var, else falls back to a
+  # dev0 placeholder that fails nixpkgs' metadata-version check.
+  env.MLFLOW_OIDC_AUTH_VERSION = version;
+
   # mlflow and mlflow-skinny are provided by the surrounding python env.
   pythonRemoveDeps = [
     "mlflow"
     "mlflow-skinny"
   ];
 
-  # The pinned unstable nixpkgs ships slightly older patch versions than
+  # The pinned unstable nixpkgs ships slightly older or newer versions than
   # what pyproject.toml declares; packages are compatible at runtime.
   pythonRelaxDeps = [
     "sqlalchemy"
     "uvicorn"
     "fastapi"
     "asgiref"
+    "gunicorn"
   ];
 
   dependencies = [
