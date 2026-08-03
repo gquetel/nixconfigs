@@ -2,9 +2,15 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 
+let
+  llmAgents = pkgs.callPackage ../../packages/llm-agents {
+    inherit inputs;
+  };
+in
 {
   imports = [
     # Include the results of the hardware scan.
@@ -44,6 +50,10 @@
     extraGroups = [
       "wheel"
       "nginx"
+    ];
+    packages = [
+      llmAgents."claude-code"
+      llmAgents.codex
     ];
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICK/iZJoWOdOasaD28jedexzjVc4tHosDTEYFIG/i9Fc gquetel@scylla"
