@@ -132,19 +132,6 @@
       "url": "https://releases.nixos.org/nixos/26.05/nixos-26.05.6503.21ea275a7c46/nixexprs.tar.xz",
       "hash": "sha256-xQPrEWR75P2lZ/p9pAzIeMd4PtkckDLj6ojo+tWjZQw="
     },
-    "nixpkgs-nix-fix": {
-      "type": "Git",
-      "repository": {
-        "type": "GitHub",
-        "owner": "nixos",
-        "repo": "nixpkgs"
-      },
-      "branch": "nixos-unstable",
-      "submodules": false,
-      "revision": "1559d3daa3ecc813a650b79375ea61b6741b8746",
-      "url": "https://github.com/nixos/nixpkgs/archive/1559d3daa3ecc813a650b79375ea61b6741b8746.tar.gz",
-      "hash": "sha256-LQy14TZp77TwbQf40gg1V3jo8FwJG0jGDkAH+zRHqg8="
-    },
     "unstable": {
       "type": "Git",
       "repository": {
