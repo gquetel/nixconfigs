@@ -49,6 +49,16 @@ in
   # Expire 15 july 2027
   "tailscale-authkey.age".publicKeys = [ system-vapula ] ++ users;
 
+  # Dex client secret for vibe-kanban's oauth2-proxy. Needed on strix (dex)
+  # and vapula (oauth2-proxy).
+  "dex-vibe-kanban-secret.age".publicKeys = [
+    system-strix
+    system-vapula
+  ]
+  ++ users;
+  # Seed for oauth2-proxy's vibe-kanban session cookies.
+  "vibe-kanban-cookie-secret.age".publicKeys = [ system-vapula ] ++ users;
+
   # Zotero Web API key, read-only, for the thesis-citations agent profile.
   "zotero-agent.env.age".publicKeys = [ system-vapula ] ++ users;
   # GitLab deploy token (read_repository only) for cloning quetel_phd_latex.

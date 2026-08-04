@@ -30,6 +30,7 @@ in
     ../../modules/prometheus-exporters
     ../../modules/wireguard-client
     ../../modules/autonomous-agent
+    ../../modules/vibe-kanban
 
     # ../../modules/systemd-resolved
     "${(import ../../npins).agenix}/modules/age.nix"
@@ -233,6 +234,8 @@ in
       "thesis-citations"
     ];
   };
+
+  vibe-kanban.enable = true;
 
   common.useLatestKernel = false; # We use a kernel version that supports zfs
   servers.motd = {

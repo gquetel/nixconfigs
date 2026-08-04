@@ -9,4 +9,5 @@ in
 {
   "claude-code" = llmAgents.packages.${system}."claude-code";
   codex = llmAgents.packages.${system}.codex;
+  "vibe-kanban" = llmAgents.packages.${system}."vibe-kanban";
 }

@@ -93,6 +93,13 @@ in
           redirectURIs = [ "https://mlflow.mesh.gq/callback" ];
           secretFile = config.age.secrets.dex-mlflow-secret.path;
         }
+        {
+          id = "vibe-kanban";
+          name = "vibe-kanban Client";
+          # Consumed by the oauth2-proxy fronting vibe-kanban on vapula.
+          redirectURIs = [ "https://kanban.mesh.gq/oauth2/callback" ];
+          secretFile = config.age.secrets.dex-vibe-kanban-secret.path;
+        }
       ];
       staticPasswords = [
         {
@@ -144,5 +151,7 @@ in
     owner = "outline";
     group = "outline";
   };
+  
+  age.secrets.dex-vibe-kanban-secret.file = ../../secrets/dex-vibe-kanban-secret.age;
 
 }
