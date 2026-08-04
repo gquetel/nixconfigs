@@ -58,10 +58,6 @@ in
   ++ users;
   # Seed for oauth2-proxy's OpenHands session cookies.
   "openhands-cookie-secret.age".publicKeys = [ system-vapula ] ++ users;
-
-  # Zotero Web API key, read-only, for the thesis-citations agent profile.
-  "zotero-agent.env.age".publicKeys = [ system-vapula ] ++ users;
-  # GitLab deploy token (read_repository only) for cloning quetel_phd_latex.
-  "thesis-repo-token.env.age".publicKeys = [ system-vapula ] ++ users;
-
+  # Plane API token for OpenHands.
+  "plane-openhands.env.age".publicKeys = [ system-vapula ] ++ users;
 }

@@ -2,6 +2,7 @@
   lib,
   config,
   pkgs,
+  inputs,
   ...
 }:
 # OpenHands Agent Canvas, following upstream's SELF_HOSTING.md.
@@ -15,27 +16,42 @@ let
 
   agent-canvas = pkgs.callPackage ../../packages/openhands-agent-canvas { };
 
+  llmAgents = pkgs.callPackage ../../packages/llm-agents {
+    inherit inputs;
+  };
+
   userCfg = config.users.users.${cfg.user};
   homeDir = userCfg.home;
 
   # PATH for the launcher and every command the agent runs.
-  runtimePath = with pkgs; [
-    git
-    gh
-    openssh
-    bash
-    coreutils
-    findutils
-    gnugrep
-    gnused
-    gnutar
-    gzip
-    curl
-    jq
-    ripgrep
-    nodejs
-    python3
-  ];
+  runtimePath =
+    (with pkgs; [
+      git
+      gh
+      openssh
+      bash
+      coreutils
+      findutils
+      gnugrep
+      gnused
+      gnutar
+      gzip
+      curl
+      jq
+      ripgrep
+      nodejs
+      python3
+      uv
+    ])
+    ++ [
+      # The Claude Code and Codex presets launch their ACP server as
+      # `npx -y @agentclientprotocol/<pkg>`, which downloads a dynamically linked
+      # binary that cannot run here. The agent-server rewrites that command to the
+      # provider's binary name whenever it resolves on PATH, so shipping these two
+      # keeps the built-in presets working without touching their settings.
+      llmAgents."claude-agent-acp"
+      llmAgents."codex-acp"
+    ];
 
   tailnetOnly = ''
     allow 100.64.0.0/10;
@@ -124,6 +140,9 @@ in
         # encryption key, conversations and the automation database.
         HOME = homeDir;
         SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
+        # UV is required if we want to connect to plane.
+        UV_PYTHON_DOWNLOADS = "never";
+        UV_PYTHON = lib.getExe pkgs.python3;
       };
 
       serviceConfig = {
@@ -131,6 +150,11 @@ in
         # on first start, at the versions pinned by the npm package, and caches
         # them under $HOME/.cache/uv.
         ExecStart = "${lib.getExe agent-canvas} --port ${toString cfg.port}";
+        # PLANE_API_KEY, PLANE_BASE_URL and PLANE_WORKSPACE_SLUG for the Plane
+        # MCP server. systemd reads the file as root, before dropping to
+        # cfg.user, so the credentials reach the environment without the
+        # service user ever being able to read the file.
+        EnvironmentFile = config.age.secrets."plane-openhands.env".path;
         User = cfg.user;
         Group = userCfg.group;
         WorkingDirectory = homeDir;
@@ -191,6 +215,7 @@ in
 
     age.secrets.dex-openhands-secret.file = ../../secrets/dex-openhands-secret.age;
     age.secrets.openhands-cookie-secret.file = ../../secrets/openhands-cookie-secret.age;
+    age.secrets."plane-openhands.env".file = ../../secrets/plane-openhands.env.age;
 
     services.nginx.virtualHosts.${cfg.host} = {
       forceSSL = true;
