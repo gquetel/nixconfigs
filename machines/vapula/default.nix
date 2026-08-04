@@ -29,7 +29,6 @@ in
     ../../modules/servers
     ../../modules/prometheus-exporters
     ../../modules/wireguard-client
-    ../../modules/autonomous-agent
     ../../modules/openhands
 
     # ../../modules/systemd-resolved
@@ -225,15 +224,6 @@ in
 
   # ---------------- Modules ----------------
   wg0.enable = true;
-
-  autonomous-agent = {
-    enable = false;
-    nightlyProfile = "thesis-citations";
-    profiles = [
-      "vuln"
-      "thesis-citations"
-    ];
-  };
 
   openhands.enable = true;
 

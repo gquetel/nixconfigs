@@ -13,19 +13,6 @@
       "url": "https://github.com/ryantm/agenix/archive/b027ee29d959fda4b60b57566d64c98a202e0feb.tar.gz",
       "hash": "sha256-9VnK6Oqai65puVJ4WYtCTvlJeXxMzAp/69HhQuTdl/I="
     },
-    "agent-runtime": {
-      "type": "Git",
-      "repository": {
-        "type": "GitHub",
-        "owner": "gquetel",
-        "repo": "agent-runtime"
-      },
-      "branch": "main",
-      "submodules": false,
-      "revision": "02a077787b9bde505349199bbb766bbe9f7101ed",
-      "url": "https://github.com/gquetel/agent-runtime/archive/02a077787b9bde505349199bbb766bbe9f7101ed.tar.gz",
-      "hash": "sha256-6Bty9JLB2X3lAmcxaH3Zk/s6PmTo7k5g18cL5m74lv8="
-    },
     "colmena": {
       "type": "GitRelease",
       "repository": {
@@ -83,19 +70,6 @@
       "revision": "a6dcbf72f6d61519cc12858176f0fdd189853b28",
       "url": "https://github.com/numtide/llm-agents.nix/archive/a6dcbf72f6d61519cc12858176f0fdd189853b28.tar.gz",
       "hash": "sha256-ujzuafv52VH5LJkMINYcpjWG7xpMVHTZwwdiisJhZGY="
-    },
-    "microvm.nix": {
-      "type": "Git",
-      "repository": {
-        "type": "GitHub",
-        "owner": "astro",
-        "repo": "microvm.nix"
-      },
-      "branch": "main",
-      "submodules": false,
-      "revision": "06544a68599a0e0721760af442000204e57e3937",
-      "url": "https://github.com/astro/microvm.nix/archive/06544a68599a0e0721760af442000204e57e3937.tar.gz",
-      "hash": "sha256-d/AR1r5guAk52ZWM0sAd3O8Fd2jQbyGwxU+e6flTiUk="
     },
     "nix-topology": {
       "type": "Git",
