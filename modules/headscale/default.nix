@@ -83,7 +83,7 @@
           }
 
           {
-            name = nodes.vapula.config.vibe-kanban.host;
+            name = nodes.vapula.config.openhands.host;
             type = "A";
             value = nodes.vapula.config.machine.meta.ipTailscale;
           }

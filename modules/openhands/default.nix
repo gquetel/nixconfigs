@@ -2,48 +2,24 @@
   lib,
   config,
   pkgs,
-  inputs,
   ...
 }:
-# The binary has no auth and no CSRF protection, so reaching it means code
-# execution as the service user. nginx (tailnet-only) + oauth2-proxy (dex)
-# gate access before the loopback port.
-
+# OpenHands Agent Canvas, following upstream's SELF_HOSTING.md.
+#
+# The agent reads and writes the filesystem, runs shell commands and reaches
+# the network as the service user, so reaching the UI means code execution as
+# that user. nginx (tailnet-only) + oauth2-proxy (dex) gate access before the
+# loopback ingress port.
 let
-  cfg = config.vibe-kanban;
-  llmAgents = pkgs.callPackage ../../packages/llm-agents {
-    inherit inputs;
-  };
-  vibe-kanban = llmAgents."vibe-kanban";
-  claude-code = llmAgents."claude-code";
-  codex = llmAgents.codex;
+  cfg = config.openhands;
+
+  agent-canvas = pkgs.callPackage ../../packages/openhands-agent-canvas { };
 
   userCfg = config.users.users.${cfg.user};
   homeDir = userCfg.home;
-  dataDir = "${homeDir}/.local/share/vibe-kanban";
 
-  # Overrides merged over crates/executors/default_profiles.json, else
-  # CLAUDE_CODE/CODEX shell out to `npx` instead of the Nix packages.
-  # merge_with_defaults replaces a variant wholesale, so defaults are repeated.
-  defaultProfiles = pkgs.writeText "vibe-kanban-profiles.json" (
-    builtins.toJSON {
-      executors = {
-        CLAUDE_CODE.DEFAULT.CLAUDE_CODE = {
-          dangerously_skip_permissions = true;
-          base_command_override = lib.getExe claude-code;
-        };
-        CODEX.DEFAULT.CODEX = {
-          sandbox = "danger-full-access";
-          base_command_override = lib.getExe codex;
-        };
-      };
-    }
-  );
-
-  # PATH for the server and every agent it spawns.
+  # PATH for the launcher and every command the agent runs.
   runtimePath = with pkgs; [
-    claude-code
-    codex
     git
     gh
     openssh
@@ -61,28 +37,6 @@ let
     python3
   ];
 
-  preStart = pkgs.writeShellScript "vibe-kanban-pre-start" ''
-    install -d -m0700 ${dataDir}
-
-    # Seeded once so the executor overrides can still be edited from the UI.
-    if [ ! -e ${dataDir}/profiles.json ]; then
-      install -m0600 ${defaultProfiles} ${dataDir}/profiles.json
-    fi
-
-    # Server defaults both to true in config.json. Both are no-ops now (no
-    # PostHog key / relay base in this build) — set false against a later version.
-    if [ -e ${dataDir}/config.json ]; then
-      ${pkgs.jq}/bin/jq '.relay_enabled = false | .analytics_enabled = false' \
-        ${dataDir}/config.json > ${dataDir}/config.json.new \
-        && mv ${dataDir}/config.json.new ${dataDir}/config.json
-    fi
-  '';
-
-  startScript = pkgs.writeShellScript "vibe-kanban-start" ''
-    export CLAUDE_CODE_OAUTH_TOKEN="$(cat "$CREDENTIALS_DIRECTORY/claude-token")"
-    exec ${lib.getExe vibe-kanban}
-  '';
-
   tailnetOnly = ''
     allow 100.64.0.0/10;
     allow fd7a:115c:a1e0::/48;
@@ -90,37 +44,53 @@ let
   '';
 in
 {
-  options.vibe-kanban = with lib; {
-    enable = mkEnableOption "vibe-kanban server";
+  options.openhands = with lib; {
+    enable = mkEnableOption "OpenHands Agent Canvas";
 
     user = mkOption {
       type = types.str;
       default = "gquetel";
       description = ''
-        Login user the server and its agents run as. Reaching the server is
-        a shell as this user; the tailnet ACL and oauth2-proxy limit that.
+        Login user the stack and its agents run as. Reaching the ingress is a
+        shell as this user; the tailnet ACL and oauth2-proxy limit that.
       '';
     };
 
     host = mkOption {
       type = types.str;
-      default = "kanban.mesh.gq";
+      default = "canvas.mesh.gq";
       description = "Tailnet-internal hostname serving the UI.";
     };
 
     port = mkOption {
       type = types.port;
       default = 9910;
-      description = "Loopback port for the vibe-kanban API and UI.";
+      description = ''
+        Loopback port of the ingress proxy, the only one nginx talks to. It
+        routes /api/* and /sockets to the backends and everything else to the
+        frontend.
+      '';
     };
 
-    previewProxyPort = mkOption {
+    backendPort = mkOption {
       type = types.port;
-      default = 9911;
+      default = 9913;
       description = ''
-        Loopback port for the preview proxy fronting agent dev servers.
-        Pinned instead of the default 0 (random port); not exposed through nginx.
+        Loopback port for the agent server. Its VSCode service claims this
+        port plus 1000.
       '';
+    };
+
+    automationPort = mkOption {
+      type = types.port;
+      default = 9914;
+      description = "Loopback port for the automation backend.";
+    };
+
+    staticPort = mkOption {
+      type = types.port;
+      default = 9915;
+      description = "Loopback port serving the pre-built frontend assets.";
     };
 
     authPort = mkOption {
@@ -138,37 +108,36 @@ in
 
   config = lib.mkIf cfg.enable {
 
-    systemd.services.vibe-kanban = {
-      description = "vibe-kanban server";
+    systemd.services.openhands = {
+      description = "OpenHands Agent Canvas";
       after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
       wantedBy = [ "multi-user.target" ];
       path = runtimePath;
 
       environment = {
-        HOST = "127.0.0.1";
-        BACKEND_PORT = toString cfg.port;
-        PREVIEW_PROXY_PORT = toString cfg.previewProxyPort;
-        # Needed for XDG dir resolution. Left at default so state matches
-        # an interactive run.
+        # Every service binds loopback; only the ingress port is fronted.
+        OH_CANVAS_SAFE_BACKEND_PORT = toString cfg.backendPort;
+        OH_CANVAS_SAFE_AUTOMATION_PORT = toString cfg.automationPort;
+        OH_CANVAS_SAFE_VITE_PORT = toString cfg.staticPort;
+        # State lives under $HOME/.openhands: the session API key, the settings
+        # encryption key, conversations and the automation database.
         HOME = homeDir;
-        RUST_LOG = "info";
         SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
       };
 
       serviceConfig = {
-        ExecStartPre = preStart;
-        ExecStart = startScript;
+        # uvx fetches the Python halves of the stack (agent server, automation)
+        # on first start, at the versions pinned by the npm package, and caches
+        # them under $HOME/.cache/uv.
+        ExecStart = "${lib.getExe agent-canvas} --port ${toString cfg.port}";
         User = cfg.user;
         Group = userCfg.group;
         WorkingDirectory = homeDir;
         Restart = "on-failure";
         RestartSec = "30";
-        LoadCredential = [
-          "claude-token:${config.age.secrets.vibe-kanban-claude-token.path}"
-        ];
 
-        # Hardening. 
+        # Hardening.
         NoNewPrivileges = true;
         RestrictSUIDSGID = true;
         LockPersonality = true;
@@ -196,8 +165,8 @@ in
       enable = true;
       provider = "oidc";
       oidcIssuerUrl = "https://dex.mesh.gq";
-      clientID = "vibe-kanban";
-      clientSecretFile = config.age.secrets.dex-vibe-kanban-secret.path;
+      clientID = "openhands";
+      clientSecretFile = config.age.secrets.dex-openhands-secret.path;
       scope = "openid email profile";
       redirectURL = "https://${cfg.host}/oauth2/callback";
       httpAddress = "http://127.0.0.1:${toString cfg.authPort}";
@@ -211,7 +180,7 @@ in
       ];
       cookie = {
         secure = true;
-        secretFile = config.age.secrets.vibe-kanban-cookie-secret.path;
+        secretFile = config.age.secrets.openhands-cookie-secret.path;
       };
       extraConfig = {
         skip-provider-button = true;
@@ -220,9 +189,8 @@ in
       };
     };
 
-    age.secrets.vibe-kanban-claude-token.file = ../../secrets/claude-oauth-token.age;
-    age.secrets.dex-vibe-kanban-secret.file = ../../secrets/dex-vibe-kanban-secret.age;
-    age.secrets.vibe-kanban-cookie-secret.file = ../../secrets/vibe-kanban-cookie-secret.age;
+    age.secrets.dex-openhands-secret.file = ../../secrets/dex-openhands-secret.age;
+    age.secrets.openhands-cookie-secret.file = ../../secrets/openhands-cookie-secret.age;
 
     services.nginx.virtualHosts.${cfg.host} = {
       forceSSL = true;
@@ -240,7 +208,7 @@ in
       ];
       locations."/" = {
         proxyPass = "http://127.0.0.1:${toString cfg.authPort}";
-        # Task output and diffs stream over websockets and SSE.
+        # Agent events stream over websockets.
         proxyWebsockets = true;
         extraConfig = tailnetOnly + ''
           proxy_buffering off;

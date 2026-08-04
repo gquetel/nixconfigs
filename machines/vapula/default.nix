@@ -30,7 +30,7 @@ in
     ../../modules/prometheus-exporters
     ../../modules/wireguard-client
     ../../modules/autonomous-agent
-    ../../modules/vibe-kanban
+    ../../modules/openhands
 
     # ../../modules/systemd-resolved
     "${(import ../../npins).agenix}/modules/age.nix"
@@ -235,7 +235,7 @@ in
     ];
   };
 
-  vibe-kanban.enable = true;
+  openhands.enable = true;
 
   common.useLatestKernel = false; # We use a kernel version that supports zfs
   servers.motd = {

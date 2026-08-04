@@ -32,11 +32,11 @@ in
           secretFile = config.age.secrets.dex-mlflow-secret.path;
         }
         {
-          id = "vibe-kanban";
-          name = "vibe-kanban Client";
-          # Consumed by the oauth2-proxy fronting vibe-kanban on vapula.
-          redirectURIs = [ "https://kanban.mesh.gq/oauth2/callback" ];
-          secretFile = config.age.secrets.dex-vibe-kanban-secret.path;
+          id = "openhands";
+          name = "OpenHands Client";
+          # Consumed by the oauth2-proxy fronting Agent Canvas on vapula.
+          redirectURIs = [ "https://canvas.mesh.gq/oauth2/callback" ];
+          secretFile = config.age.secrets.dex-openhands-secret.path;
         }
       ];
       staticPasswords = [
@@ -83,7 +83,7 @@ in
   };
   security.acme.certs."dex.mesh.gq".server = "https://ca.mesh.gq/acme/acme/directory";
 
-  # vibe-kanban runs on vapula, not strix, so its module (which normally owns
+  # OpenHands runs on vapula, not strix, so its module (which normally owns
   # this secret) is never imported here to provide it.
-  age.secrets.dex-vibe-kanban-secret.file = ../../secrets/dex-vibe-kanban-secret.age;
+  age.secrets.dex-openhands-secret.file = ../../secrets/dex-openhands-secret.age;
 }
