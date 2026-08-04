@@ -22,6 +22,7 @@ in
     ../../modules/fail2ban
     # ../../modules/systemd-resolved
     ../../modules/gitlab-runner
+    ../../modules/dex
     ../../modules/outline
     ../../modules/servers
     ../../modules/plausible
