@@ -83,7 +83,7 @@
           }
 
           {
-            name = nodes.vapula.config.openhands.host;
+            name = nodes.vapula.config.hermes.host;
             type = "A";
             value = nodes.vapula.config.machine.meta.ipTailscale;
           }

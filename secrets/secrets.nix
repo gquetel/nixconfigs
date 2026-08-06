@@ -25,7 +25,6 @@ in
   # Secrets for strix machine
   "gquetel-strix.age".publicKeys = [ system-strix ] ++ users;
   "thesis-artefacts.age".publicKeys = [ system-strix ] ++ users;
-  "temporary.age".publicKeys = [ system-strix ] ++ users;
   "gitlab-runner.env.age".publicKeys = [ system-strix ] ++ users;
   "dex-outline-secret.age".publicKeys = [ system-strix ] ++ users;
   "dex-mlflow-secret.age".publicKeys = [ system-strix ] ++ users;
@@ -42,15 +41,18 @@ in
   # private key can be decrypted using agenix -d wireguard-pvkey.age
   "wireguard-pvkey.age".publicKeys = [ system-vapula ] ++ users;
 
-  # Dex client secret for OpenHands' oauth2-proxy. Needed on strix (dex)
+  # Dex client secret for Hermes' oauth2-proxy. Needed on strix (dex)
   # and vapula (oauth2-proxy).
-  "dex-openhands-secret.age".publicKeys = [
+  "dex-hermes-secret.age".publicKeys = [
     system-strix
     system-vapula
   ]
   ++ users;
-  # Seed for oauth2-proxy's OpenHands session cookies.
-  "openhands-cookie-secret.age".publicKeys = [ system-vapula ] ++ users;
-  # Plane API token for OpenHands.
-  "plane-openhands.env.age".publicKeys = [ system-vapula ] ++ users;
+  # Seed for oauth2-proxy's Hermes session cookies.
+  "hermes-cookie-secret.age".publicKeys = [ system-vapula ] ++ users;
+  # Phone number for Hermes' Signal channel (signal-cli daemon + SIGNAL_ACCOUNT).
+  "hermes-signal-account.age".publicKeys = [ system-vapula ] ++ users;
+  # Hermes model provider credentials (EnvironmentFile: OPENAI_API_KEY,
+  # ANTHROPIC_API_KEY, …), one KEY=VALUE line per provider.
+  "hermes-provider-keys.age".publicKeys = [ system-vapula ] ++ users;
 }

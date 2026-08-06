@@ -151,13 +151,6 @@ in
     group = "nginx";
   };
 
-  age.secrets.tmp = {
-    file = ../../secrets/temporary.age;
-    mode = "770";
-    owner = "nginx";
-    group = "nginx";
-  };
-
   # ----------------- Drivers -----------------
 
   environment.systemPackages = with pkgs; [
@@ -290,36 +283,6 @@ in
       }
     ];
     root = "/var/www/html/gquetel.fr";
-  };
-
-  services.nginx.virtualHosts."temporary.gquetel.fr" = {
-    forceSSL = true;
-    enableACME = true;
-    listen = [
-      {
-        addr = "[::]";
-        port = 444;
-        ssl = true;
-        proxyProtocol = true;
-      }
-      {
-        addr = "[::]";
-        port = 443;
-        ssl = true;
-      }
-      {
-        addr = "0.0.0.0";
-        port = 80;
-      }
-    ];
-    root = "/var/www/tmp";
-    locations."/" = {
-      extraConfig = ''
-        auth_basic "Fichiers temporaires personels";
-        auth_basic_user_file ${config.age.secrets.tmp.path} ;
-        autoindex on;
-      '';
-    };
   };
 
   # VHost on which pdf artefacts are hosted.

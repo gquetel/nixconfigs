@@ -32,11 +32,11 @@ in
           secretFile = config.age.secrets.dex-mlflow-secret.path;
         }
         {
-          id = "openhands";
-          name = "OpenHands Client";
-          # Consumed by the oauth2-proxy fronting Agent Canvas on vapula.
-          redirectURIs = [ "https://canvas.mesh.gq/oauth2/callback" ];
-          secretFile = config.age.secrets.dex-openhands-secret.path;
+          id = "hermes";
+          name = "Hermes Client";
+          # Consumed by the oauth2-proxy fronting the Hermes dashboard on vapula.
+          redirectURIs = [ "https://hermes.mesh.gq/oauth2/callback" ];
+          secretFile = config.age.secrets.dex-hermes-secret.path;
         }
       ];
       staticPasswords = [
@@ -83,7 +83,7 @@ in
   };
   security.acme.certs."dex.mesh.gq".server = "https://ca.mesh.gq/acme/acme/directory";
 
-  # OpenHands runs on vapula, not strix, so its module (which normally owns
-  # this secret) is never imported here to provide it.
-  age.secrets.dex-openhands-secret.file = ../../secrets/dex-openhands-secret.age;
+  # Hermes runs on vapula, not strix, so its module (which normally owns this
+  # secret) is never imported here to provide it.
+  age.secrets.dex-hermes-secret.file = ../../secrets/dex-hermes-secret.age;
 }
