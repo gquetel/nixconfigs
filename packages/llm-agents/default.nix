@@ -20,6 +20,11 @@ in
   "hermes-agent" = llmAgents.packages.${system}."hermes-agent".overrideAttrs (old: {
     postInstall = old.postInstall + ''
       cp -r ${old.src}/plugins $out/share/hermes/plugins
+
+      # See daemon-pool-compat.py: upstream's thread pool is broken on 3.14.
+      pool=$(echo "$out"/lib/python*/site-packages/tools/daemon_pool.py)
+      test -f "$pool" || { echo "daemon_pool.py not found; drop this patch"; exit 1; }
+      cat ${./daemon-pool-compat.py} >> "$pool"
     '';
 
     makeWrapperArgs = old.makeWrapperArgs ++ [

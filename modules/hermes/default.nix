@@ -117,14 +117,8 @@ in
     };
 
     # The phone number is PII, so it lives in secrets/hermes-signal-account.age
-    # rather than in an option.
-    #
-    # It must be registered or linked once by hand before first start; the
-    # daemon exits with "not registered" otherwise. Run signal-cli's `link`
-    # from a transient unit sharing StateDirectory=signal-cli, so the state
-    # lands under the same dynamic user:
-    #   systemd-run --pty -p DynamicUser=yes -p StateDirectory=signal-cli \
-    #     signal-cli --config /var/lib/signal-cli link -n <device-name>
+    # rather than in an option. It must be registered or linked once by hand before
+    # first start.
     signal = {
       enable = mkEnableOption "the Signal channel, backed by a local signal-cli daemon";
 
@@ -183,6 +177,9 @@ in
         WorkingDirectory = homeDir;
         Restart = "on-failure";
         RestartSec = "30";
+        # Agent sessions can ignore SIGTERM while a tool call is in flight;
+        # kill them well before systemd's 90s default so restarts stay quick.
+        TimeoutStopSec = "25";
 
         # Hardening.
         NoNewPrivileges = true;
