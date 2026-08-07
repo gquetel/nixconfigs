@@ -55,4 +55,7 @@ in
   # Hermes model provider credentials (EnvironmentFile: OPENAI_API_KEY,
   # ANTHROPIC_API_KEY, …), one KEY=VALUE line per provider.
   "hermes-provider-keys.age".publicKeys = [ system-vapula ] ++ users;
+  # Hermes' Plane credentials (EnvironmentFile), one KEY=VALUE line each. The
+  # API token is issued from the Plane UI and scoped to the issuing account.
+  "hermes-plane-token.age".publicKeys = [ system-vapula ] ++ users;
 }

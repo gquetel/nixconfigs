@@ -53,13 +53,26 @@ let
     deny all;
   '';
 
+  # Every KEY=VALUE file the agent's environment is built from.
+  envFiles =
+    lib.optional (cfg.environmentFile != null) cfg.environmentFile
+    ++ lib.optional cfg.plane.enable config.age.secrets.hermes-plane-token.path;
+
+  # Upstream bug, if not started on default profile, hermes re-exec itself without 
+  # the proper context / dependencies (leading to ModuleNotFound). We start using default 
+  # to avoid this.
+  dashboardArgs = [
+    "-p default"
+    "dashboard"
+    "--host 127.0.0.1"
+    "--port ${toString cfg.port}"
+    "--no-open"
+    "--skip-build"
+  ];
+
   hermesWrapper = pkgs.writeShellScriptBin "hermes-wrapper" ''
     export SIGNAL_ACCOUNT="$(cat "$CREDENTIALS_DIRECTORY/signal_account")"
-    exec ${lib.getExe hermes} dashboard \
-      --host 127.0.0.1 \
-      --port ${toString cfg.port} \
-      --no-open \
-      --skip-build
+    exec ${lib.getExe hermes} ${lib.concatStringsSep " " dashboardArgs}
   '';
 
   signalCliWrapper = pkgs.writeShellScriptBin "signal-cli-wrapper" ''
@@ -116,6 +129,11 @@ in
       '';
     };
 
+    plane.enable = mkEnableOption ''
+      secrets/hermes-plane-token.age as an extra EnvironmentFile, holding the
+      Plane API token and whatever else the agent needs to reach the instance
+    '';
+
     # The phone number is PII, so it lives in secrets/hermes-signal-account.age
     # rather than in an option.
     #
@@ -165,19 +183,11 @@ in
       };
 
       serviceConfig = {
-        # --skip-build: the frontend is already built in the package.
         ExecStart =
           if cfg.signal.enable then
             lib.getExe hermesWrapper
           else
-            lib.concatStringsSep " " [
-              (lib.getExe hermes)
-              "dashboard"
-              "--host 127.0.0.1"
-              "--port ${toString cfg.port}"
-              "--no-open"
-              "--skip-build"
-            ];
+            lib.concatStringsSep " " ([ (lib.getExe hermes) ] ++ dashboardArgs);
         User = cfg.user;
         Group = userCfg.group;
         WorkingDirectory = homeDir;
@@ -201,8 +211,8 @@ in
         SystemCallArchitectures = "native";
         CapabilityBoundingSet = "";
       }
-      // lib.optionalAttrs (cfg.environmentFile != null) {
-        EnvironmentFile = cfg.environmentFile;
+      // lib.optionalAttrs (envFiles != [ ]) {
+        EnvironmentFile = envFiles;
       }
       // lib.optionalAttrs cfg.signal.enable {
         LoadCredential = "signal_account:${config.age.secrets.hermes-signal-account.path}";
@@ -283,6 +293,10 @@ in
 
     age.secrets.hermes-signal-account = lib.mkIf cfg.signal.enable {
       file = ../../secrets/hermes-signal-account.age;
+    };
+
+    age.secrets.hermes-plane-token = lib.mkIf cfg.plane.enable {
+      file = ../../secrets/hermes-plane-token.age;
     };
 
     services.nginx.virtualHosts.${cfg.host} = {

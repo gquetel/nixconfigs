@@ -226,7 +226,8 @@ in
   wg0.enable = true;
 
   hermes.enable = true;
-  hermes.signal.enable = true;
+  hermes.signal.enable = false;
+  hermes.plane.enable = true;
 
   common.useLatestKernel = false; # We use a kernel version that supports zfs
   servers.motd = {
