@@ -18,12 +18,24 @@ let
 
   hermes = llmAgents."hermes-agent";
 
+  # Dependency closure plus Hermes itself, for PYTHONPATH below. The
+  # interpreter comes from Hermes' own dependencies because pkgs.python3 is a
+  # different minor version.
+  hermesPython = (builtins.head hermes.propagatedBuildInputs).pythonModule;
+  hermesPythonEnv = hermesPython.withPackages (_: hermes.propagatedBuildInputs);
+  hermesPythonPath = lib.concatStringsSep ":" [
+    "${hermesPythonEnv}/${hermesPython.sitePackages}"
+    "${hermes}/${hermesPython.sitePackages}"
+  ];
+
   userCfg = config.users.users.${cfg.user};
   homeDir = userCfg.home;
 
   # Replaces the system PATH for the dashboard and every command the agent
   # runs, so anything it may invoke has to be listed here.
-  runtimePath = [ hermes ]
+  runtimePath = [
+    hermes
+  ]
   ++ (with pkgs; [
     git
     gh
@@ -53,21 +65,65 @@ let
     deny all;
   '';
 
-  hermesWrapper = pkgs.writeShellScriptBin "hermes-wrapper" ''
-    export SIGNAL_ACCOUNT="$(cat "$CREDENTIALS_DIRECTORY/signal_account")"
-    exec ${lib.getExe hermes} dashboard \
-      --host 127.0.0.1 \
-      --port ${toString cfg.port} \
-      --no-open \
-      --skip-build
-  '';
+  # Shared by the dashboard and the gateway: both run the agent as cfg.user
+  # against the same $HOME/.hermes state.
+  commonUnit = {
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    path = runtimePath;
 
-  signalCliWrapper = pkgs.writeShellScriptBin "signal-cli-wrapper" ''
-    account="$(cat "$CREDENTIALS_DIRECTORY/signal_account")"
-    exec ${lib.getExe' pkgs.signal-cli "signal-cli"} --config /var/lib/signal-cli -a "$account" daemon \
-      --http 127.0.0.1:${toString cfg.signal.port} \
-      --no-receive-stdout
-  '';
+    environment = {
+      # Config, sessions, skills and credentials live under $HOME/.hermes.
+      HOME = homeDir;
+      HERMES_HOME = "${homeDir}/.hermes";
+      SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
+      # Hermes respawns itself and needs its own binary. Without this it
+      # falls back to the bare interpreter, which lacks the dependency
+      # paths the wrapper injects.
+      HERMES_BIN = lib.getExe hermes;
+      # Hermes respawns itself as `sys.executable -m hermes_cli.main`, which
+      # is the bare interpreter. The wrapper injects dependencies inside the
+      # wrapped script, so only PYTHONPATH reaches such a child.
+      PYTHONPATH = hermesPythonPath;
+      # Read by the nixos-unit-compat patch: keeps the CLI from rewriting the
+      # unit and lets it drive systemd as cfg.user (see the polkit rule).
+      # Needed on the dashboard too, which spawns `hermes gateway restart`
+      # for its restart button.
+      HERMES_NIXOS_UNIT = "1";
+    };
+  };
+
+  commonServiceConfig = {
+    User = cfg.user;
+    Group = userCfg.group;
+    WorkingDirectory = homeDir;
+    Restart = "on-failure";
+    RestartSec = "30";
+    # Sessions can ignore SIGTERM while a tool call is in flight; kill them
+    # well before systemd's 90s default so restarts stay quick.
+    TimeoutStopSec = "25";
+
+    # Hardening.
+    NoNewPrivileges = true;
+    RestrictSUIDSGID = true;
+    LockPersonality = true;
+    ProtectSystem = "full"; # /usr, /boot and /etc read-only; $HOME writable.
+    PrivateTmp = true;
+    PrivateDevices = true;
+    ProtectClock = true;
+    ProtectKernelLogs = true;
+    ProtectKernelModules = true;
+    ProtectKernelTunables = true;
+    ProtectControlGroups = true;
+    ProtectHostname = true;
+    RestrictRealtime = true;
+    SystemCallArchitectures = "native";
+    CapabilityBoundingSet = "";
+  }
+  // lib.optionalAttrs (cfg.environmentFile != null) {
+    EnvironmentFile = cfg.environmentFile;
+  };
 in
 {
   options.hermes = with lib; {
@@ -115,133 +171,87 @@ in
         entered in the dashboard, which stores them under $HOME/.hermes.
       '';
     };
-
-    # The phone number is PII, so it lives in secrets/hermes-signal-account.age
-    # rather than in an option. It must be registered or linked once by hand before
-    # first start.
-    signal = {
-      enable = mkEnableOption "the Signal channel, backed by a local signal-cli daemon";
-
-      port = mkOption {
-        type = types.port;
-        default = 8090;
-        description = "Loopback port the signal-cli JSON-RPC/SSE HTTP daemon listens on.";
-      };
-    };
   };
 
   config = lib.mkIf cfg.enable {
 
     # `hermes` CLI. Defaults to ~/.hermes, the same state dir as the service.
     environment.systemPackages = [ hermes ];
+    # So an interactive `hermes gateway ...` takes the same path as the units.
+    environment.variables.HERMES_NIXOS_UNIT = "1";
 
     systemd.services.hermes = {
       description = "Hermes Agent web dashboard";
-      after = [ "network-online.target" ] ++ lib.optional cfg.signal.enable "signal-cli.service";
-      wants = [ "network-online.target" ];
-      wantedBy = [ "multi-user.target" ];
-      path = runtimePath;
+      inherit (commonUnit)
+        after
+        wants
+        wantedBy
+        path
+        environment
+        ;
 
-      environment = {
-        # Config, sessions, skills and credentials live under $HOME/.hermes.
-        HOME = homeDir;
-        HERMES_HOME = "${homeDir}/.hermes";
-        SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
-        # Hermes respawns itself and needs its own binary. Without this it
-        # falls back to the bare interpreter, which lacks the dependency
-        # paths the wrapper injects.
-        HERMES_BIN = lib.getExe hermes;
-      }
-      # Set together with SIGNAL_ACCOUNT (LoadCredential below) to enable the
-      # Signal channel.
-      // lib.optionalAttrs cfg.signal.enable {
-        SIGNAL_HTTP_URL = "http://127.0.0.1:${toString cfg.signal.port}";
-      };
-
-      serviceConfig = {
+      serviceConfig = commonServiceConfig // {
         # --skip-build: the frontend is already built in the package.
-        ExecStart =
-          if cfg.signal.enable then
-            lib.getExe hermesWrapper
-          else
-            lib.concatStringsSep " " [
-              (lib.getExe hermes)
-              "dashboard"
-              "--host 127.0.0.1"
-              "--port ${toString cfg.port}"
-              "--no-open"
-              "--skip-build"
-            ];
-        User = cfg.user;
-        Group = userCfg.group;
-        WorkingDirectory = homeDir;
-        Restart = "on-failure";
-        RestartSec = "30";
-        # Agent sessions can ignore SIGTERM while a tool call is in flight;
-        # kill them well before systemd's 90s default so restarts stay quick.
-        TimeoutStopSec = "25";
-
-        # Hardening.
-        NoNewPrivileges = true;
-        RestrictSUIDSGID = true;
-        LockPersonality = true;
-        ProtectSystem = "full"; # /usr, /boot and /etc read-only; $HOME writable.
-        PrivateTmp = true;
-        PrivateDevices = true;
-        ProtectClock = true;
-        ProtectKernelLogs = true;
-        ProtectKernelModules = true;
-        ProtectKernelTunables = true;
-        ProtectControlGroups = true;
-        ProtectHostname = true;
-        RestrictRealtime = true;
-        SystemCallArchitectures = "native";
-        CapabilityBoundingSet = "";
-      }
-      // lib.optionalAttrs (cfg.environmentFile != null) {
-        EnvironmentFile = cfg.environmentFile;
-      }
-      // lib.optionalAttrs cfg.signal.enable {
-        LoadCredential = "signal_account:${config.age.secrets.hermes-signal-account.path}";
+        ExecStart = lib.concatStringsSep " " [
+          (lib.getExe hermes)
+          "dashboard"
+          "--host 127.0.0.1"
+          "--port ${toString cfg.port}"
+          "--no-open"
+          "--skip-build"
+        ];
       };
     };
+
+    # Serves the messaging channels, which are configured from the dashboard.
+    # Separate from the dashboard itself: outside Hermes' s6 container image
+    # the two are independent processes.
+    systemd.services.hermes-gateway = {
+      description = "Hermes Agent messaging gateway";
+      inherit (commonUnit)
+        after
+        wants
+        wantedBy
+        path
+        environment
+        ;
+
+      # The directives below mirror the unit Hermes generates for itself; a
+      # planned restart (dashboard button, /restart, SIGUSR1) drains and then
+      # exits 75 expecting the service manager to bring it back.
+      serviceConfig = commonServiceConfig // {
+        # --replace takes over from an instance systemd has not reaped yet.
+        # --external-supervisor makes in-chat restarts exit back to systemd
+        # instead of installing a user-scope unit of Hermes' own.
+        ExecStart = "${lib.getExe hermes} gateway run --replace --external-supervisor";
+        Restart = "always";
+        RestartSec = "5";
+        # 78 is Hermes' "config is broken"; restarting cannot fix it.
+        RestartPreventExitStatus = "78";
+        KillMode = "mixed";
+        # Must be >= drain timeout + 30s or the gateway warns at startup that
+        # systemd may SIGKILL it mid-drain.
+        TimeoutStopSec = "60";
+      };
+    };
+
+    # Lets the gateway restart itself: the dashboard button and /restart shell
+    # out to `hermes gateway restart`, which calls systemctl as cfg.user.
+    # Without polkitd running, systemd denies that outright.
+    security.polkit.enable = true;
+    security.polkit.extraConfig = ''
+      polkit.addRule(function(action, subject) {
+        if (action.id == "org.freedesktop.systemd1.manage-units" &&
+            action.lookup("unit") == "hermes-gateway.service" &&
+            subject.user == "${cfg.user}") {
+          return polkit.Result.YES;
+        }
+      });
+    '';
 
     systemd.services.oauth2-proxy = {
       after = [ "tailscale-online.service" ];
       requires = [ "tailscale-online.service" ];
-    };
-
-    systemd.services.signal-cli = lib.mkIf cfg.signal.enable {
-      description = "signal-cli JSON-RPC/SSE daemon for Hermes' Signal channel";
-      after = [ "network-online.target" ];
-      wants = [ "network-online.target" ];
-      wantedBy = [ "multi-user.target" ];
-
-      serviceConfig = {
-        ExecStart = lib.getExe signalCliWrapper;
-        LoadCredential = "signal_account:${config.age.secrets.hermes-signal-account.path}";
-        DynamicUser = true;
-        StateDirectory = "signal-cli";
-        Restart = "on-failure";
-        RestartSec = "10";
-
-        # Hardening.
-        NoNewPrivileges = true;
-        RestrictSUIDSGID = true;
-        LockPersonality = true;
-        ProtectSystem = "strict";
-        PrivateTmp = true;
-        PrivateDevices = true;
-        ProtectClock = true;
-        ProtectKernelLogs = true;
-        ProtectKernelModules = true;
-        ProtectKernelTunables = true;
-        ProtectControlGroups = true;
-        ProtectHostname = true;
-        RestrictRealtime = true;
-        SystemCallArchitectures = "native";
-        CapabilityBoundingSet = "";
-      };
     };
 
     services.oauth2-proxy = {
@@ -269,7 +279,6 @@ in
       };
       extraConfig = {
         skip-provider-button = true;
-        cookie-samesite = "lax";
         flush-interval = "100ms";
       };
     };
@@ -277,10 +286,6 @@ in
     age.secrets.dex-hermes-secret.file = ../../secrets/dex-hermes-secret.age;
     age.secrets.hermes-cookie-secret.file = ../../secrets/hermes-cookie-secret.age;
     age.secrets.hermes-provider-keys.file = ../../secrets/hermes-provider-keys.age;
-
-    age.secrets.hermes-signal-account = lib.mkIf cfg.signal.enable {
-      file = ../../secrets/hermes-signal-account.age;
-    };
 
     services.nginx.virtualHosts.${cfg.host} = {
       forceSSL = true;

@@ -1,10 +1,9 @@
 
 # Appended to hermes' tools/daemon_pool.py.
 #
-# Upstream's _adjust_thread_count vendors CPython's 3.8-3.13 internals, which
-# Python 3.14 removed: the initializer moved into a worker-context object and
-# _worker's signature changed. Without this, every submit() on a
-# DaemonThreadPoolExecutor raises AttributeError: '_initializer'.
+# Replaces _adjust_thread_count, which reads self._initializer and calls
+# _worker with the 3.8-3.13 argument order. Python 3.14 moved both behind a
+# worker-context object, so every submit() raises AttributeError without this.
 def _adjust_thread_count_compat(self) -> None:
     if self._idle_semaphore.acquire(timeout=0):
         return
@@ -30,8 +29,8 @@ def _adjust_thread_count_compat(self) -> None:
             self._initargs,
         )
 
-    # daemon=True and no _threads_queues registration: the whole point of the
-    # subclass, so a wedged worker cannot hold interpreter exit open.
+    # daemon=True, and no _threads_queues entry, so a wedged worker cannot
+    # hold interpreter exit open.
     t = threading.Thread(
         name="%s_%d" % (self._thread_name_prefix or self, num_threads),
         target=_worker,

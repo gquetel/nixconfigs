@@ -21,10 +21,15 @@ in
     postInstall = old.postInstall + ''
       cp -r ${old.src}/plugins $out/share/hermes/plugins
 
-      # See daemon-pool-compat.py: upstream's thread pool is broken on 3.14.
+      # Make the agent's thread pool work on Python 3.14; see the appended file.
       pool=$(echo "$out"/lib/python*/site-packages/tools/daemon_pool.py)
       test -f "$pool" || { echo "daemon_pool.py not found; drop this patch"; exit 1; }
       cat ${./daemon-pool-compat.py} >> "$pool"
+
+      # Stop the CLI from rewriting the NixOS-owned unit; see the appended file.
+      gw=$(echo "$out"/lib/python*/site-packages/hermes_cli/gateway.py)
+      test -f "$gw" || { echo "hermes_cli/gateway.py not found; drop this patch"; exit 1; }
+      cat ${./nixos-unit-compat.py} >> "$gw"
     '';
 
     makeWrapperArgs = old.makeWrapperArgs ++ [

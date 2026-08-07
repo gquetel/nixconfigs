@@ -50,8 +50,6 @@ in
   ++ users;
   # Seed for oauth2-proxy's Hermes session cookies.
   "hermes-cookie-secret.age".publicKeys = [ system-vapula ] ++ users;
-  # Phone number for Hermes' Signal channel (signal-cli daemon + SIGNAL_ACCOUNT).
-  "hermes-signal-account.age".publicKeys = [ system-vapula ] ++ users;
   # Hermes model provider credentials (EnvironmentFile: OPENAI_API_KEY,
   # ANTHROPIC_API_KEY, …), one KEY=VALUE line per provider.
   "hermes-provider-keys.age".publicKeys = [ system-vapula ] ++ users;
