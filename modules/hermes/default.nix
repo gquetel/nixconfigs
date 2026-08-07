@@ -65,6 +65,10 @@ let
     deny all;
   '';
 
+  envFiles =
+    lib.optional (cfg.environmentFile != null) cfg.environmentFile
+    ++ lib.optional cfg.plane.enable config.age.secrets.hermes-plane-token.path;
+
   # Shared by the dashboard and the gateway: both run the agent as cfg.user
   # against the same $HOME/.hermes state.
   commonUnit = {
@@ -121,8 +125,8 @@ let
     SystemCallArchitectures = "native";
     CapabilityBoundingSet = "";
   }
-  // lib.optionalAttrs (cfg.environmentFile != null) {
-    EnvironmentFile = cfg.environmentFile;
+  // lib.optionalAttrs (envFiles != [ ]) {
+    EnvironmentFile = envFiles;
   };
 in
 {
@@ -171,6 +175,11 @@ in
         entered in the dashboard, which stores them under $HOME/.hermes.
       '';
     };
+
+    plane.enable = mkEnableOption ''
+      secrets/hermes-plane-token.age as an extra EnvironmentFile, holding the
+      Plane API token and whatever else the agent needs to reach the instance
+    '';
   };
 
   config = lib.mkIf cfg.enable {
@@ -286,7 +295,9 @@ in
     age.secrets.dex-hermes-secret.file = ../../secrets/dex-hermes-secret.age;
     age.secrets.hermes-cookie-secret.file = ../../secrets/hermes-cookie-secret.age;
     age.secrets.hermes-provider-keys.file = ../../secrets/hermes-provider-keys.age;
-
+    age.secrets.hermes-plane-token = lib.mkIf cfg.plane.enable {
+      file = ../../secrets/hermes-plane-token.age;
+    };
     services.nginx.virtualHosts.${cfg.host} = {
       forceSSL = true;
       enableACME = true;
