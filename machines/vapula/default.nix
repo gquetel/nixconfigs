@@ -28,7 +28,7 @@ in
     ../../modules/tailscale
     ../../modules/servers
     ../../modules/prometheus-exporters
-    ../../modules/wireguard-client
+    ../../modules/mullvad
     ../../modules/hermes
 
     # ../../modules/systemd-resolved
@@ -121,10 +121,6 @@ in
       ip6tables -A nixos-fw -p tcp --dport 443 -s 2a01:cb00:253:ed00::3 -j nixos-fw-accept
       ip6tables -A nixos-fw -p tcp --dport 444 -s 2a01:cb00:253:ed00::3 -j nixos-fw-accept
     '';
-    firewall.interfaces."wg0" = {
-      allowedTCPPorts = [ 56881 ];
-      allowedUDPPorts = [ 56881 ];
-    };
     useNetworkd = true;
   };
 
@@ -223,7 +219,12 @@ in
   };
 
   # ---------------- Modules ----------------
-  wg0.enable = true;
+  # The [Peer] section of a WireGuard config
+  mullvad = {
+    enable = true;
+    publicKey = "HUj/J8Rxx7QVGh3kJsFgPZoqtm2BQIX03vKJSIyTOSo=";
+    endpoint = "149.102.240.66:51820";
+  };
 
   hermes.enable = true;
   hermes.plane.enable = true;

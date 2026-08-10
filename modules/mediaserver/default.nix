@@ -60,13 +60,17 @@
       max_active_seeding = 200;
       max_active_downloading = 10;
       max_active_limit = 200;
-      outgoing_interface = "wg0";
-      listen_interface = "wg0";
       listen_ports = [
         56881
         56881
       ];
     };
+  };
+
+  systemd.services.deluged = config.mullvad.confine;
+  mullvad.proxies.deluge-rpc = {
+    listen = "127.0.0.1:58846";
+    connect = "127.0.0.1:58846";
   };
 
   services.seerr = {

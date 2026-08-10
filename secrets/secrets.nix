@@ -37,10 +37,7 @@ in
   "plane.env.age".publicKeys = [ system-garmr ] ++ users;
 
   # Secrets for vapula machine
-  # Wireguard, public key = zoDZGWMPZ+QGAh8Ml9OospRJRlaoaWVFpU7EkdJv3XU=
-  # private key can be decrypted using agenix -d wireguard-pvkey.age
-  "wireguard-pvkey.age".publicKeys = [ system-vapula ] ++ users;
-
+  "mullvad-pvkey.age".publicKeys = [ system-vapula ] ++ users;
   # Dex client secret for Hermes' oauth2-proxy. Needed on strix (dex)
   # and vapula (oauth2-proxy).
   "dex-hermes-secret.age".publicKeys = [
