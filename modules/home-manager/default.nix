@@ -98,6 +98,7 @@ in
           themeFile = "Seafoam_Pastel";
           keybindings = {
             "ctrl+shift+t" = "new_tab_with_cwd";
+            "ctrl+shift+o" = "launch --stdin-source=@last_cmd_output --type=clipboard cat";
           };
         };
         # https://discourse.nixos.org/t/nixos-options-to-configure-gnome-keyboard-shortcuts/7275/4
