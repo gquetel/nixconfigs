@@ -94,12 +94,6 @@
         pkgs.networkmanager-openvpn
       ];
     };
-    # Procrastination websites to ban.
-    extraHosts = ''
-      127.0.0.1 reddit.com
-      127.0.0.1 www.reddit.com
-      127.0.0.1 x.com
-    '';
     nameservers = [
       "80.67.169.12"
       "1.1.1.1"
