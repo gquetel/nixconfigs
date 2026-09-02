@@ -71,12 +71,6 @@
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGI/nKCR/pq8yHrDdlQ3ml1jcio0Npxm5D7vJlG4QaDi gquetel@charybdis"
     ];
   };
-  # FIXME: When booting the machine, nginx will check as ca.mesh.gq for certificates, nginx is started before
-  # tailscale / headscale, hence it does not find ca.mesh.gq. There might be a better workaround.
-  # networking.hosts = {
-  #   "127.0.0.1" = [ "ca.mesh.gq" ];
-  # };
-
   # ---------------- Networking  ----------------
   # systemd-networkd should be prefered over "scripted networking". Refs:
   # - https://wiki.archlinux.org/title/Systemd-networkd
@@ -175,10 +169,6 @@
       # Defines the request header field whose value will be used to replace the client address.
       real_ip_header proxy_protocol;
     '';
-  };
-  systemd.services.nginx = {
-    after = [ "tailscale-online.service" ];
-    requires = [ "tailscale-online.service" ];
   };
   # ---------------- Modules ----------------
   servers.motd = {

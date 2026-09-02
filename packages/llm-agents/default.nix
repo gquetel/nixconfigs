@@ -14,13 +14,9 @@ in
   "claude-agent-acp" = llmAgents.packages.${system}."claude-agent-acp";
   "codex-acp" = llmAgents.packages.${system}."codex-acp";
 
-  # Agent CLI plus prebuilt web dashboard. The wheel keeps only the .py files
-  # of the plugins/ tree, dropping the manifests and bundles the dashboard
-  # needs, so ship that tree from source and point the loader at it.
+  # Agent CLI plus prebuilt web dashboard.
   "hermes-agent" = llmAgents.packages.${system}."hermes-agent".overrideAttrs (old: {
     postInstall = old.postInstall + ''
-      cp -r ${old.src}/plugins $out/share/hermes/plugins
-
       # Make the agent's thread pool work on Python 3.14; see the appended file.
       pool=$(echo "$out"/lib/python*/site-packages/tools/daemon_pool.py)
       test -f "$pool" || { echo "daemon_pool.py not found; drop this patch"; exit 1; }
@@ -31,11 +27,5 @@ in
       test -f "$gw" || { echo "hermes_cli/gateway.py not found; drop this patch"; exit 1; }
       cat ${./nixos-unit-compat.py} >> "$gw"
     '';
-
-    makeWrapperArgs = old.makeWrapperArgs ++ [
-      "--set"
-      "HERMES_BUNDLED_PLUGINS"
-      "${placeholder "out"}/share/hermes/plugins"
-    ];
   });
 }

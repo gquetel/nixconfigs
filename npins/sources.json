@@ -54,9 +54,9 @@
       },
       "branch": "release-26.05",
       "submodules": false,
-      "revision": "d4fd24667c8cbef124bb70a20380cab75ec8474d",
-      "url": "https://github.com/nix-community/home-manager/archive/d4fd24667c8cbef124bb70a20380cab75ec8474d.tar.gz",
-      "hash": "sha256-Rgs2xKnGLFWQscxUaXX07oyZeuMDOHEbqDOsgliLFGM="
+      "revision": "65258d5c65a250189fde2e35f490d15e064c4c62",
+      "url": "https://github.com/nix-community/home-manager/archive/65258d5c65a250189fde2e35f490d15e064c4c62.tar.gz",
+      "hash": "sha256-Sxu1NLTD/Ern6hFGLlZmtKCSct3YQXZI/lls8RE1XeM="
     },
     "llm-agents": {
       "type": "Git",
@@ -67,9 +67,9 @@
       },
       "branch": "main",
       "submodules": false,
-      "revision": "9300f2adc8ff27f02c92b48efc5ab76955ba1046",
-      "url": "https://github.com/numtide/llm-agents.nix/archive/9300f2adc8ff27f02c92b48efc5ab76955ba1046.tar.gz",
-      "hash": "sha256-tyldMcr6qS8XrZdFKc6iqnkLPNxaRujzuJ09jOGES+s="
+      "revision": "2ad12d8ff5c08ef36dcc15ff2ab2b03aad7f3c1f",
+      "url": "https://github.com/numtide/llm-agents.nix/archive/2ad12d8ff5c08ef36dcc15ff2ab2b03aad7f3c1f.tar.gz",
+      "hash": "sha256-HHM3n39H3DcgV+FWhxiVKVYKlxr8oQpUHmsGPY1wRLA="
     },
     "nix-topology": {
       "type": "Git",
@@ -103,8 +103,8 @@
     "nixpkgs": {
       "type": "Channel",
       "name": "nixos-26.05",
-      "url": "https://releases.nixos.org/nixos/26.05/nixos-26.05.6503.21ea275a7c46/nixexprs.tar.xz",
-      "hash": "sha256-xQPrEWR75P2lZ/p9pAzIeMd4PtkckDLj6ojo+tWjZQw="
+      "url": "https://releases.nixos.org/nixos/26.05/nixos-26.05.8772.5dfba6236110/nixexprs.tar.xz",
+      "hash": "sha256-v5c4scCRMmrQEh3UDsKtnI9JTehKl0hTSYDMxe2G14k="
     },
     "unstable": {
       "type": "Git",
@@ -115,9 +115,9 @@
       },
       "branch": "nixos-unstable",
       "submodules": false,
-      "revision": "643809054d65fdd466a63e3155b8c498cb483c04",
-      "url": "https://github.com/nixos/nixpkgs/archive/643809054d65fdd466a63e3155b8c498cb483c04.tar.gz",
-      "hash": "sha256-vUfIeBEfpbAfZ5zjgIkYk7eHBeVfCYVjLbWnMkseYnk="
+      "revision": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
+      "url": "https://github.com/nixos/nixpkgs/archive/34ab99075ac4f7e40cf037eef32cb1c360bb85e9.tar.gz",
+      "hash": "sha256-hn1oU2rue2SYK8dAr8+WNZWtbsz1S2W5mnHlSEuh3bo="
     }
   },
   "version": 7
