@@ -54,9 +54,9 @@
       },
       "branch": "release-26.05",
       "submodules": false,
-      "revision": "65258d5c65a250189fde2e35f490d15e064c4c62",
-      "url": "https://github.com/nix-community/home-manager/archive/65258d5c65a250189fde2e35f490d15e064c4c62.tar.gz",
-      "hash": "sha256-Sxu1NLTD/Ern6hFGLlZmtKCSct3YQXZI/lls8RE1XeM="
+      "revision": "fd0956c99c41ae3c13a73a638f1f7e963aebc4ab",
+      "url": "https://github.com/nix-community/home-manager/archive/fd0956c99c41ae3c13a73a638f1f7e963aebc4ab.tar.gz",
+      "hash": "sha256-sPpQFVaFTDqO/4vvCAhuAhqTgqN/ygu+9eJcs5eB0js="
     },
     "llm-agents": {
       "type": "Git",
@@ -67,9 +67,22 @@
       },
       "branch": "main",
       "submodules": false,
-      "revision": "2ad12d8ff5c08ef36dcc15ff2ab2b03aad7f3c1f",
-      "url": "https://github.com/numtide/llm-agents.nix/archive/2ad12d8ff5c08ef36dcc15ff2ab2b03aad7f3c1f.tar.gz",
-      "hash": "sha256-HHM3n39H3DcgV+FWhxiVKVYKlxr8oQpUHmsGPY1wRLA="
+      "revision": "6dfa856ce21ea57820962de08cdd2350a18c1598",
+      "url": "https://github.com/numtide/llm-agents.nix/archive/6dfa856ce21ea57820962de08cdd2350a18c1598.tar.gz",
+      "hash": "sha256-y+FZSBXT0XLO9hWTQSmVRoqT+qJaqgPK7tFUlngCisA="
+    },
+    "microvm.nix": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "astro",
+        "repo": "microvm.nix"
+      },
+      "branch": "main",
+      "submodules": false,
+      "revision": "804cbac7a462aa0fa8bb60c3d2fc4ead0a62060f",
+      "url": "https://github.com/astro/microvm.nix/archive/804cbac7a462aa0fa8bb60c3d2fc4ead0a62060f.tar.gz",
+      "hash": "sha256-iCLUJO5V2ZlEAlYxlkCZ5YLkyQrpkyXOMUTkPXjsdPk="
     },
     "nix-topology": {
       "type": "Git",
@@ -103,8 +116,8 @@
     "nixpkgs": {
       "type": "Channel",
       "name": "nixos-26.05",
-      "url": "https://releases.nixos.org/nixos/26.05/nixos-26.05.8772.5dfba6236110/nixexprs.tar.xz",
-      "hash": "sha256-v5c4scCRMmrQEh3UDsKtnI9JTehKl0hTSYDMxe2G14k="
+      "url": "https://releases.nixos.org/nixos/26.05/nixos-26.05.9227.c25784012c99/nixexprs.tar.xz",
+      "hash": "sha256-aVla+xR1lotA4iEMo6ltSr5oKVvWxBZ8Gc9KjbwxJq8="
     },
     "unstable": {
       "type": "Git",
@@ -115,9 +128,9 @@
       },
       "branch": "nixos-unstable",
       "submodules": false,
-      "revision": "34ab99075ac4f7e40cf037eef32cb1c360bb85e9",
-      "url": "https://github.com/nixos/nixpkgs/archive/34ab99075ac4f7e40cf037eef32cb1c360bb85e9.tar.gz",
-      "hash": "sha256-hn1oU2rue2SYK8dAr8+WNZWtbsz1S2W5mnHlSEuh3bo="
+      "revision": "dc5d91f840324650bac8c379428c7037a416959a",
+      "url": "https://github.com/nixos/nixpkgs/archive/dc5d91f840324650bac8c379428c7037a416959a.tar.gz",
+      "hash": "sha256-VaWGJ6+cIYN2erfSecbRV+4ljI185Ty2wUrXyvQbgOw="
     }
   },
   "version": 7

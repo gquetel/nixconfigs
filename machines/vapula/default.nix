@@ -30,6 +30,7 @@ in
     ../../modules/prometheus-exporters
     ../../modules/mullvad
     ../../modules/hermes
+    ../../modules/agent-vm
 
     # ../../modules/systemd-resolved
     "${(import ../../npins).agenix}/modules/age.nix"
@@ -228,6 +229,13 @@ in
 
   hermes.enable = true;
   hermes.plane.enable = true;
+
+  # VM for the agents. It copies its API keys from hermes, but the Plane token
+  # is not stored there, so it is passed in separately.
+  agent-vm = {
+    enable = true;
+    environmentFiles = [ config.age.secrets.hermes-plane-token.path ];
+  };
 
   common.useLatestKernel = false; # We use a kernel version that supports zfs
   servers.motd = {
