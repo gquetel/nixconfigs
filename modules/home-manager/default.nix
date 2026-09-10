@@ -142,6 +142,37 @@ in
           };
         };
 
+        # Diff pager. It highlights the changed words inside a line, which line
+        # diffs cannot show for LaTeX paragraphs written on one long line.
+        programs.delta = {
+          enable = true;
+          enableGitIntegration = true;
+
+          options = {
+            line-numbers = true;
+            navigate = true;
+            # A LaTeX paragraph can be more than 1000 characters long. Wrap it
+            # fully instead of the default limit of two screen lines.
+            wrap-max-lines = "unlimited";
+            # Always pair a removed line with the added line that replaces it,
+            # so heavily edited paragraphs keep the word-level highlight.
+            max-line-distance = "1.0";
+          };
+        };
+
+        programs.lazygit = {
+          enable = true;
+          # The binary comes from environment.systemPackages; keep only the config.
+          package = null;
+
+          settings.git.pagers = [
+            {
+              colorArg = "always";
+              pager = "delta --dark --paging=never";
+            }
+          ];
+        };
+
         programs.vscode = {
           enable = true;
           # We force declarative extension installation.
