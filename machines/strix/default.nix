@@ -28,6 +28,7 @@ in
     ../../modules/plausible
     ../../modules/mlflow
     ../../modules/prometheus-exporters
+    ../../modules/uptime-kuma
 
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
@@ -370,6 +371,7 @@ in
   # ---------------- Modules ----------------
   plausible.enable = true;
   mlflow.enable = true;
+  uptime-kuma.enable = true;
   # Public mTLS ingest so the off-tailnet compute cluster can push runs.
   # Reaches this host via the SNI proxy's default branch; mTLS terminates at
   # the per-host nginx vhost. Client certs are issued by step-ca (ca.mesh.gq);
@@ -395,6 +397,7 @@ in
       service_status.outline = "outline";
       service_status.prometheus_node_exporter = "prometheus-node-exporter";
       service_status.mlflow = "mlflow";
+      service_status.uptime-kuma = "uptime-kuma";
 
       filesystems.root = "/";
       last_login.gquetel = 3;
