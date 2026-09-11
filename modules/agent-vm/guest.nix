@@ -5,20 +5,76 @@
   tapName,
   baseDir,
   agentUid,
+  vmIp,
+  launcherName,
   mem,
   disk,
   ...
 }:
 # The system inside the VM.
 #
-# An ordinary machine with nix, docker, tmux and ssh. It does not know or care
-# which agent you run. Start one by hand:
+# An ordinary machine with nix, docker, tmux and ssh, plus the launcher that
+# starts one agent session. The host `agent-run` CLI is the front end; you can
+# also run the launcher by hand:
 #
 #   ssh agent@<vm>               (or `ssh agent@10.77.0.2` from the host)
-#   tmux new -s night
-#   nix run github:gquetel/agent-runtime -- ...
+#   agent-session <profile> [prompt...]
 let
   workDir = "/work";
+
+  # The runtime repo: the driver and the per-project profiles. It is cloned
+  # here and not packaged, so a change to a profile needs a `git push` only.
+  runtimeDir = "${workDir}/state/agent-runtime";
+
+  claude-code = pkgs.callPackage ../../packages/claude-code { };
+
+  launcher = pkgs.writeShellApplication {
+    name = launcherName;
+    runtimeInputs = with pkgs; [
+      claude-code
+      coreutils
+      git
+      python3
+    ];
+    text = ''
+      if [ "$#" -lt 1 ]; then
+        echo "usage: ${launcherName} <profile> [prompt...]" >&2
+        exit 2
+      fi
+      profile="$1"
+      shift
+
+      # ssh runs a command without a login shell, so nothing has read the keys
+      # yet. AGENT_RUNTIME_TOKEN comes from here.
+      set -a
+      # shellcheck disable=SC1091
+      . /run/agent-secrets/env
+      set +a
+
+      # The token is part of the URL, and it expires. Write it again on every
+      # run, or the clone keeps the one it was made with.
+      url="https://x-access-token:$AGENT_RUNTIME_TOKEN@github.com/gquetel/agent-runtime"
+      if [ -d ${runtimeDir}/.git ]; then
+        git -C ${runtimeDir} remote set-url origin "$url"
+        git -C ${runtimeDir} pull --ff-only
+      else
+        git clone "$url" ${runtimeDir}
+      fi
+
+      # Claude Code rewrites this file as it runs, so only put it back when the
+      # last reset took it away.
+      if [ ! -f "$HOME/.claude.json" ]; then
+        install -m0600 ${runtimeDir}/claude.json "$HOME/.claude.json"
+      fi
+
+      args=(run --profile "$profile")
+      if [ "$#" -gt 0 ]; then
+        args+=(--prompt "$*")
+      fi
+      python3 ${runtimeDir}/autonomous_agent.py "''${args[@]}" 2>&1 \
+        | tee -a ${workDir}/state/agent.log
+    '';
+  };
 in
 {
   # --------------------------- VM hardware ---------------------------------- #
@@ -66,9 +122,9 @@ in
         proto = "virtiofs";
       }
       {
-        source = "${baseDir}/hermes";
-        mountPoint = "${workDir}/.hermes";
-        tag = "hermes";
+        source = "${baseDir}/config";
+        mountPoint = "${workDir}/state/config";
+        tag = "config";
         proto = "virtiofs";
       }
       {
@@ -97,7 +153,7 @@ in
     enable = true;
     networks."10-uplink" = {
       matchConfig.MACAddress = "02:00:00:00:aa:01";
-      address = [ "10.77.0.2/24" ];
+      address = [ "${vmIp}/24" ];
       routes = [ { Gateway = "10.77.0.1"; } ];
       # Public resolvers. The host passes traffic on; it is not our DNS server.
       dns = [
@@ -163,26 +219,37 @@ in
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICK/iZJoWOdOasaD28jedexzjVc4tHosDTEYFIG/i9Fc gquetel@scylla"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGI/nKCR/pq8yHrDdlQ3ml1jcio0Npxm5D7vJlG4QaDi gquetel@charybdis"
+      # The host, for `agent-run`.
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKd5Lwiv2fv6BBmJ4Pb/ttQpsuyqWQbbg2LvxKQuF1OM vapula@gquetel.fr"
     ];
   };
   # The agent runs unattended; a password prompt would hang it.
   security.sudo.wheelNeedsPassword = false;
 
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = [
+    claude-code
+    launcher
+  ]
+  ++ (with pkgs; [
     git
     curl
     jq
+    python3
     ripgrep
     tmux
     nixos-container
+  ]);
+
+  # Claude Code keeps its own state and its credentials in ~/.claude. The home
+  # dir is wiped by agent-vm-reset, the shared folder is not.
+  systemd.tmpfiles.rules = [
+    "d ${workDir}/state/config/claude 0700 agent users -"
+    "L+ ${workDir}/.claude - - - - ${workDir}/state/config/claude"
   ];
 
-  # Keeps Hermes' settings and API keys on the shared folder, so a reset does
-  # not lose them.
-  environment.variables.HERMES_HOME = "${workDir}/.hermes";
-
-  # Loads the keys when you log in. Scripts started by ssh or tmux skip this,
-  # so they have to read /run/agent-secrets/env themselves.
+  # Loads the keys when you log in, for commands you type yourself. A script
+  # gets no interactive shell, so it reads /run/agent-secrets/env itself; the
+  # launcher above does.
   environment.interactiveShellInit = ''
     if [ -r /run/agent-secrets/env ]; then
       set -a

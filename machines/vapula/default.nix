@@ -230,11 +230,14 @@ in
   hermes.enable = true;
   hermes.plane.enable = true;
 
-  # VM for the agents. It copies its API keys from hermes, but the Plane token
-  # is not stored there, so it is passed in separately.
+  # VM for the agents. Its credentials arrive as two env files: the Plane
+  # token still rides on the hermes secret, the agent's own keys have theirs.
   agent-vm = {
     enable = true;
-    environmentFiles = [ config.age.secrets.hermes-plane-token.path ];
+    environmentFiles = [
+      config.age.secrets.hermes-plane-token.path
+      config.age.secrets.agent-secrets.path
+    ];
   };
 
   common.useLatestKernel = false; # We use a kernel version that supports zfs
@@ -273,6 +276,12 @@ in
     };
   };
   # ---------------- age secrets ----------------
+
+  # The agent VM's own keys: CLAUDE_CODE_OAUTH_TOKEN, made with
+  # `claude setup-token` and re-keyed by hand when it expires, and
+  # AGENT_RUNTIME_TOKEN, a fine-grained PAT with Contents: read on
+  # gquetel/agent-runtime.
+  age.secrets.agent-secrets.file = ../../secrets/agent-secrets.env.age;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

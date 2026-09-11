@@ -7,8 +7,9 @@
 }:
 # A VM for running AI agents, cut off from the LAN and the mesh.
 #
-# This module sets up the VM only. Nothing here decides what runs inside it:
-# you log in over ssh and start it yourself.
+# This module sets up the VM and the `agent-run` CLI that starts a session in
+# it. It does not know what the agent does: the driver and the per-project
+# profiles live in a private repo that the VM clones when it runs.
 let
   cfg = config.agent-vm;
   vmName = "agent-vm";
@@ -21,7 +22,10 @@ let
   # sides, so host folders the VM must read have to use this number too.
   agentUid = 1000;
 
-  seedHome = lib.optionalString (cfg.seedFrom != null) config.users.users.${cfg.seedFrom}.home;
+  vmIp = "10.77.0.2";
+
+  # The guest command that `agent-run` starts over ssh. Defined in guest.nix.
+  launcherName = "agent-session";
 
   reset = pkgs.writeShellApplication {
     name = "agent-vm-reset";
@@ -34,7 +38,63 @@ let
       rm -rf ${baseDir}/nix-store/*
       rm -f ${baseDir}/disk/root.img
       systemctl start microvm@${vmName}.service
-      echo "guest rebuilt; /work/state, /work/.hermes and the tailscale node are kept"
+      echo "guest rebuilt; /work/state and the tailscale node are kept"
+    '';
+  };
+
+  # The operator front end. Everything it needs is on the host: the session
+  # runs in a tmux in the VM, and the agent writes its status and its log to
+  # the shared state folder. It does not know which profiles exist. They live
+  # in the private runtime repo, and Nix must not have to list them.
+  agent-run = pkgs.writeShellApplication {
+    name = "agent-run";
+    runtimeInputs = with pkgs; [
+      coreutils
+      jq
+      openssh
+    ];
+    text = ''
+      S=${baseDir}/state
+
+      case "''${1:-}" in
+        --status)
+          if [ ! -f "$S/status.json" ]; then
+            echo "no status yet; no session has run since the last reset"
+            exit 0
+          fi
+          jq -r '
+            "profile:          " + (.profile // "-"),
+            "state:            " + .state,
+            "updated_at:       " + .updated_at,
+            "started_at:       " + (.started_at // "-"),
+            "stop_at:          " + (.stop_at // "-"),
+            "last_heartbeat:   " + (.last_heartbeat // "-"),
+            "last_exit_reason: " + (.last_exit_reason // "-"),
+            "last_exit_at:     " + (.last_exit_at // "-")
+          ' "$S/status.json"
+          exit 0
+          ;;
+        --stop)
+          : > "$S/stop.trigger"
+          echo "stop requested; the session stops before its next iteration"
+          exit 0
+          ;;
+        "" | --*)
+          echo "usage: agent-run <profile> [prompt...] | agent-run --status | agent-run --stop" >&2
+          exit 2
+          ;;
+      esac
+
+      profile="$1"
+      shift
+      # Two levels of quoting: ssh gives the string to the guest shell, which
+      # gives the inner string to tmux, which runs it with sh -c.
+      inner="$(printf '%q ' ${launcherName} "$profile" "$@")"
+      # A reset gives the VM new host keys, so there is nothing stable to check.
+      ssh -t \
+        -o StrictHostKeyChecking=no \
+        -o UserKnownHostsFile=/dev/null \
+        agent@${vmIp} "tmux new -As agent $(printf '%q' "$inner")"
     '';
   };
 in
@@ -61,24 +121,14 @@ in
       '';
     };
 
-    seedFrom = mkOption {
-      type = types.nullOr types.str;
-      default = "gquetel";
-      description = ''
-        Host user whose ~/.hermes/auth.json is copied into the VM every time it
-        starts, so you do not have to add the same API keys twice. The copy
-        only goes one way. Set to null to copy nothing.
-      '';
-    };
-
     environmentFiles = mkOption {
       type = types.listOf types.path;
       default = [ ];
       example = literalExpression "[ config.age.secrets.hermes-plane-token.path ]";
       description = ''
         KEY=VALUE files joined into one file the VM reads at
-        /run/agent-secrets/env. For keys that do not live in auth.json, such as
-        the Plane token. Whatever runs in the VM has to read that file itself.
+        /run/agent-secrets/env. This is the only path credentials take into the
+        VM. Whatever runs in the VM has to read that file itself.
       '';
     };
   };
@@ -87,7 +137,10 @@ in
     # The VM runs VMs of its own to test things in.
     boot.extraModprobeConfig = "options kvm-intel nested=1";
 
-    environment.systemPackages = [ reset ];
+    environment.systemPackages = [
+      reset
+      agent-run
+    ];
 
     systemd.tmpfiles.rules = [
       "d ${baseDir}           0750 root root -"
@@ -96,7 +149,7 @@ in
       "d ${baseDir}/state     0775 root wheel -"
       # These two must belong to the VM's user, or the VM cannot open them.
       "d ${baseDir}/secrets   0700 ${toString agentUid} root -"
-      "d ${baseDir}/hermes    0700 ${toString agentUid} root -"
+      "d ${baseDir}/config    0700 ${toString agentUid} root -"
       "d ${baseDir}/tailscale 0700 root root -"
       "a+ ${baseDir} - - - - u:microvm:x"
     ];
@@ -110,13 +163,6 @@ in
       script = ''
         set -eu
         umask 077
-
-        ${lib.optionalString (cfg.seedFrom != null) ''
-          if [ -f ${seedHome}/.hermes/auth.json ]; then
-            install -m0600 -o ${toString agentUid} -g root \
-              ${seedHome}/.hermes/auth.json ${baseDir}/hermes/auth.json
-          fi
-        ''}
 
         ${lib.optionalString (cfg.environmentFiles != [ ]) ''
           # The extra newline stops the last line of one file from being glued
@@ -139,6 +185,8 @@ in
           tapName
           baseDir
           agentUid
+          vmIp
+          launcherName
           ;
         inherit (cfg) mem disk;
       };
@@ -185,8 +233,9 @@ in
     };
 
     # The internet is already allowed, so we only block what the VM must never
-    # reach. The last rule stops the VM from connecting to this host; it only
-    # needs us to pass its traffic on.
+    # reach. The last two rules stop the VM from opening a connection to this
+    # host, but keep the answers to the ones we open, such as the ssh of
+    # `agent-run`. Both go above the accept rules of nixos-fw.
     networking.firewall.extraCommands = ''
       # ${vmName} (10.77.0.0/24): internet only, no LAN, mesh, or VPN.
       iptables -I FORWARD -s 10.77.0.0/24 -d 192.168.0.0/16 -j DROP
@@ -195,6 +244,7 @@ in
       iptables -I FORWARD -s 10.77.0.0/24 -d 169.254.0.0/16 -j DROP
       iptables -I FORWARD -s 10.77.0.0/24 -d 100.64.0.0/10  -j DROP
       iptables -I nixos-fw 1 -i br-agent -j nixos-fw-refuse
+      iptables -I nixos-fw 1 -i br-agent -m conntrack --ctstate ESTABLISHED,RELATED -j nixos-fw-accept
     '';
     networking.firewall.extraStopCommands = ''
       iptables -D FORWARD -s 10.77.0.0/24 -d 192.168.0.0/16 -j DROP 2>/dev/null || true
@@ -203,6 +253,7 @@ in
       iptables -D FORWARD -s 10.77.0.0/24 -d 169.254.0.0/16 -j DROP 2>/dev/null || true
       iptables -D FORWARD -s 10.77.0.0/24 -d 100.64.0.0/10  -j DROP 2>/dev/null || true
       iptables -D nixos-fw -i br-agent -j nixos-fw-refuse 2>/dev/null || true
+      iptables -D nixos-fw -i br-agent -m conntrack --ctstate ESTABLISHED,RELATED -j nixos-fw-accept 2>/dev/null || true
     '';
   };
 }
