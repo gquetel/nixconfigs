@@ -58,6 +58,12 @@ let
 
       case "''${1:-}" in
         --status)
+          # An unreadable folder looks the same as a missing file, and the VM
+          # writes there as a different user, so tell the two apart here.
+          if [ ! -r "$S" ]; then
+            echo "cannot read $S; you must be in the wheel group" >&2
+            exit 1
+          fi
           if [ ! -f "$S/status.json" ]; then
             echo "no status yet; no session has run since the last reset"
             exit 0
@@ -80,7 +86,7 @@ let
           exit 0
           ;;
         "" | --*)
-          echo "usage: agent-run <profile> [prompt...] | agent-run --status | agent-run --stop" >&2
+          echo "usage: agent-run <profile> [driver option...] [--] [prompt...] | agent-run --status | agent-run --stop" >&2
           exit 2
           ;;
       esac
@@ -151,7 +157,10 @@ in
       "d ${baseDir}/secrets   0700 ${toString agentUid} root -"
       "d ${baseDir}/config    0700 ${toString agentUid} root -"
       "d ${baseDir}/tailscale 0700 root root -"
-      "a+ ${baseDir} - - - - u:microvm:x"
+      # microvm must reach the VM's files, and wheel must reach state/ for
+      # `agent-run --status` and `--stop`. Traverse only: neither one can list
+      # ${baseDir} itself.
+      "a+ ${baseDir} - - - - u:microvm:x,g:wheel:x"
     ];
 
     # Runs every time the VM starts, so new keys on the host reach the VM after

@@ -18,7 +18,7 @@
 # also run the launcher by hand:
 #
 #   ssh agent@<vm>               (or `ssh agent@10.77.0.2` from the host)
-#   agent-session <profile> [prompt...]
+#   agent-session <profile> [driver option...] [--] [prompt...]
 let
   workDir = "/work";
 
@@ -38,11 +38,30 @@ let
     ];
     text = ''
       if [ "$#" -lt 1 ]; then
-        echo "usage: ${launcherName} <profile> [prompt...]" >&2
+        echo "usage: ${launcherName} <profile> [driver option...] [--] [prompt...]" >&2
         exit 2
       fi
       profile="$1"
       shift
+
+      # Options after the profile go to the driver as they are, so a new driver
+      # option needs no change here. An option takes the next word as its value
+      # if that word does not start with `-`. The first other word starts the
+      # prompt; `--` starts it too, for a prompt that starts with a dash.
+      opts=()
+      while [ "$#" -gt 0 ]; do
+        case "$1" in
+          --) shift; break ;;
+          --*=*) opts+=("$1"); shift ;;
+          --*)
+            opts+=("$1"); shift
+            if [ "$#" -gt 0 ] && [ "''${1#-}" = "$1" ]; then
+              opts+=("$1"); shift
+            fi
+            ;;
+          *) break ;;
+        esac
+      done
 
       # ssh runs a command without a login shell, so nothing has read the keys
       # yet. AGENT_RUNTIME_TOKEN comes from here.
@@ -67,7 +86,7 @@ let
         install -m0600 ${runtimeDir}/claude.json "$HOME/.claude.json"
       fi
 
-      args=(run --profile "$profile")
+      args=(run --profile "$profile" ''${opts[@]+"''${opts[@]}"})
       if [ "$#" -gt 0 ]; then
         args+=(--prompt "$*")
       fi
