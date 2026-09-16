@@ -1,6 +1,7 @@
 {
   lib,
   pkgs,
+  inputs,
   vmName,
   tapName,
   baseDir,
@@ -204,6 +205,12 @@ in
     ];
   };
 
+  nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
+  nix.registry.nixpkgs.to = {
+    type = "path";
+    path = "${inputs.nixpkgs}";
+  };
+
   # The agent starts the software it tests in containers or small VMs.
   boot.enableContainers = true;
   boot.kernelModules = [ "kvm-intel" ];
@@ -257,6 +264,7 @@ in
     ripgrep
     tmux
     nixos-container
+    uv
   ]);
 
   # Claude Code keeps its own state and its credentials in ~/.claude. The home

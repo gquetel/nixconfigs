@@ -200,9 +200,7 @@ in
         inherit (cfg) mem disk;
       };
       config = import ./guest.nix;
-      # Runs here last for hours. A deploy must not cut one short, so config
-      # changes only apply when the VM is rebooted.
-      restartIfChanged = false;
+      restartIfChanged = true;
     };
 
     systemd.services."microvm@${vmName}" = {
