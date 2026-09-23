@@ -24,10 +24,10 @@
       "version_upper_bound": null,
       "release_prefix": null,
       "submodules": false,
-      "version": "v0.4.0",
-      "revision": "f8a595d8e747e34d0b0c768f08cb6e263963c615",
-      "url": "https://api.github.com/repos/zhaofengli/colmena/tarball/v0.4.0",
-      "hash": "sha256-01bfuSY4gnshhtqA1EJCw2CMsKkAx+dHS+sEpQ2+EAQ="
+      "version": "v0.5.0",
+      "revision": "fbba22a868342b065179e68ed2f79a10588dce49",
+      "url": "https://api.github.com/repos/zhaofengli/colmena/tarball/refs/tags/v0.5.0",
+      "hash": "sha256-YkaWZQV/OO4ZEmin+RHZ/6qFfBah/qSSXduTQMZTNR0="
     },
     "disko": {
       "type": "GitRelease",
@@ -54,9 +54,9 @@
       },
       "branch": "release-26.05",
       "submodules": false,
-      "revision": "fd0956c99c41ae3c13a73a638f1f7e963aebc4ab",
-      "url": "https://github.com/nix-community/home-manager/archive/fd0956c99c41ae3c13a73a638f1f7e963aebc4ab.tar.gz",
-      "hash": "sha256-sPpQFVaFTDqO/4vvCAhuAhqTgqN/ygu+9eJcs5eB0js="
+      "revision": "ec172013fa62135f58fb58dd17ae9651e8f39727",
+      "url": "https://github.com/nix-community/home-manager/archive/ec172013fa62135f58fb58dd17ae9651e8f39727.tar.gz",
+      "hash": "sha256-LWiBv9yAYFi2LPbUhDGHPGKYskJQjj2fw12OlyO1uQo="
     },
     "llm-agents": {
       "type": "Git",
@@ -67,9 +67,9 @@
       },
       "branch": "main",
       "submodules": false,
-      "revision": "6dfa856ce21ea57820962de08cdd2350a18c1598",
-      "url": "https://github.com/numtide/llm-agents.nix/archive/6dfa856ce21ea57820962de08cdd2350a18c1598.tar.gz",
-      "hash": "sha256-y+FZSBXT0XLO9hWTQSmVRoqT+qJaqgPK7tFUlngCisA="
+      "revision": "3a78485c5ec8c10ec53915410c724a4492cea4bb",
+      "url": "https://github.com/numtide/llm-agents.nix/archive/3a78485c5ec8c10ec53915410c724a4492cea4bb.tar.gz",
+      "hash": "sha256-Ho5xXKbluCp1lmvUkVwrN76fUW1NC3RARdNaFMGpEcY="
     },
     "microvm.nix": {
       "type": "Git",
@@ -80,9 +80,9 @@
       },
       "branch": "main",
       "submodules": false,
-      "revision": "804cbac7a462aa0fa8bb60c3d2fc4ead0a62060f",
-      "url": "https://github.com/astro/microvm.nix/archive/804cbac7a462aa0fa8bb60c3d2fc4ead0a62060f.tar.gz",
-      "hash": "sha256-iCLUJO5V2ZlEAlYxlkCZ5YLkyQrpkyXOMUTkPXjsdPk="
+      "revision": "b2fd8eb40192c4fefd16c26b979954f7d354d1aa",
+      "url": "https://github.com/astro/microvm.nix/archive/b2fd8eb40192c4fefd16c26b979954f7d354d1aa.tar.gz",
+      "hash": "sha256-aPNg2CKSPat+SjD20AXYyRAXsPH7fe5+N0ZYOhpjym0="
     },
     "nix-topology": {
       "type": "Git",
@@ -116,8 +116,8 @@
     "nixpkgs": {
       "type": "Channel",
       "name": "nixos-26.05",
-      "url": "https://releases.nixos.org/nixos/26.05/nixos-26.05.9227.c25784012c99/nixexprs.tar.xz",
-      "hash": "sha256-aVla+xR1lotA4iEMo6ltSr5oKVvWxBZ8Gc9KjbwxJq8="
+      "url": "https://releases.nixos.org/nixos/26.05/nixos-26.05.10402.1e8bc658fc98/nixexprs.tar.xz",
+      "hash": "sha256-GiMDMZpYQ2eK3OFtqj/yXpRZwqfu6JfG5WWrUHWyF8M="
     },
     "unstable": {
       "type": "Git",
@@ -128,9 +128,9 @@
       },
       "branch": "nixos-unstable",
       "submodules": false,
-      "revision": "dc5d91f840324650bac8c379428c7037a416959a",
-      "url": "https://github.com/nixos/nixpkgs/archive/dc5d91f840324650bac8c379428c7037a416959a.tar.gz",
-      "hash": "sha256-VaWGJ6+cIYN2erfSecbRV+4ljI185Ty2wUrXyvQbgOw="
+      "revision": "6774f7bc253789b113a4f39285dc0fa100abeacc",
+      "url": "https://github.com/nixos/nixpkgs/archive/6774f7bc253789b113a4f39285dc0fa100abeacc.tar.gz",
+      "hash": "sha256-MYiI+CzL0tuWgRPjGsKCDHqYs2T3OzMlMQWOYWG0qso="
     }
   },
   "version": 7
