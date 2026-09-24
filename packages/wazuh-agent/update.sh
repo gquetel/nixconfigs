@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Pin one Wazuh release for the whole cluster: the agent sources
-# (packages/wazuh-agent/sources.json) and the manager image
-# (modules/wazuh-manager/image.json).
+# (packages/wazuh-agent/sources.json) and the manager, indexer and dashboard
+# images (modules/wazuh-manager/image.json).
 #
 # Usage: packages/wazuh-agent/update.sh <version>, e.g. 4.14.8
 # Needs curl, git and nix. Deploy the manager (garmr) before the agents.
@@ -45,15 +45,21 @@ echo "wazuh $version: DEPS_VERSION=$deps_version, $(wc -w <<<"$deps") deps" >&2
 mv "$here/sources.json.new" "$here/sources.json"
 
 # Digest of the multi-arch index, so podman pulls exactly this image.
-token=$(curl -sf "https://auth.docker.io/token?service=registry.docker.io&scope=repository:wazuh/wazuh-manager:pull" |
-  sed -E 's/.*"token":"([^"]+)".*/\1/')
-digest=$(curl -sfI -H "Authorization: Bearer $token" \
-  -H "Accept: application/vnd.oci.image.index.v1+json" \
-  -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
-  "https://registry-1.docker.io/v2/wazuh/wazuh-manager/manifests/$version" |
-  sed -n 's/^docker-content-digest: *//Ip' | tr -d '\r')
-printf '{\n  "version": "%s",\n  "digest": "%s",\n  "configHash": "%s"\n}\n' "$version" "$digest" \
+digest() {
+  local token
+  token=$(curl -sf "https://auth.docker.io/token?service=registry.docker.io&scope=repository:wazuh/$1:pull" |
+    sed -E 's/.*"token":"([^"]+)".*/\1/')
+  curl -sfI -H "Authorization: Bearer $token" \
+    -H "Accept: application/vnd.oci.image.index.v1+json" \
+    -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" \
+    "https://registry-1.docker.io/v2/wazuh/$1/manifests/$version" |
+    sed -n 's/^docker-content-digest: *//Ip' | tr -d '\r'
+}
+
+printf '{\n  "version": "%s",\n  "configHash": "%s",\n  "digests": {\n    "manager": "%s",\n    "indexer": "%s",\n    "dashboard": "%s"\n  }\n}\n' \
+  "$version" \
   "$(prefetch "https://raw.githubusercontent.com/wazuh/wazuh-docker/v$version/single-node/config/wazuh_cluster/wazuh_manager.conf")" \
+  "$(digest wazuh-manager)" "$(digest wazuh-indexer)" "$(digest wazuh-dashboard)" \
   >"$repo/modules/wazuh-manager/image.json"
 
 echo "Updated sources.json and image.json to $version." >&2

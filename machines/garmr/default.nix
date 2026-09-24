@@ -197,7 +197,10 @@
   grafana.enable = true;
   plane.enable = true;
   prometheus.enable = true;
-  wazuh-manager.enable = true;
+  wazuh-manager = {
+    enable = true;
+    admins = [ "gquetel@mail.foo.gq" ];
+  };
 
   prometheus_exporter = {
     node = {

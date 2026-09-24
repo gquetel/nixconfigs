@@ -62,4 +62,13 @@ in
   "agent-secrets.env.age".publicKeys = [ system-vapula ] ++ users;
   # Wazuh enrollment password: authd on garmr and every agent.
   "wazuh-authd.pass.age".publicKeys = servers ++ workstations ++ users;
+  # Wazuh server service accounts (garmr): INDEXER_PASSWORD, DASHBOARD_PASSWORD,
+  # API_PASSWORD, one KEY=VALUE line each.
+  "wazuh-server.env.age".publicKeys = [ system-garmr ] ++ users;
+  # Dex client secret of the Wazuh dashboard: Dex on strix, dashboard on garmr.
+  "dex-wazuh-secret.age".publicKeys = [
+    system-strix
+    system-garmr
+  ]
+  ++ users;
 }
