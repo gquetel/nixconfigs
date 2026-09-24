@@ -31,6 +31,7 @@ in
     ../../modules/mullvad
     ../../modules/hermes
     ../../modules/agent-vm
+    ../../modules/wazuh-agent
 
     # ../../modules/systemd-resolved
     "${(import ../../npins).agenix}/modules/age.nix"

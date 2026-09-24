@@ -126,6 +126,24 @@
   # ---------------- Custom modules ----------------
   hm.enable = true;
 
+  # ---------------- openssh ----------------
+  # Enabled for its host key, which agenix uses to decrypt secrets. The port
+  # stays closed, except on the trusted tailscale0 interface.
+  # TODO: Wazuh agent. After the first deploy with openssh, add
+  # /etc/ssh/ssh_host_ed25519_key.pub as system-charybdis to `workstations` in
+  # secrets/secrets.nix, encrypt wazuh-authd.pass.age again, then import
+  # ../../modules/wazuh-agent (as on scylla). `agenix -e` does not rewrite an
+  # unchanged secret; in secrets/, use:
+  #   agenix -d wazuh-authd.pass.age | age -o wazuh-authd.pass.age.new \
+  #     -R <(nix-instantiate --eval --strict --json -E \
+  #       '(import ./secrets.nix)."wazuh-authd.pass.age".publicKeys' | jq -r '.[]')
+  #   mv wazuh-authd.pass.age.new wazuh-authd.pass.age
+  services.openssh = {
+    enable = true;
+    openFirewall = false;
+    settings.PasswordAuthentication = false;
+  };
+
   # ---------------- Custom services  ----------------
   virtualisation.docker = {
     enable = true;

@@ -46,6 +46,7 @@ rec {
               nixpkgs.overlays = [
                 (final: prev: {
                   unstable = import inputs.unstable { config.allowUnfree = true; };
+                  wazuh-agent = final.callPackage ./packages/wazuh-agent/package.nix { };
                 })
               ];
             }
@@ -72,5 +73,10 @@ rec {
       }
       ./topology.nix
     ];
+  };
+
+  # NixOS VM tests of local modules. Run: nix-build -A tests.<name>
+  tests = {
+    wazuh-agent = pkgs.testers.runNixOSTest ./tests/wazuh-agent.nix;
   };
 }

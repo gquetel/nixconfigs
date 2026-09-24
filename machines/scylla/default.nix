@@ -13,6 +13,7 @@
     ../../modules/fonts
     ../../modules/tailscale
     ../../modules/home-manager
+    ../../modules/wazuh-agent
     ../../modules/languagetool
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
@@ -185,6 +186,15 @@
       dconf.settings."org/gnome/desktop/input-sources".xkb-options = [ "fixkeys" ];
     };
   #  ---------------- End SLOP ----------------
+
+  # ---------------- openssh ----------------
+  # Enabled for its host key, which agenix uses to decrypt secrets. The port
+  # stays closed, except on the trusted tailscale0 interface.
+  services.openssh = {
+    enable = true;
+    openFirewall = false;
+    settings.PasswordAuthentication = false;
+  };
 
   # ---------------- Custom services  ----------------
   environment.systemPackages = with pkgs; [
