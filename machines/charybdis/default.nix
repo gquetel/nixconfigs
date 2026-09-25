@@ -126,6 +126,15 @@
   # ---------------- Custom modules ----------------
   hm.enable = true;
 
+  # This is so that agenix decrypts with the SSH host key. We enable 
+  # openssh but don't open firewall nor enable auth. 
+  # TODO: Add key to wazuh.
+  services.openssh = {
+    enable = true;
+    openFirewall = false;
+    settings.PasswordAuthentication = false;
+  };
+
   # ---------------- Custom services  ----------------
   virtualisation.docker = {
     enable = true;

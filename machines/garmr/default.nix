@@ -20,6 +20,8 @@
     ../../modules/plane
     ../../modules/prometheus
     ../../modules/prometheus-exporters
+    ../../modules/wazuh-agent
+    ../../modules/wazuh-manager
     # ../../modules/systemd-resolved
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
@@ -195,6 +197,10 @@
   grafana.enable = true;
   plane.enable = true;
   prometheus.enable = true;
+  wazuh-manager = {
+    enable = true;
+    admins = [ "gquetel@mail.foo.gq" ];
+  };
 
   prometheus_exporter = {
     node = {

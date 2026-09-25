@@ -4,14 +4,18 @@ let
   system-strix = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEvHay0sNHYnR3of3Kb+shjU6F6aBhvvTnKoIjdfhw75 root@strix";
   system-garmr = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINyVDTeg/odX9AQso1e9yyFXUNwrxIU/XQGMmHJHZ59X root@garmr";
   system-vapula = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJS3TWYs0F4beUVQHE4XXBi+0jqI/stwN7FVx6AK9E/Q root@nixos";
+  system-scylla = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK7rePqrc63RwbDDBA1K6cwfvs43XWnGuwmByure5XBA root@scylla";
 
   gquetel-scylla = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICK/iZJoWOdOasaD28jedexzjVc4tHosDTEYFIG/i9Fc gquetel@scylla";
   gquetel-charybdis = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGI/nKCR/pq8yHrDdlQ3ml1jcio0Npxm5D7vJlG4QaDi gquetel@charybdis";
 
   servers = [
     system-strix
-    system-garmr.age
+    system-garmr
     system-vapula
+  ];
+  workstations = [
+    system-scylla
   ];
   users = [
     gquetel-scylla
@@ -56,4 +60,15 @@ in
   # The agent VM's own keys (EnvironmentFile): CLAUDE_CODE_OAUTH_TOKEN and
   # AGENT_RUNTIME_TOKEN, one KEY=VALUE line each.
   "agent-secrets.env.age".publicKeys = [ system-vapula ] ++ users;
+  # Wazuh enrollment password: authd on garmr and every agent.
+  "wazuh-authd.pass.age".publicKeys = servers ++ workstations ++ users;
+  # Wazuh server service accounts (garmr): INDEXER_PASSWORD, DASHBOARD_PASSWORD,
+  # API_PASSWORD, one KEY=VALUE line each.
+  "wazuh-server.env.age".publicKeys = [ system-garmr ] ++ users;
+  # Dex client secret of the Wazuh dashboard: Dex on strix, dashboard on garmr.
+  "dex-wazuh-secret.age".publicKeys = [
+    system-strix
+    system-garmr
+  ]
+  ++ users;
 }

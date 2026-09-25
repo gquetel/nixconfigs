@@ -29,6 +29,7 @@ in
     ../../modules/mlflow
     ../../modules/prometheus-exporters
     ../../modules/uptime-kuma
+    ../../modules/wazuh-agent
 
     "${(import ../../npins).agenix}/modules/age.nix"
   ];

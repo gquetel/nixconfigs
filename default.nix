@@ -46,6 +46,7 @@ rec {
               nixpkgs.overlays = [
                 (final: prev: {
                   unstable = import inputs.unstable { config.allowUnfree = true; };
+                  wazuh-agent = final.callPackage ./packages/wazuh-agent/package.nix { };
                 })
               ];
             }
@@ -72,5 +73,9 @@ rec {
       }
       ./topology.nix
     ];
+  };
+
+  tests = {
+    wazuh-agent = pkgs.testers.runNixOSTest ./tests/wazuh-agent.nix;
   };
 }

@@ -38,6 +38,12 @@ in
           redirectURIs = [ "https://hermes.mesh.gq/oauth2/callback" ];
           secretFile = config.age.secrets.dex-hermes-secret.path;
         }
+        {
+          id = "wazuh";
+          name = "Wazuh Client";
+          redirectURIs = [ "https://wazuh.mesh.gq/auth/openid/login" ];
+          secretFile = config.age.secrets.dex-wazuh-secret.path;
+        }
       ];
       staticPasswords = [
         {
@@ -86,4 +92,5 @@ in
   # Hermes runs on vapula, not strix, so its module (which normally owns this
   # secret) is never imported here to provide it.
   age.secrets.dex-hermes-secret.file = ../../secrets/dex-hermes-secret.age;
+  age.secrets.dex-wazuh-secret.file = ../../secrets/dex-wazuh-secret.age;
 }

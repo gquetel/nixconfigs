@@ -1,0 +1,9 @@
+{
+  "version": "4.14.7",
+  "configHash": "sha256-sTegA8YXruSpgOnrEyztNMdGp4BwiaZ6EH27rnRRj84=",
+  "digests": {
+    "manager": "sha256:e32fe983f83b9ee1f14d8e4f061848244a21c4f678d278d13f91ff6079961d6f",
+    "indexer": "sha256:1b85f946cc7c6530ffc34b5a2f4471ef533a17e6262f97b75dc794c3f2b8c0a0",
+    "dashboard": "sha256:860f45d7878fcf34e42616bbceb91e8aa726b6108d0c7469e554e47648d28d43"
+  }
+}

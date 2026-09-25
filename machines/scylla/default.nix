@@ -13,6 +13,7 @@
     ../../modules/fonts
     ../../modules/tailscale
     ../../modules/home-manager
+    ../../modules/wazuh-agent
     ../../modules/languagetool
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
@@ -185,6 +186,14 @@
       dconf.settings."org/gnome/desktop/input-sources".xkb-options = [ "fixkeys" ];
     };
   #  ---------------- End SLOP ----------------
+
+  # This is so that agenix decrypts with the SSH host key. We enable 
+  # openssh but don't open firewall nor enable auth. 
+  services.openssh = {
+    enable = true;
+    openFirewall = false;
+    settings.PasswordAuthentication = false;
+  };
 
   # ---------------- Custom services  ----------------
   environment.systemPackages = with pkgs; [

@@ -75,6 +75,11 @@
             type = "A";
             value = nodes.garmr.config.machine.meta.ipTailscale;
           }
+          {
+            name = "wazuh.mesh.gq";
+            type = "A";
+            value = nodes.garmr.config.machine.meta.ipTailscale;
+          }
 
           {
             name = "mlflow.mesh.gq";
