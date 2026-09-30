@@ -10,6 +10,7 @@
     ../../modules/tailscale
     # ../../modules/languagetool
     ../../modules/home-manager
+    ../../modules/wazuh-agent
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
 
@@ -128,7 +129,6 @@
 
   # This is so that agenix decrypts with the SSH host key. We enable 
   # openssh but don't open firewall nor enable auth. 
-  # TODO: Add key to wazuh.
   services.openssh = {
     enable = true;
     openFirewall = false;

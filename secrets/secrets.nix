@@ -5,6 +5,7 @@ let
   system-garmr = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINyVDTeg/odX9AQso1e9yyFXUNwrxIU/XQGMmHJHZ59X root@garmr";
   system-vapula = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJS3TWYs0F4beUVQHE4XXBi+0jqI/stwN7FVx6AK9E/Q root@nixos";
   system-scylla = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK7rePqrc63RwbDDBA1K6cwfvs43XWnGuwmByure5XBA root@scylla";
+  system-charybdis = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICXm/0/TLnyVSnVIfZeMJv++ubX4nMJCTrK92sTYzDHN root@charybdis";
 
   gquetel-scylla = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICK/iZJoWOdOasaD28jedexzjVc4tHosDTEYFIG/i9Fc gquetel@scylla";
   gquetel-charybdis = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGI/nKCR/pq8yHrDdlQ3ml1jcio0Npxm5D7vJlG4QaDi gquetel@charybdis";
@@ -16,6 +17,7 @@ let
   ];
   workstations = [
     system-scylla
+    system-charybdis
   ];
   users = [
     gquetel-scylla
