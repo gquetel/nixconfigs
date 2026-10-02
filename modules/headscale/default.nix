@@ -88,6 +88,12 @@
           }
 
           {
+            name = "papers.mesh.gq";
+            type = "A";
+            value = nodes.strix.config.machine.meta.ipTailscale;
+          }
+
+          {
             name = nodes.vapula.config.hermes.host;
             type = "A";
             value = nodes.vapula.config.machine.meta.ipTailscale;

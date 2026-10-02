@@ -27,6 +27,7 @@ in
     ../../modules/servers
     ../../modules/plausible
     ../../modules/mlflow
+    ../../modules/paperhippo
     ../../modules/prometheus-exporters
     ../../modules/uptime-kuma
     ../../modules/wazuh-agent

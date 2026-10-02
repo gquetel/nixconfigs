@@ -36,6 +36,8 @@ in
   "dex-mlflow-secret.age".publicKeys = [ system-strix ] ++ users;
   "mlflow-session-key.age".publicKeys = [ system-strix ] ++ users;
   "plausible-secret-key-base.age".publicKeys = [ system-strix ] ++ users;
+  # paperhippo LLM credentials (EnvironmentFile): LLM_API_KEY=…
+  "paperhippo-env.age".publicKeys = [ system-strix ] ++ users;
 
   # Secrets for garmr machine
   "step-ca.pwd.age".publicKeys = [ system-garmr ] ++ users;
