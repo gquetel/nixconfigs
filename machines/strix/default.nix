@@ -61,8 +61,10 @@ in
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICK/iZJoWOdOasaD28jedexzjVc4tHosDTEYFIG/i9Fc gquetel@scylla"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGI/nKCR/pq8yHrDdlQ3ml1jcio0Npxm5D7vJlG4QaDi gquetel@charybdis"
-      # TODO: Make this login to a separate user.
+      # Scholarsec deploy.
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMj/R2lRH0XRspKGInAI/glUtV0EodRT2fRzW2cC4M3g github-deploy-key"
+      # GH Website deployment with restricted rights.
+      ''command="${pkgs.rrsync}/bin/rrsync -wo /var/www/html/gquetel.fr",restrict ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHkmeypF0OLB+L1c6RGZTOgkyf0j9BMYAqotbBtSMc2i web-deploy''
     ];
   };
 
