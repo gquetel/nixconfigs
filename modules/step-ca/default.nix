@@ -80,7 +80,6 @@
   # headscale answers, and headscale is served by nginx on this host.
   boot.kernel.sysctl."net.ipv4.ip_nonlocal_bind" = 1;
 
-  security.acme.acceptTerms = true;
   security.acme.defaults.renewInterval = "hourly";
 
   # Certificate for this Vhost will be located under: /var/lib/acme/ca.mesh.gq

@@ -27,7 +27,6 @@ in
     ../../modules/mediaserver
     ../../modules/tailscale
     ../../modules/servers
-    ../../modules/prometheus-exporters
     ../../modules/mullvad
     ../../modules/hermes
     ../../modules/agent-vm
@@ -58,26 +57,6 @@ in
   # ---------------- My config  ----------------
   machine.meta = {
     ipTailscale = "100.64.0.2";
-  };
-
-  users.users.gquetel = {
-    isNormalUser = true;
-    description = "gquetel";
-    extraGroups = [
-      "wheel"
-      "nginx"
-    ];
-    openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICK/iZJoWOdOasaD28jedexzjVc4tHosDTEYFIG/i9Fc gquetel@scylla"
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGI/nKCR/pq8yHrDdlQ3ml1jcio0Npxm5D7vJlG4QaDi gquetel@charybdis"
-    ];
-  };
-
-  users.users.root = {
-    openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICK/iZJoWOdOasaD28jedexzjVc4tHosDTEYFIG/i9Fc gquetel@scylla"
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGI/nKCR/pq8yHrDdlQ3ml1jcio0Npxm5D7vJlG4QaDi gquetel@charybdis"
-    ];
   };
 
   # ---------------- ZFS  ----------------
@@ -118,41 +97,12 @@ in
       ip6tables -A nixos-fw -p tcp --dport 443 -s 2a01:cb00:253:ed00::3 -j nixos-fw-accept
       ip6tables -A nixos-fw -p tcp --dport 444 -s 2a01:cb00:253:ed00::3 -j nixos-fw-accept
     '';
-    useNetworkd = true;
   };
 
-  systemd.network = {
-    networks."10-wired" = {
-      # Match device name.
-      matchConfig.Name = "enp0s31f6";
-      # TODO: Single variable holding DNS servers provided to resolved
-      dns = [
-        "80.67.169.12"
-        "1.1.1.1"
-        "80.67.169.40"
-
-        "9.9.9.9"
-        "1.0.0.1"
-        "149.112.112.112"
-      ];
-
-      # static IPv4 or IPv6 addresses and their prefix length
-      addresses = [
-        { Address = "192.168.1.37/24"; }
-        { Address = "2a01:cb00:253:ed00::0007/64"; }
-      ];
-
-      # Routes define where to route a packet (Gateway) given a destination range.
-      routes = [
-        {
-          Gateway = "192.168.1.1";
-          Destination = "0.0.0.0/0";
-        }
-      ];
-      # make routing on this interface a dependency for network-online.target
-      linkConfig.RequiredForOnline = "routable";
-    };
-  };
+  servers.lanAddresses = [
+    "192.168.1.37/24"
+    "2a01:cb00:253:ed00::0007/64"
+  ];
 
   # ----------------- Drivers -----------------
   # This permit ffmpeg to transcode using hardware acceleration
@@ -181,37 +131,9 @@ in
     };
   };
 
-  services.nginx = {
-    enable = true;
-    logError = "/var/log/nginx/error.log error";
-    # Set headers for the proxied server such as X-Forwarded-For.
-    # See, code for modified headers:
-    # https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/web-servers/nginx/default.nix
-    recommendedProxySettings = true;
-
-    appendHttpConfig = ''
-      log_format vcombined '$host:$server_port '
-              '$remote_addr - $remote_user [$time_local] '
-              '"$request" $status $body_bytes_sent '
-              '"$http_referer" "$http_user_agent"';
-
-      access_log /var/log/nginx/access.log vcombined;
-
-      #  Defines trusted addresses that are known to send correct replacement addresses
-      set_real_ip_from 2a01:cb00:253:ed00::3;
-
-      # Defines the request header field whose value will be used to replace the client address.
-      real_ip_header proxy_protocol;
-    '';
-  };
   systemd.services.nginx = {
     after = [ "tailscale-online.service" ];
     requires = [ "tailscale-online.service" ];
-  };
-
-  security.acme = {
-    acceptTerms = true;
-    defaults.email = "gregor.quetel@gquetel.fr";
   };
 
   # ---------------- Modules ----------------
@@ -248,15 +170,6 @@ in
     filesystems.mmedia = "/mmedia";
   };
 
-  prometheus_exporter = {
-    node = {
-      enable = true;
-      addr = config.machine.meta.ipTailscale;
-    };
-    nginx = {
-      enable = true;
-    };
-  };
   # ---------------- age secrets ----------------
 
   # The agent VM's own keys: CLAUDE_CODE_OAUTH_TOKEN, made with

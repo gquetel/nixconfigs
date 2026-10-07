@@ -241,9 +241,7 @@ in
       "docker"
       "wheel"
     ];
-    openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICK/iZJoWOdOasaD28jedexzjVc4tHosDTEYFIG/i9Fc gquetel@scylla"
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGI/nKCR/pq8yHrDdlQ3ml1jcio0Npxm5D7vJlG4QaDi gquetel@charybdis"
+    openssh.authorizedKeys.keys = builtins.attrValues (import ../../keys.nix) ++ [
       # The host, for `agent-run`.
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKd5Lwiv2fv6BBmJ4Pb/ttQpsuyqWQbbg2LvxKQuF1OM vapula@gquetel.fr"
     ];

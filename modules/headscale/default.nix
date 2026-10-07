@@ -94,11 +94,6 @@
     };
   };
 
-  security.acme = {
-    acceptTerms = true;
-    defaults.email = "gregor.quetel@gquetel.fr";
-  };
-
   services.nginx.virtualHosts."mesh.gquetel.fr" = {
     forceSSL = true;
     enableACME = true;

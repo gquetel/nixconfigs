@@ -1,4 +1,4 @@
-{ config, ... }:
+{ ... }:
 
 {
   imports = [
@@ -14,7 +14,6 @@
     ../../modules/grafana
     ../../modules/plane
     ../../modules/prometheus
-    ../../modules/prometheus-exporters
     ../../modules/wazuh-agent
     ../../modules/wazuh-manager
     "${(import ../../npins).agenix}/modules/age.nix"
@@ -44,66 +43,12 @@
     ipTailscale = "100.64.0.5";
   };
 
-  users.users.gquetel = {
-    isNormalUser = true;
-    description = "gquetel";
-    extraGroups = [
-      "nginx"
-      "wheel"
-    ];
-    openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICK/iZJoWOdOasaD28jedexzjVc4tHosDTEYFIG/i9Fc gquetel@scylla"
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGI/nKCR/pq8yHrDdlQ3ml1jcio0Npxm5D7vJlG4QaDi gquetel@charybdis"
-    ];
-  };
-
-  users.users.root = {
-    openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICK/iZJoWOdOasaD28jedexzjVc4tHosDTEYFIG/i9Fc gquetel@scylla"
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGI/nKCR/pq8yHrDdlQ3ml1jcio0Npxm5D7vJlG4QaDi gquetel@charybdis"
-    ];
-  };
   # ---------------- Networking  ----------------
-  # systemd-networkd should be prefered over "scripted networking". Refs:
-  # - https://wiki.archlinux.org/title/Systemd-networkd
-  # - https://wiki.nixos.org/wiki/Systemd/networkd
-  # - https://man7.org/linux/man-pages/man5/systemd.netdev.5.html For networks configs.
-
-  networking.useNetworkd = true;
-  systemd.network = {
-    networks."10-wired" = {
-      # Match device name.
-      matchConfig.Name = "enp0s31f6";
-      # static IPv4 or IPv6 addresses and their prefix length
-      addresses = [
-        { Address = "192.168.1.28/24"; }
-        { Address = "2a01:cb00:253:ed00::0005/64"; }
-      ];
-
-      # TODO: Single variable holding DNS servers provided to resolved
-      dns = [
-        "80.67.169.12"
-        "1.1.1.1"
-        "80.67.169.40"
-
-        "9.9.9.9"
-        "1.0.0.1"
-        "149.112.112.112"
-      ];
-
-      # Routes define where to route a packet (Gateway) given a destination range.
-      routes = [
-        {
-          Gateway = "192.168.1.1";
-          Destination = "0.0.0.0/0";
-        }
-      ];
-      # make routing on this interface a dependency for network-online.target
-      linkConfig.RequiredForOnline = "routable";
-
-      networkConfig.IPv6AcceptRA = true;
-    };
-  };
+  servers.lanAddresses = [
+    "192.168.1.28/24"
+    "2a01:cb00:253:ed00::0005/64"
+  ];
+  systemd.network.networks."10-wired".networkConfig.IPv6AcceptRA = true;
 
   networking = {
     hostName = "garmr";
@@ -132,28 +77,6 @@
     };
   };
 
-  services.nginx = {
-    enable = true;
-    logError = "/var/log/nginx/error.log error";
-    # Set headers for the proxied server such as X-Forwarded-For.
-    # See, code for modified headers:
-    # https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/web-servers/nginx/default.nix
-    recommendedProxySettings = true;
-
-    appendHttpConfig = ''
-      log_format vcombined '$host:$server_port '
-              '$remote_addr - $remote_user [$time_local] '
-              '"$request" $status $body_bytes_sent '
-              '"$http_referer" "$http_user_agent"';
-
-      access_log /var/log/nginx/access.log vcombined;
-      #  Defines trusted addresses that are known to send correct replacement addresses
-      set_real_ip_from 2a01:cb00:253:ed00::3;
-
-      # Defines the request header field whose value will be used to replace the client address.
-      real_ip_header proxy_protocol;
-    '';
-  };
   # ---------------- Modules ----------------
   programs.rust-motd.settings.service_status = {
     headscale = "headscale";
@@ -169,16 +92,6 @@
   wazuh-manager = {
     enable = true;
     admins = [ "gquetel@mail.foo.gq" ];
-  };
-
-  prometheus_exporter = {
-    node = {
-      enable = true;
-      addr = config.machine.meta.ipTailscale;
-    };
-    nginx = {
-      enable = true;
-    };
   };
 
   # ---------------- age secrets ----------------

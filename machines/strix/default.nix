@@ -25,7 +25,6 @@ in
     ../../modules/servers
     ../../modules/plausible
     ../../modules/mlflow
-    ../../modules/prometheus-exporters
     ../../modules/uptime-kuma
     ../../modules/wazuh-agent
 
@@ -47,29 +46,15 @@ in
 
   users.users.gquetel = {
     hashedPasswordFile = config.age.secrets.gquetel-strix.path;
-    isNormalUser = true;
-    extraGroups = [
-      "wheel"
-      "nginx"
-    ];
     packages = [
       llmAgents."claude-code"
       llmAgents.codex
     ];
     openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICK/iZJoWOdOasaD28jedexzjVc4tHosDTEYFIG/i9Fc gquetel@scylla"
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGI/nKCR/pq8yHrDdlQ3ml1jcio0Npxm5D7vJlG4QaDi gquetel@charybdis"
       # Scholarsec deploy.
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMj/R2lRH0XRspKGInAI/glUtV0EodRT2fRzW2cC4M3g github-deploy-key"
       # GH Website deployment with restricted rights.
       ''command="${pkgs.rrsync}/bin/rrsync -wo /var/www/html/gquetel.fr",restrict ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHkmeypF0OLB+L1c6RGZTOgkyf0j9BMYAqotbBtSMc2i web-deploy''
-    ];
-  };
-
-  users.users.root = {
-    openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICK/iZJoWOdOasaD28jedexzjVc4tHosDTEYFIG/i9Fc gquetel@scylla"
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGI/nKCR/pq8yHrDdlQ3ml1jcio0Npxm5D7vJlG4QaDi gquetel@charybdis"
     ];
   };
 
@@ -84,55 +69,22 @@ in
     ];
   };
 
-  # systemd-networkd should be prefered over "scripted networking". Refs:
-  # - https://wiki.archlinux.org/title/Systemd-networkd
-  # - https://wiki.nixos.org/wiki/Systemd/networkd
-  # - https://man7.org/linux/man-pages/man5/systemd.netdev.5.html For networks configs.
-
-  networking.useNetworkd = true;
-
-  systemd.network = {
-    networks."10-wired" = {
-      # Match device name.
-      matchConfig.Name = "enp0s31f6";
-      # TODO: Single variable holding DNS servers provided to resolved
-      dns = [
-        "80.67.169.12"
-        "1.1.1.1"
-        "80.67.169.40"
-
-        "9.9.9.9"
-        "1.0.0.1"
-        "149.112.112.112"
-      ];
-
-      # static IPv4 or IPv6 addresses and their prefix length
-      addresses = [
-        { Address = "192.168.1.33/24"; }
-        { Address = "2a01:cb00:253:ed00::0003/64"; }
-      ];
-
-      # Routes define where to route a packet (Gateway) given a destination range.
-      routes = [
-        {
-          Gateway = "192.168.1.1";
-          Destination = "0.0.0.0/0";
-        }
-        # Theses makes sure that when redirecting traffic, we use this IP and
-        # not the privacy preserving ones.
-        {
-          Destination = "2a01:cb00:253:ed00::5/128";
-          PreferredSource = "2a01:cb00:253:ed00::3";
-        }
-        {
-          Destination = "2a01:cb00:253:ed00::7/128";
-          PreferredSource = "2a01:cb00:253:ed00::3";
-        }
-      ];
-      # make routing on this interface a dependency for network-online.target
-      linkConfig.RequiredForOnline = "routable";
-    };
-  };
+  servers.lanAddresses = [
+    "192.168.1.33/24"
+    "2a01:cb00:253:ed00::0003/64"
+  ];
+  # Theses makes sure that when redirecting traffic, we use this IP and
+  # not the privacy preserving ones.
+  systemd.network.networks."10-wired".routes = [
+    {
+      Destination = "2a01:cb00:253:ed00::5/128";
+      PreferredSource = "2a01:cb00:253:ed00::3";
+    }
+    {
+      Destination = "2a01:cb00:253:ed00::7/128";
+      PreferredSource = "2a01:cb00:253:ed00::3";
+    }
+  ];
 
   # Colmena deployment info
   deployment.targetHost = "strix";
@@ -168,28 +120,9 @@ in
 
   # ------------ Nginx ------------
   services.nginx = {
-    enable = true;
-    logError = "/var/log/nginx/error.log error";
-    # Set headers for the proxied server such as X-Forwarded-For.
-    # See, code for modified headers:
-    # https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/web-servers/nginx/default.nix
-    recommendedProxySettings = true;
-
+    # The SNI proxy below sends from loopback.
     appendHttpConfig = ''
-      log_format vcombined '$host:$server_port '
-              '$remote_addr - $remote_user [$time_local] '
-              '"$request" $status $body_bytes_sent '
-              '"$http_referer" "$http_user_agent"';
-
-      access_log /var/log/nginx/access.log vcombined;
-
-      #  Defines addresses that are known to send correct replacement addresses
-      set_real_ip_from 2a01:cb00:253:ed00::3;
       set_real_ip_from ::1;
-
-
-      # Defines the request header field whose value will be used to replace the client address.
-      real_ip_header proxy_protocol;
     '';
 
     streamConfig = ''
@@ -251,11 +184,6 @@ in
     ];
     locations."/.well-known/acme-challenge/".proxyPass = "http://[2a01:cb00:253:ed00::5]";
     locations."/".return = "404";
-  };
-
-  security.acme = {
-    acceptTerms = true;
-    defaults.email = "gregor.quetel@gquetel.fr";
   };
 
   services.nginx.virtualHosts."gquetel.fr" = {
@@ -387,16 +315,6 @@ in
     prometheus_node_exporter = "prometheus-node-exporter";
     mlflow = "mlflow";
     uptime-kuma = "uptime-kuma";
-  };
-
-  prometheus_exporter = {
-    node = {
-      enable = true;
-      addr = config.machine.meta.ipTailscale;
-    };
-    nginx = {
-      enable = true;
-    };
   };
 
   # This option defines the first version of NixOS you have installed on this particular machine,
