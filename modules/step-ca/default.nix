@@ -116,7 +116,6 @@
   security.acme.certs."ca.mesh.gq" = {
     # ACME Directory Resource URI: CA API URI.
     server = "https://100.64.0.5:6060/acme/acme/directory";
-    webroot = "/var/lib/acme/acme-challenge";
   };
 
   environment.systemPackages = with pkgs; [

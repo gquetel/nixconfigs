@@ -7,14 +7,10 @@
 {
 
   # ----------------- mediaserver user & group -----------------
-  users.groups.mediaserver = {
-    name = "mediaserver";
-  };
+  users.groups.mediaserver = { };
 
   users.users.mediaserver = {
-    name = "mediaserver";
     isNormalUser = true;
-    home = "/home/mediaserver";
     group = "mediaserver";
   };
 

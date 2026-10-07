@@ -8,40 +8,23 @@ with lib;
 
 let
   cfg = config.uptime-kuma;
+  domain = "status.gquetel.fr";
+  port = 3001;
+  addr = "127.0.0.1";
 in
 {
-  options.uptime-kuma = {
-    enable = mkEnableOption "Uptime Kuma status page and monitoring service";
-
-    domain = mkOption {
-      type = types.str;
-      default = "status.gquetel.fr";
-      description = "Public domain name of the status page.";
-    };
-
-    port = mkOption {
-      type = types.int;
-      default = 3001;
-      description = "Loopback port that Uptime Kuma listens on.";
-    };
-
-    addr = mkOption {
-      type = types.str;
-      default = "127.0.0.1";
-      description = "Address that Uptime Kuma binds to.";
-    };
-  };
+  options.uptime-kuma.enable = mkEnableOption "Uptime Kuma status page and monitoring service";
 
   config = mkIf cfg.enable {
     services.uptime-kuma = {
       enable = true;
       settings = {
-        HOST = cfg.addr;
-        PORT = toString cfg.port;
+        HOST = addr;
+        PORT = toString port;
       };
     };
 
-    services.nginx.virtualHosts.${cfg.domain} = {
+    services.nginx.virtualHosts.${domain} = {
       forceSSL = true;
       enableACME = true;
       listen = [
@@ -64,7 +47,7 @@ in
       locations."/" = {
         # The dashboard speaks socket.io.
         proxyWebsockets = true;
-        proxyPass = "http://${cfg.addr}:${toString cfg.port}";
+        proxyPass = "http://${addr}:${toString port}";
       };
     };
   };

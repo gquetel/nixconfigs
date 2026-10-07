@@ -14,7 +14,6 @@
   # enable the option "Run untagged jobs" on the runner options in the web interface.
   # Then, create a .env file with given values.
 
-  boot.kernel.sysctl."net.ipv4.ip_forward" = true; # Required for cloning
   virtualisation.docker.enable = true;
 
   services.gitlab-runner = {

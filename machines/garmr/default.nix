@@ -58,9 +58,6 @@
   };
 
   users.users.root = {
-    description = "System administrator";
-    home = "/root";
-    group = "root";
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICK/iZJoWOdOasaD28jedexzjVc4tHosDTEYFIG/i9Fc gquetel@scylla"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGI/nKCR/pq8yHrDdlQ3ml1jcio0Npxm5D7vJlG4QaDi gquetel@charybdis"
@@ -74,8 +71,6 @@
 
   networking.useNetworkd = true;
   systemd.network = {
-    enable = true;
-
     networks."10-wired" = {
       # Match device name.
       matchConfig.Name = "enp0s31f6";
