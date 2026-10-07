@@ -1,10 +1,4 @@
-{
-  lib,
-  config,
-  pkgs,
-  nodes,
-  ...
-}:
+{ config, nodes, ... }:
 {
   # Headscale server setup. References:
   # - [1] https://headscale.net/stable/setup/requirements/

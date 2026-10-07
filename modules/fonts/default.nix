@@ -1,9 +1,4 @@
-{
-  lib,
-  config,
-  pkgs,
-  ...
-}:
+{ pkgs, ... }:
 
 let
   marianne = pkgs.stdenv.mkDerivation {

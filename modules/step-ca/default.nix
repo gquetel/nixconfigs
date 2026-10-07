@@ -1,9 +1,4 @@
-{
-  lib,
-  config,
-  pkgs,
-  ...
-}:
+{ config, pkgs, ... }:
 {
   # Some internal (tailnet) web applications cannot use Let's encrypt to generate
   # certificate: we do not own the domains used in the extra records fields.

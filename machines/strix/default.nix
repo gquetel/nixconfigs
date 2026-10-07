@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   pkgs,
   inputs,
   ...
@@ -95,7 +94,6 @@ in
 
   networking.useNetworkd = true;
 
-  # allowedIPs = [ "10.100.45.4/32" ];
   systemd.network = {
     enable = true;
 
@@ -376,8 +374,7 @@ in
   uptime-kuma.enable = true;
   # Public mTLS ingest so the off-tailnet compute cluster can push runs.
   # Reaches this host via the SNI proxy's default branch; mTLS terminates at
-  # the per-host nginx vhost. Client certs are issued by step-ca (ca.mesh.gq);
-  # commit its public root as modules/mlflow/step-ca-root.crt (`step ca root`).
+  # the per-host nginx vhost. Client certs are issued by step-ca (ca.mesh.gq).
   mlflow.ingest = {
     enable = true;
     clientCA = ../../modules/step-ca/roots.pem;

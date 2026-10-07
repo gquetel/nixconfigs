@@ -2,7 +2,6 @@
   lib,
   config,
   nodes,
-  pkgs,
   ...
 }:
 # Self-hosted Plane (https://plane.so), the declarative equivalent of the

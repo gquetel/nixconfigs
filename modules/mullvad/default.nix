@@ -190,7 +190,7 @@ in
         };
       };
     }
-    
+
     // mapAttrs' (
       name: p:
       nameValuePair "mullvad-proxy-${name}" {

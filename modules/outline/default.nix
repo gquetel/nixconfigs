@@ -1,9 +1,7 @@
 {
-  lib,
   config,
   pkgs,
   nodes,
-  builtins,
   ...
 }:
 let

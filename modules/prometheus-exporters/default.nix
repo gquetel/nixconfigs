@@ -1,9 +1,4 @@
-{
-  lib,
-  config,
-  systemd,
-  ...
-}:
+{ lib, config, ... }:
 
 with lib;
 
