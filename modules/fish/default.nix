@@ -9,6 +9,7 @@
   programs.fish = {
     enable = true;
     interactiveShellInit = builtins.readFile ./interactive_init.fish;
+    promptInit = builtins.readFile ./fish_prompt.fish;
     shellAliases = {
       v6 = "curl api6.ipify.org";
       v4 = "curl api.ipify.org";
@@ -20,7 +21,6 @@
       nsf = "nix-shell --run fish";
       nspf = "nix-shell --run fish -p";
       nscf = "nix-shell --command \"fish; code . ; return\"";
-      nix-gh-sha = "nix-shell -p nix-prefetch-github --run \"nix-prefetch-github $argv[1] $argv[2] --rev $argv[3]\""; # author repository rev
       c = "code .";
       rgf = "rg --files | rg";
 

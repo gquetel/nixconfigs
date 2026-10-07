@@ -2,6 +2,7 @@
   lib,
   config,
   pkgs,
+  inputs,
   ...
 }:
 
@@ -46,8 +47,6 @@
           mkdir -p -m 0755 /nix/var/nix/profiles/per-user/root
           mkdir -p -m 0700 "$HOME/.nix-defexpr"
           . ${pkgs.nix}/etc/profile.d/nix-daemon.sh
-          ${pkgs.nix}/bin/nix-channel --add https://nixos.org/channels/nixos-25.11 nixpkgs
-          ${pkgs.nix}/bin/nix-channel --update nixpkgs
           ${pkgs.nix}/bin/nix-env -i ${
             concatStringsSep " " (
               with pkgs;
@@ -64,6 +63,8 @@
           ENV = "/etc/profile";
           USER = "root";
           NIX_REMOTE = "daemon";
+          # Jobs resolve <nixpkgs> to the nixpkgs pin of this repository.
+          NIX_PATH = "nixpkgs=${inputs.nixpkgs}";
           PATH = "/nix/var/nix/profiles/default/bin:/nix/var/nix/profiles/default/sbin:/bin:/sbin:/usr/bin:/usr/sbin";
           NIX_SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
           SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";

@@ -113,13 +113,7 @@
       # make routing on this interface a dependency for network-online.target
       linkConfig.RequiredForOnline = "routable";
 
-      # Disable SLAAC. It seems that it mess with the identification of the
-      # machine by the Orange router: the machine seems to be identified by the
-      # temporary address, then the firewall does not allow traffic directed at the
-      # IPV6 address given above...
-      networkConfig = {
-        IPv6AcceptRA = true; # disable SLAAC (no RAs)
-      };
+      networkConfig.IPv6AcceptRA = true;
     };
   };
 

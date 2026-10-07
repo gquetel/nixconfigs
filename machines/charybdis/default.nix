@@ -63,7 +63,6 @@
 
   # ---------------- My config  ----------------
   machine.meta = {
-    # TODO: Update
     ipTailscale = "100.64.0.9";
   };
 

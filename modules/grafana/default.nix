@@ -45,9 +45,11 @@ in
 
     services.grafana = {
       enable = true;
-      domain = cfg.domain;
-      port = cfg.port;
-      addr = cfg.addr;
+      settings.server = {
+        domain = cfg.domain;
+        http_port = cfg.port;
+        http_addr = cfg.addr;
+      };
       settings.security.secret_key = "$__file{${config.age.secrets.grafana-secret-key.path}}";
     };
 

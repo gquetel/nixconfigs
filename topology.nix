@@ -25,8 +25,8 @@
     image = ./docs/_machines/livebox5.png;
     interfaceGroups = [
       [
-        "eth1" # Charybdis
-        "eth2" # Switch
+        "eth1" # Switch
+        "eth2" # Charybdis
         "wifi"
       ]
       [ "fiber0" ]
@@ -67,7 +67,7 @@
     };
 
     interfaces.tailscale0 = {
-      addresses = [ "100.64.0.1" ];
+      addresses = [ "100.64.0.9" ];
       network = "tailscale";
     };
     services.languagetool.hidden = true;

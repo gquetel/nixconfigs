@@ -13,9 +13,6 @@
 
   services.headscale = {
     enable = true;
-
-    # Listening address + port of headscale.
-    address = "0.0.0.0";
     port = 9090;
 
     settings = {
@@ -112,7 +109,8 @@
     forceSSL = true;
     enableACME = true;
     locations."/" = {
-      proxyPass = "http://127.0.0.1:9090";
+      # By default 127.0.0.1
+      proxyPass = "http://${config.services.headscale.address}:${toString config.services.headscale.port}";
       # Required because we are behind a reverse proxy.
       proxyWebsockets = true;
     };

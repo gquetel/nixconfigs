@@ -1,7 +1,10 @@
-# For now, just copy and paste this in fish prompt to update fish config.
-# Supposedly, I could automatically update  ~/.config/fish/functions/fish_prompt.fish when reloading my configuration using home-manager. 
+# Loaded by modules/fish through programs.fish.promptInit.
+# To use it on another machine:
+#   curl -sL https://raw.githubusercontent.com/gquetel/nixconfigs/main/modules/fish/fish_prompt.fish | source
+# Then run `funcsave fish_prompt` to keep it.
 
-functions -e fish_right_prompt; function fish_prompt -d "Write out the prompt"
+functions -e fish_right_prompt
+function fish_prompt -d "Write out the prompt"
     set -l laststatus $status
 
     set -l git_info
@@ -51,4 +54,3 @@ functions -e fish_right_prompt; function fish_prompt -d "Write out the prompt"
         printf "%s✘%s≻%s " (set_color -o red) (set_color white) (set_color normal)
     end
 end
-funcsave fish_prompt && funcsave fish_right_prompt 2>/dev/null
