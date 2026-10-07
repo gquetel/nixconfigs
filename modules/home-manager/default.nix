@@ -181,9 +181,6 @@ in
           profiles.default = {
             # Disable update notification for extensions.
             enableExtensionUpdateCheck = false;
-            # TODO
-            # Integrate MCP server config
-            enableMcpIntegration = true;
             extensions =
               with pkgs.vscode-extensions;
               [

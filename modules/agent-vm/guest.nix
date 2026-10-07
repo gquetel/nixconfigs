@@ -27,7 +27,7 @@ let
   # here and not packaged, so a change to a profile needs a `git push` only.
   runtimeDir = "${workDir}/state/agent-runtime";
 
-  claude-code = pkgs.callPackage ../../packages/claude-code { };
+  inherit (pkgs.callPackage ../../packages/llm-agents { inherit inputs; }) claude-code;
 
   launcher = pkgs.writeShellApplication {
     name = launcherName;

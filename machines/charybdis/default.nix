@@ -67,8 +67,6 @@
   };
 
   # Use stable kernel for better NVIDIA driver compatibility
-
-  common.useLatestKernel = false;
   boot.kernelPackages = pkgs.linuxPackages;
 
   deployment = {
@@ -126,8 +124,8 @@
   # ---------------- Custom modules ----------------
   hm.enable = true;
 
-  # This is so that agenix decrypts with the SSH host key. We enable 
-  # openssh but don't open firewall nor enable auth. 
+  # This is so that agenix decrypts with the SSH host key. We enable
+  # openssh but don't open firewall nor enable auth.
   services.openssh = {
     enable = true;
     openFirewall = false;

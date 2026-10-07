@@ -5,20 +5,7 @@
   inputs,
   ...
 }:
-with lib;
-let
-  cfg = config.common;
-in
 {
-
-  options = {
-    common.useLatestKernel = mkOption {
-      type = types.bool;
-      default = true;
-      description = "Whether to use the latest kernel packages";
-    };
-  };
-
   options.machine.meta = lib.mkOption {
     description = "Machine metadata";
 
@@ -44,7 +31,7 @@ in
     networking.firewall.enable = true;
 
     # Use latest kernel version.
-    boot.kernelPackages = mkIf cfg.useLatestKernel pkgs.linuxPackages_latest;
+    boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_latest;
 
     # Enable tmux.
     programs.tmux = {

@@ -22,7 +22,6 @@
     ../../modules/prometheus-exporters
     ../../modules/wazuh-agent
     ../../modules/wazuh-manager
-    # ../../modules/systemd-resolved
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
 
@@ -167,25 +166,12 @@
     '';
   };
   # ---------------- Modules ----------------
-  servers.motd = {
-    enable = true;
-    settings = {
-      uptime.prefix = "Up";
-      service_status.nginx = "nginx";
-      service_status.headscale = "headscale";
-      service_status.tailscale = "tailscaled";
-      service_status.prometheus = "prometheus";
-      service_status.prometheus_node_exporter = "prometheus-node-exporter";
-      service_status.step-ca = "step-ca";
-      filesystems.root = "/";
-      last_login.gquetel = 3;
-      filesystems.boot = "/boot";
-      memory.swap_pos = "none";
-      fail_2_ban.jails = [
-        "sshd"
-        "nginx-404-scan"
-      ];
-    };
+  programs.rust-motd.settings.service_status = {
+    headscale = "headscale";
+    tailscale = "tailscaled";
+    prometheus = "prometheus";
+    prometheus_node_exporter = "prometheus-node-exporter";
+    step-ca = "step-ca";
   };
 
   grafana.enable = true;

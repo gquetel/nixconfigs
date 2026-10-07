@@ -33,7 +33,6 @@ in
     ../../modules/agent-vm
     ../../modules/wazuh-agent
 
-    # ../../modules/systemd-resolved
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
 
@@ -241,30 +240,17 @@ in
     ];
   };
 
-  common.useLatestKernel = false; # We use a kernel version that supports zfs
-  servers.motd = {
-    enable = true;
-    settings = {
-      uptime.prefix = "Up";
-      service_status.nginx = "nginx";
-      service_status.tailscale = "tailscaled";
-      service_status.jellyfin = "jellyfin";
-      service_status.seerr = "seerr";
-      service_status.deluged = "deluged";
-      service_status.sonarr = "sonarr";
-      service_status.radarr = "radarr";
-      service_status.jackett = "jackett";
-
-      filesystems.root = "/";
-      filesystems.boot = "/boot";
-      filesystems.mmedia = "/mmedia";
-      memory.swap_pos = "none";
-      last_login.gquetel = 3;
-      fail_2_ban.jails = [
-        "sshd"
-        "nginx-404-scan"
-      ];
+  programs.rust-motd.settings = {
+    service_status = {
+      tailscale = "tailscaled";
+      jellyfin = "jellyfin";
+      seerr = "seerr";
+      deluged = "deluged";
+      sonarr = "sonarr";
+      radarr = "radarr";
+      jackett = "jackett";
     };
+    filesystems.mmedia = "/mmedia";
   };
 
   prometheus_exporter = {

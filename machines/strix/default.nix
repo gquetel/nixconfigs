@@ -20,7 +20,6 @@ in
     ../../modules/common
     ../../modules/tailscale
     ../../modules/fail2ban
-    # ../../modules/systemd-resolved
     ../../modules/gitlab-runner
     ../../modules/dex
     ../../modules/outline
@@ -390,27 +389,12 @@ in
       "86.238.112.146" # Home
     ];
   };
-  servers.motd = {
-    enable = true;
-    settings = {
-      uptime.prefix = "Up";
-
-      service_status.nginx = "nginx";
-      service_status.gitlab-runner = "gitlab-runner";
-      service_status.outline = "outline";
-      service_status.prometheus_node_exporter = "prometheus-node-exporter";
-      service_status.mlflow = "mlflow";
-      service_status.uptime-kuma = "uptime-kuma";
-
-      filesystems.root = "/";
-      last_login.gquetel = 3;
-      filesystems.boot = "/boot";
-      memory.swap_pos = "none";
-      fail_2_ban.jails = [
-        "sshd"
-        "nginx-404-scan"
-      ];
-    };
+  programs.rust-motd.settings.service_status = {
+    gitlab-runner = "gitlab-runner";
+    outline = "outline";
+    prometheus_node_exporter = "prometheus-node-exporter";
+    mlflow = "mlflow";
+    uptime-kuma = "uptime-kuma";
   };
 
   prometheus_exporter = {

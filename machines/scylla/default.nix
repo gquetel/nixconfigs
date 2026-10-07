@@ -73,18 +73,6 @@
 
   virtualisation.docker.enable = true;
 
-  # https://nix.dev/guides/faq#how-to-run-non-nix-executables
-  # For https://github.com/Jellyfin2Samsung/Samsung-Jellyfin-Installer
-  programs.nix-ld.enable = false;
-  programs.nix-ld.libraries = with pkgs; [
-    xorg.libSM
-    xorg.libICE
-    xorg.libX11
-    icu
-    fontconfig
-    mesa
-  ];
-
   # ---------------- Networking  ----------------
 
   networking = {
@@ -187,8 +175,8 @@
     };
   #  ---------------- End SLOP ----------------
 
-  # This is so that agenix decrypts with the SSH host key. We enable 
-  # openssh but don't open firewall nor enable auth. 
+  # This is so that agenix decrypts with the SSH host key. We enable
+  # openssh but don't open firewall nor enable auth.
   services.openssh = {
     enable = true;
     openFirewall = false;
