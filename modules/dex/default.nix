@@ -1,8 +1,4 @@
-{
-  config,
-  nodes,
-  ...
-}:
+{ config, ... }:
 let
   dexUrl = "dex.mesh.gq";
   dexPort = 9294;
@@ -65,29 +61,7 @@ in
     };
   };
 
-  services.nginx.virtualHosts."dex.mesh.gq" = {
-    forceSSL = true;
-    enableACME = true;
-    listen = [
-      {
-        addr = nodes.strix.config.machine.meta.ipTailscale;
-        port = 443;
-        ssl = true;
-      }
-      {
-        addr = nodes.strix.config.machine.meta.ipTailscale;
-        port = 80;
-      }
-    ];
-    locations."/" = {
-      extraConfig = "
-      allow 100.64.0.0/10;
-      allow  fd7a:115c:a1e0::/48;
-      deny all;";
-      proxyPass = "http://127.0.0.1:${toString dexPort}";
-    };
-  };
-  security.acme.certs."dex.mesh.gq".server = "https://ca.mesh.gq/acme/acme/directory";
+  tailnet.vhosts."dex.mesh.gq".proxyPass = "http://127.0.0.1:${toString dexPort}";
 
   # Hermes runs on vapula, not strix, so its module (which normally owns this
   # secret) is never imported here to provide it.

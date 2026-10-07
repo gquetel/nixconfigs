@@ -5,6 +5,8 @@
   ...
 }:
 {
+  imports = [ ../tailnet-vhosts ];
+
   options.machine.meta = lib.mkOption {
     description = "Machine metadata";
 

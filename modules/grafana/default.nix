@@ -1,9 +1,4 @@
-{
-  lib,
-  config,
-  nodes,
-  ...
-}:
+{ lib, config, ... }:
 
 with lib;
 
@@ -53,33 +48,9 @@ in
       settings.security.secret_key = "$__file{${config.age.secrets.grafana-secret-key.path}}";
     };
 
-    services.nginx.virtualHosts.${cfg.domain} = {
-      forceSSL = true;
-      enableACME = true;
-      listen = [
-        {
-          addr = nodes.garmr.config.machine.meta.ipTailscale;
-          port = 443;
-          ssl = true;
-        }
-        {
-          addr = nodes.garmr.config.machine.meta.ipTailscale;
-          port = 80;
-        }
-      ];
-      locations."/" = {
-        extraConfig = ''
-          allow 100.64.0.0/10;
-          allow fd7a:115c:a1e0::/48;
-          deny all;
-        '';
-        proxyWebsockets = true;
-        proxyPass = "http://${cfg.addr}:${toString cfg.port}";
-      };
-    };
-
-    security.acme.certs."${cfg.domain}" = {
-      server = "https://ca.mesh.gq/acme/acme/directory";
+    tailnet.vhosts.${cfg.domain} = {
+      proxyWebsockets = true;
+      proxyPass = "http://${cfg.addr}:${toString cfg.port}";
     };
   };
 }

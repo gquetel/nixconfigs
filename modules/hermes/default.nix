@@ -59,12 +59,6 @@ let
   # Host or Origin that isn't loopback. Both headers are rewritten below.
   loopbackOrigin = "http://127.0.0.1:${toString cfg.port}";
 
-  tailnetOnly = ''
-    allow 100.64.0.0/10;
-    allow fd7a:115c:a1e0::/48;
-    deny all;
-  '';
-
   envFiles =
     lib.optional (cfg.environmentFile != null) cfg.environmentFile
     ++ lib.optional cfg.plane.enable config.age.secrets.hermes-plane-token.path;
@@ -298,34 +292,18 @@ in
     age.secrets.hermes-plane-token = lib.mkIf cfg.plane.enable {
       file = ../../secrets/hermes-plane-token.age;
     };
-    services.nginx.virtualHosts.${cfg.host} = {
-      forceSSL = true;
-      enableACME = true;
-      listen = [
-        {
-          addr = config.machine.meta.ipTailscale;
-          port = 443;
-          ssl = true;
-        }
-        {
-          addr = config.machine.meta.ipTailscale;
-          port = 80;
-        }
-      ];
-      locations."/" = {
-        proxyPass = "http://127.0.0.1:${toString cfg.authPort}";
-        # Agent events and terminals stream over websockets.
-        proxyWebsockets = true;
-        extraConfig = tailnetOnly + ''
-          # The browser sends the public host; Hermes only accepts loopback.
-          proxy_set_header Origin ${loopbackOrigin};
+    tailnet.vhosts.${cfg.host} = {
+      proxyPass = "http://127.0.0.1:${toString cfg.authPort}";
+      # Agent events and terminals stream over websockets.
+      proxyWebsockets = true;
+      extraConfig = ''
+        # The browser sends the public host; Hermes only accepts loopback.
+        proxy_set_header Origin ${loopbackOrigin};
 
-          proxy_buffering off;
-          proxy_read_timeout 1d;
-          client_max_body_size 0;
-        '';
-      };
+        proxy_buffering off;
+        proxy_read_timeout 1d;
+        client_max_body_size 0;
+      '';
     };
-    security.acme.certs.${cfg.host}.server = "https://ca.mesh.gq/acme/acme/directory";
   };
 }

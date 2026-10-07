@@ -2,7 +2,6 @@
   lib,
   config,
   pkgs,
-  nodes,
   ...
 }:
 # Module to self-host a mlflow server.
@@ -200,32 +199,10 @@ in
     age.secrets.dex-mlflow-secret.file = ../../secrets/dex-mlflow-secret.age;
     age.secrets.mlflow-session-key.file = ../../secrets/mlflow-session-key.age;
 
-    services.nginx.virtualHosts."mlflow.mesh.gq" = {
-      forceSSL = true;
-      enableACME = true;
-      listen = [
-        {
-          addr = nodes.strix.config.machine.meta.ipTailscale;
-          port = 443;
-          ssl = true;
-        }
-        {
-          addr = nodes.strix.config.machine.meta.ipTailscale;
-          port = 80;
-        }
-      ];
-      locations."/" = {
-        recommendedProxySettings = true;
-        proxyPass = "http://127.0.0.1:${toString cfg.port}";
-        extraConfig = ''
-          allow 100.64.0.0/10;
-          allow fd7a:115c:a1e0::/48;
-          deny all;
-        '';
-      };
+    tailnet.vhosts."mlflow.mesh.gq" = {
+      recommendedProxySettings = true;
+      proxyPass = "http://127.0.0.1:${toString cfg.port}";
     };
-
-    security.acme.certs."mlflow.mesh.gq".server = "https://ca.mesh.gq/acme/acme/directory";
 
     # Public mTLS ingest path for off-tailnet (cluster machines). We enable:
     # - mTLS using our step-ca instance that will issue client certificates.

@@ -1,9 +1,4 @@
-{
-  config,
-  nodes,
-  pkgs,
-  ...
-}:
+{ config, pkgs, ... }:
 {
 
   # ----------------- mediaserver user & group -----------------
@@ -123,101 +118,12 @@
     ];
   };
 
-  services.nginx.virtualHosts."deluge.mesh.gq" = {
-    forceSSL = true;
-    enableACME = true;
-    listen = [
-      {
-        addr = nodes.vapula.config.machine.meta.ipTailscale;
-        port = 443;
-        ssl = true;
-      }
-      {
-        addr = nodes.vapula.config.machine.meta.ipTailscale;
-        port = 80;
-      }
-    ];
-    locations."/" = {
-      extraConfig = "
-      allow 100.64.0.0/10;
-      allow  fd7a:115c:a1e0::/48;
-      deny all;";
-      proxyPass = "http://127.0.0.1:8112";
-    };
+  tailnet.vhosts = {
+    "deluge.mesh.gq".proxyPass = "http://127.0.0.1:8112";
+    "veste.mesh.gq".proxyPass = "http://127.0.0.1:9117";
+    "sonarr.mesh.gq".proxyPass = "http://127.0.0.1:8989";
+    "radarr.mesh.gq".proxyPass = "http://127.0.0.1:7878";
   };
-  security.acme.certs."deluge.mesh.gq".server = "https://ca.mesh.gq/acme/acme/directory";
-
-  services.nginx.virtualHosts."veste.mesh.gq" = {
-    forceSSL = true;
-    enableACME = true;
-    listen = [
-      {
-        addr = nodes.vapula.config.machine.meta.ipTailscale;
-        port = 443;
-        ssl = true;
-      }
-      {
-        addr = nodes.vapula.config.machine.meta.ipTailscale;
-        port = 80;
-      }
-    ];
-    locations."/" = {
-      extraConfig = "
-      allow 100.64.0.0/10;
-      allow  fd7a:115c:a1e0::/48;
-      deny all;";
-      proxyPass = "http://127.0.0.1:9117";
-    };
-  };
-  security.acme.certs."veste.mesh.gq".server = "https://ca.mesh.gq/acme/acme/directory";
-
-  services.nginx.virtualHosts."sonarr.mesh.gq" = {
-    forceSSL = true;
-    enableACME = true;
-    listen = [
-      {
-        addr = nodes.vapula.config.machine.meta.ipTailscale;
-        port = 443;
-        ssl = true;
-      }
-      {
-        addr = nodes.vapula.config.machine.meta.ipTailscale;
-        port = 80;
-      }
-    ];
-    locations."/" = {
-      extraConfig = "
-      allow 100.64.0.0/10;
-      allow  fd7a:115c:a1e0::/48;
-      deny all;";
-      proxyPass = "http://127.0.0.1:8989";
-    };
-  };
-  security.acme.certs."sonarr.mesh.gq".server = "https://ca.mesh.gq/acme/acme/directory";
-
-  services.nginx.virtualHosts."radarr.mesh.gq" = {
-    forceSSL = true;
-    enableACME = true;
-    listen = [
-      {
-        addr = nodes.vapula.config.machine.meta.ipTailscale;
-        port = 443;
-        ssl = true;
-      }
-      {
-        addr = nodes.vapula.config.machine.meta.ipTailscale;
-        port = 80;
-      }
-    ];
-    locations."/" = {
-      extraConfig = "
-      allow 100.64.0.0/10;
-      allow  fd7a:115c:a1e0::/48;
-      deny all;";
-      proxyPass = "http://127.0.0.1:7878";
-    };
-  };
-  security.acme.certs."radarr.mesh.gq".server = "https://ca.mesh.gq/acme/acme/directory";
 
   # ----------------- Other -----------------
   # fail2ban rules for too many authentication attempts.

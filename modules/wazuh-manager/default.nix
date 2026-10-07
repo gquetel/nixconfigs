@@ -1,7 +1,6 @@
 {
   lib,
   config,
-  nodes,
   pkgs,
   ...
 }:
@@ -471,33 +470,14 @@ in
       };
     };
 
-    services.nginx.virtualHosts.${domain} = {
-      forceSSL = true;
-      enableACME = true;
-      listen = [
-        {
-          addr = nodes.garmr.config.machine.meta.ipTailscale;
-          port = 443;
-          ssl = true;
-        }
-        {
-          addr = nodes.garmr.config.machine.meta.ipTailscale;
-          port = 80;
-        }
-      ];
-      locations."/" = {
-        proxyPass = "http://127.0.0.1:${toString dashboardPort}";
-        extraConfig = ''
-          allow 100.64.0.0/10;
-          allow fd7a:115c:a1e0::/48;
-          deny all;
-          # The OpenID session cookies are larger than the default buffers.
-          proxy_buffer_size 16k;
-          proxy_buffers 8 16k;
-        '';
-      };
+    tailnet.vhosts.${domain} = {
+      proxyPass = "http://127.0.0.1:${toString dashboardPort}";
+      extraConfig = ''
+        # The OpenID session cookies are larger than the default buffers.
+        proxy_buffer_size 16k;
+        proxy_buffers 8 16k;
+      '';
     };
-    security.acme.certs.${domain}.server = "https://ca.mesh.gq/acme/acme/directory";
 
     age.secrets = {
       "wazuh-authd.pass" = {

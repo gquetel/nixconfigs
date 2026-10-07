@@ -1,9 +1,4 @@
-{
-  config,
-  pkgs,
-  nodes,
-  ...
-}:
+{ config, pkgs, ... }:
 let
   dexUrl = "dex.mesh.gq";
   outlineUrl = "notes.mesh.gq";
@@ -37,34 +32,13 @@ in
     };
   };
 
-  services.nginx.virtualHosts."notes.mesh.gq" = {
-    forceSSL = true;
-    enableACME = true;
-    listen = [
-      {
-        addr = nodes.strix.config.machine.meta.ipTailscale;
-        port = 443;
-        ssl = true;
-      }
-      {
-        addr = nodes.strix.config.machine.meta.ipTailscale;
-        port = 80;
-      }
-    ];
-    locations."/" = {
-      recommendedProxySettings = true;
-      # Required, else break editing:
-      # https://github.com/outline/outline/discussions/3546
-      proxyWebsockets = true;
-
-      extraConfig = ''
-        allow 100.64.0.0/10;
-        allow  fd7a:115c:a1e0::/48;
-        deny all;'';
-      proxyPass = "http://localhost:9292";
-    };
+  tailnet.vhosts."notes.mesh.gq" = {
+    recommendedProxySettings = true;
+    # Required, else break editing:
+    # https://github.com/outline/outline/discussions/3546
+    proxyWebsockets = true;
+    proxyPass = "http://localhost:9292";
   };
-  security.acme.certs."notes.mesh.gq".server = "https://ca.mesh.gq/acme/acme/directory";
 
   age.secrets.dex-outline-secret = {
     file = ../../secrets/dex-outline-secret.age;

@@ -1,9 +1,4 @@
-{
-  lib,
-  config,
-  nodes,
-  ...
-}:
+{ lib, config, ... }:
 # Self-hosted Plane (https://plane.so), the declarative equivalent of the
 # upstream community docker-compose stack.
 #
@@ -340,33 +335,13 @@ in
       };
     };
 
-    services.nginx.virtualHosts."${domain}" = {
-      forceSSL = true;
-      enableACME = true;
-      listen = [
-        {
-          addr = nodes.garmr.config.machine.meta.ipTailscale;
-          port = 443;
-          ssl = true;
-        }
-        {
-          addr = nodes.garmr.config.machine.meta.ipTailscale;
-          port = 80;
-        }
-      ];
-      locations."/" = {
-        recommendedProxySettings = true;
-        # Plane's live collaboration server uses websockets.
-        proxyWebsockets = true;
-        extraConfig = ''
-          client_max_body_size 20m;
-          allow 100.64.0.0/10;
-          allow  fd7a:115c:a1e0::/48;
-          deny all;'';
-        proxyPass = "http://127.0.0.1:${toString proxyPort}";
-      };
+    tailnet.vhosts.${domain} = {
+      recommendedProxySettings = true;
+      # Plane's live collaboration server uses websockets.
+      proxyWebsockets = true;
+      extraConfig = "client_max_body_size 20m;";
+      proxyPass = "http://127.0.0.1:${toString proxyPort}";
     };
-    security.acme.certs."${domain}".server = "https://ca.mesh.gq/acme/acme/directory";
 
     age.secrets."plane.env" = {
       file = ../../secrets/plane.env.age;
