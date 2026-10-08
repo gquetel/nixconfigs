@@ -144,6 +144,27 @@ in
     endpoint = "149.102.240.66:51820";
   };
 
+  # Tailscale node in the Mullvad namespace, used as exit node to have both access to internal services and Mullvad.
+  systemd.services.tailscaled-mullvad = lib.mkMerge [
+    config.mullvad.confine
+    {
+      description = "Tailscale exit node through Mullvad";
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        ExecStart = lib.concatStringsSep " " [
+          "${pkgs.unstable.tailscale}/bin/tailscaled"
+          "--tun=userspace-networking"
+          "--statedir=/var/lib/tailscale-mullvad"
+          "--socket=/run/tailscale-mullvad/tailscaled.sock"
+          "--port=0"
+        ];
+        StateDirectory = "tailscale-mullvad";
+        RuntimeDirectory = "tailscale-mullvad";
+        Restart = "on-failure";
+      };
+    }
+  ];
+
   hermes.enable = true;
   hermes.plane.enable = true;
 

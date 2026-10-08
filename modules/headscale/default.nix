@@ -1,4 +1,9 @@
-{ config, nodes, ... }:
+{
+  config,
+  nodes,
+  pkgs,
+  ...
+}:
 {
   # Headscale server setup. References:
   # - [1] https://headscale.net/stable/setup/requirements/
@@ -7,9 +12,41 @@
 
   services.headscale = {
     enable = true;
+    # 0.29.3 or later: the nodeAttrs below need it.
+    package = pkgs.unstable.headscale;
     port = 9090;
 
     settings = {
+      policy.path = pkgs.writeText "headscale-policy.json" (
+        builtins.toJSON {
+          acls = [
+            {
+              action = "accept";
+              src = [ "*" ];
+              dst = [ "*:*" ];
+            }
+            # Exit node traffic. "*:*" only covers tailnet addresses.
+            {
+              action = "accept";
+              src = [ "*" ];
+              dst = [ "autogroup:internet:*" ];
+            }
+          ];
+          autoApprovers.exitNode = [ "garmr@" ];
+          # iOS and macOS clients 1.102+ only list exit nodes that have this
+          # attribute: https://github.com/juanfont/headscale/issues/3415
+          nodeAttrs = [
+            {
+              target = [ "*" ];
+              attr = [
+                "suggest-exit-node"
+                "suggest-exit-node-ui"
+              ];
+            }
+          ];
+        }
+      );
+
       # The URL clients will connect to.
       server_url = "https://mesh.gquetel.fr";
       dns = {
