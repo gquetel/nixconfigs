@@ -9,6 +9,7 @@ This repository contains the NixOS configurations for my machines. Each host is 
 - [strix](./machines/strix/): A ThinkCentre used as a web server and SNI proxy. It also hosts an Outline instance, Plausible analytics, and a GitLab Runner.
 - [garmr](./machines/garmr/): A ThinkCentre running infrastructure services, including Headscale, step-ca (certificate authority), and monitoring with Grafana and Prometheus.
 - [vapula](./machines/vapula/): A ThinkCentre acting as a media server, backed by ZFS storage.
+- [surtr](./machines/surtr/): A second work laptop, similar setup to scylla.
 
 ### Topology 
 These diagrams show the topology of my home network, including a main overview, and a network-specific layout.
