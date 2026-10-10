@@ -60,7 +60,7 @@
 
   # ---------------- My config  ----------------
   machine.meta = {
-    ipTailscale = "100.64.0.6";
+    ipTailscale = "100.64.0.7";
   };
   # Allows to build for aarch64.
   # https://colmena.cli.rs/unstable/examples/multi-arch.html

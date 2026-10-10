@@ -8,7 +8,7 @@ let
   system-charybdis = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICXm/0/TLnyVSnVIfZeMJv++ubX4nMJCTrK92sTYzDHN root@charybdis";
   system-surtr = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDUaxCpfBb94BRWBzicB4DuGLKWSy1GkpBY9vz5x+QzK root@surtr";
 
-  inherit (import ../keys.nix) gquetel-scylla gquetel-charybdis;
+  inherit (import ../keys.nix) gquetel-scylla gquetel-charybdis gquetel-surtr;
 
   servers = [
     system-strix
@@ -23,6 +23,7 @@ let
   users = [
     gquetel-scylla
     gquetel-charybdis
+    gquetel-surtr
   ];
 in
 {
