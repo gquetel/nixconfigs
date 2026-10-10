@@ -86,7 +86,6 @@ in
           ]
           ++ [
             (pkgs.callPackage "${(import ../../npins).agenix}/pkgs/agenix.nix" { })
-            (pkgs.callPackage ../../packages/feynman { })
             llmAgents."claude-code"
             llmAgents.codex
           ];

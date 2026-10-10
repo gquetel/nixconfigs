@@ -14,7 +14,7 @@
     ../../modules/tailscale
     ../../modules/home-manager
     ../../modules/wazuh-agent
-    ../../modules/languagetool
+     ../../modules/languagetool
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
 
@@ -97,6 +97,13 @@
   # ---------------- Drivers ----------------
   # GPU drivers: fill in after install, based on `lspci | grep VGA` on the
   # real hardware (see machines/scylla/default.nix for an Intel example).
+
+  # Intel Wireless-AC 9560 (CNVi): firmware hangs after a few minutes and the
+  # card stays dead until a full power-off. Disable its power saving.
+  boot.extraModprobeConfig = ''
+    options iwlwifi power_save=0 uapsd_disable=1
+    options iwlmvm power_scheme=1
+  '';
 
   users.users.gquetel = {
     isNormalUser = true;
