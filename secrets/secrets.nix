@@ -61,8 +61,8 @@ in
   # Hermes' Plane credentials (EnvironmentFile), one KEY=VALUE line each. The
   # API token is issued from the Plane UI and scoped to the issuing account.
   "hermes-plane-token.age".publicKeys = [ system-vapula ] ++ users;
-  # The agent VM's own keys (EnvironmentFile): CLAUDE_CODE_OAUTH_TOKEN and
-  # AGENT_RUNTIME_TOKEN, one KEY=VALUE line each.
+  # The agent VM's own keys (EnvironmentFile): CLAUDE_CODE_OAUTH_TOKEN, one
+  # KEY=VALUE line each.
   "agent-secrets.env.age".publicKeys = [ system-vapula ] ++ users;
   # Wazuh enrollment password: authd on garmr and every agent.
   "wazuh-authd.pass.age".publicKeys = servers ++ workstations ++ users;

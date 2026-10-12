@@ -194,9 +194,7 @@ in
   # ---------------- age secrets ----------------
 
   # The agent VM's own keys: CLAUDE_CODE_OAUTH_TOKEN, made with
-  # `claude setup-token` and re-keyed by hand when it expires, and
-  # AGENT_RUNTIME_TOKEN, a fine-grained PAT with Contents: read on
-  # gquetel/agent-runtime.
+  # `claude setup-token` and re-keyed by hand when it expires.
   age.secrets.agent-secrets.file = ../../secrets/agent-secrets.env.age;
 
   # This value determines the NixOS release from which the default

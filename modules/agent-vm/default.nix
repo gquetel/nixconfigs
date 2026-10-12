@@ -9,7 +9,7 @@
 #
 # This module sets up the VM and the `agent-run` CLI that starts a session in
 # it. It does not know what the agent does: the driver and the per-project
-# profiles live in a private repo that the VM clones when it runs.
+# profiles live in a private repo, pinned by npins as `agent-runtime`.
 let
   cfg = config.agent-vm;
   vmName = "agent-vm";

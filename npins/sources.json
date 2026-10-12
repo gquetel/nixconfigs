@@ -13,6 +13,18 @@
       "url": "https://github.com/ryantm/agenix/archive/3daa710894355fa2fad8243380af373a2b4046ef.tar.gz",
       "hash": "sha256-n7wew722m1OTBT9DOIMxNX/NF4zfsSUABAO5eW3wikE="
     },
+    "agent-runtime": {
+      "type": "Git",
+      "repository": {
+        "type": "Git",
+        "url": "ssh://git@github.com/gquetel/agent-runtime.git"
+      },
+      "branch": "main",
+      "submodules": false,
+      "revision": "c8af0adaf4e1eaf2ef5d64e9aad7838a197d42ad",
+      "url": null,
+      "hash": "sha256-bJmsOSFL4F2MA5j0oWphndUENsNtVeILLDwxe75kMeM="
+    },
     "colmena": {
       "type": "GitRelease",
       "repository": {

@@ -22,9 +22,9 @@
 let
   workDir = "/work";
 
-  # The runtime repo: the driver and the per-project profiles. It is cloned
-  # here and not packaged, so a change to a profile needs a `git push` only.
-  runtimeDir = "${workDir}/state/agent-runtime";
+  # The driver and the per-project profiles, pinned by npins. To use a new
+  # commit: `npins update agent-runtime`, then deploy.
+  runtimeDir = inputs.agent-runtime;
 
   inherit (pkgs.callPackage ../../packages/llm-agents { inherit inputs; }) claude-code;
 
@@ -33,7 +33,6 @@ let
     runtimeInputs = with pkgs; [
       claude-code
       coreutils
-      git
       python3
     ];
     text = ''
@@ -64,21 +63,11 @@ let
       done
 
       # ssh runs a command without a login shell, so nothing has read the keys
-      # yet. AGENT_RUNTIME_TOKEN comes from here.
+      # yet.
       set -a
       # shellcheck disable=SC1091
       . /run/agent-secrets/env
       set +a
-
-      # The token is part of the URL, and it expires. Write it again on every
-      # run, or the clone keeps the one it was made with.
-      url="https://x-access-token:$AGENT_RUNTIME_TOKEN@github.com/gquetel/agent-runtime"
-      if [ -d ${runtimeDir}/.git ]; then
-        git -C ${runtimeDir} remote set-url origin "$url"
-        git -C ${runtimeDir} pull --ff-only
-      else
-        git clone "$url" ${runtimeDir}
-      fi
 
       # Claude Code rewrites this file as it runs, so only put it back when the
       # last reset took it away.
