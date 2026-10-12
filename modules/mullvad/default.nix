@@ -15,15 +15,11 @@ let
 
   secretFile = ../../secrets/mullvad-pvkey.age;
 
-  resolvConf = pkgs.writeText "mullvad-resolv.conf" (
+  # Mounted over /run/systemd/resolve, which /etc/resolv.conf points into.
+  # A file bind mount is lost when resolved replaces the file by rename.
+  resolvDir = pkgs.writeTextDir "stub-resolv.conf" (
     concatMapStrings (a: "nameserver ${a}\n") cfg.dns
   );
-
-  resolvTarget =
-    if config.services.resolved.enable then
-      "/run/systemd/resolve/stub-resolv.conf"
-    else
-      "/etc/resolv.conf";
 
   setup = pkgs.writeShellScript "mullvad-netns-up" ''
     set -euo pipefail
@@ -148,11 +144,8 @@ in
         after = [ unit ];
         serviceConfig = {
           NetworkNamespacePath = netnsPath;
-          BindReadOnlyPaths = [ "${resolvConf}:${resolvTarget}" ];
-          InaccessiblePaths = [
-            "-/run/nscd"
-            "-/run/systemd/resolve/io.systemd.Resolve"
-          ];
+          BindReadOnlyPaths = [ "${resolvDir}:/run/systemd/resolve" ];
+          InaccessiblePaths = [ "-/run/nscd" ];
         };
       };
       defaultText = literalMD "unit fragment binding a service to the namespace";
@@ -165,6 +158,13 @@ in
   };
 
   config = mkIf cfg.enable {
+    assertions = [
+      {
+        assertion = config.services.resolved.enable;
+        message = "mullvad: confined services get their resolver through systemd-resolved paths.";
+      }
+    ];
+
     age.secrets.mullvad.file = secretFile;
 
     systemd.sockets = mapAttrs' (
