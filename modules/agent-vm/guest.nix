@@ -259,6 +259,7 @@ in
     jq
     python3
     ripgrep
+    semgrep
     tmux
     nixos-container
     uv
