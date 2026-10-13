@@ -339,7 +339,14 @@ in
       recommendedProxySettings = true;
       # Plane's live collaboration server uses websockets.
       proxyWebsockets = true;
-      extraConfig = "client_max_body_size 20m;";
+      extraConfig = ''
+        client_max_body_size 20m;
+
+        # Plane sends X-Frame-Options: DENY. Allow its UI inside our Outline
+        # instance, while keeping every other framing origin blocked.
+        proxy_hide_header X-Frame-Options;
+        add_header Content-Security-Policy "frame-ancestors 'self' https://notes.mesh.gq" always;
+      '';
       proxyPass = "http://127.0.0.1:${toString proxyPort}";
     };
 
