@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
   imports = [
@@ -57,6 +57,14 @@
     alsa.support32Bit = true;
     pulse.enable = true;
   };
+
+  # The ACPI tables set the CS35L41 speaker amps to internal boost. The hardware
+  # uses external boost. With internal boost, the amps stop at medium volume
+  # ("Amp short error" in the kernel log), and sound comes from some speakers only.
+  # This module adds a quirk entry for SSID 103C8981 that sets external boost.
+  boot.extraModulePackages = [
+    (config.boot.kernelPackages.callPackage ../../packages/cs35l41-hda-quirk { })
+  ];
 
   # ---------------- My config  ----------------
   machine.meta = {
