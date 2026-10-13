@@ -82,7 +82,8 @@ in
             uv
             vlc
             zoom-us
-            pkgs.unstable.zotero # For version 8+
+            # Pin zotero because broken: https://github.com/NixOS/nixpkgs/pull/569006
+            (import inputs.nixpkgs-zotero { inherit (pkgs.stdenv.hostPlatform) system; }).zotero
           ]
           ++ [
             (pkgs.callPackage "${(import ../../npins).agenix}/pkgs/agenix.nix" { })
