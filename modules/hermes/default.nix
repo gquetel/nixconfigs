@@ -162,9 +162,10 @@ in
 
     environmentFile = mkOption {
       type = types.nullOr types.path;
-      default = "${config.age.secrets.hermes-provider-keys.path}";
+      default = "${config.age.secrets.hermes-env.path}";
       description = ''
-        File of provider credentials (ANTHROPIC_API_KEY, OPENAI_API_KEY, …),
+        Environment file for Hermes: provider keys (ANTHROPIC_API_KEY, …),
+        service URLs and tokens (OUTLINE_API_KEY, …),
         one KEY=VALUE line each. Set to null to disable; keys can also be
         entered in the dashboard, which stores them under $HOME/.hermes.
       '';
@@ -288,7 +289,7 @@ in
 
     age.secrets.dex-hermes-secret.file = ../../secrets/dex-hermes-secret.age;
     age.secrets.hermes-cookie-secret.file = ../../secrets/hermes-cookie-secret.age;
-    age.secrets.hermes-provider-keys.file = ../../secrets/hermes-provider-keys.age;
+    age.secrets.hermes-env.file = ../../secrets/hermes.env.age;
     age.secrets.hermes-plane-token = lib.mkIf cfg.plane.enable {
       file = ../../secrets/hermes-plane-token.age;
     };

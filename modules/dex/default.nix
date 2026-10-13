@@ -57,6 +57,13 @@ in
           username = "mlflow-bot";
           userID = "8aeb94b2-305a-47ac-b509-697af055369e";
         }
+        {
+          # Hermes agent account for Outline. Password: secrets/hermes-outline-password.age
+          email = "hermes@foo.gq";
+          hash = "$2b$10$HmBGPWfbTKhTSadzhKKkpe0LeEx1tQTOSHixZumr6shLIyEu8tG1y";
+          username = "hermes";
+          userID = "0c6ee86f-3b0c-4a79-9db6-4e7503a54722";
+        }
       ];
     };
   };

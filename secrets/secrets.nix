@@ -35,6 +35,10 @@ in
   "thesis-artefacts.age".publicKeys = [ system-strix ] ++ users;
   "gitlab-runner.env.age".publicKeys = [ system-strix ] ++ users;
   "dex-outline-secret.age".publicKeys = [ system-strix ] ++ users;
+  # Dex password of the hermes Outline account. Only needed to sign in by hand.
+  "hermes-outline-password.age".publicKeys = users;
+  # Outline's Plane plugin (EnvironmentFile): PLANE_API_KEY=<Plane API token>.
+  "outline-plane.env.age".publicKeys = [ system-strix ] ++ users;
   "dex-mlflow-secret.age".publicKeys = [ system-strix ] ++ users;
   "mlflow-session-key.age".publicKeys = [ system-strix ] ++ users;
   "plausible-secret-key-base.age".publicKeys = [ system-strix ] ++ users;
@@ -55,9 +59,9 @@ in
   ++ users;
   # Seed for oauth2-proxy's Hermes session cookies.
   "hermes-cookie-secret.age".publicKeys = [ system-vapula ] ++ users;
-  # Hermes model provider credentials (EnvironmentFile: OPENAI_API_KEY,
-  # ANTHROPIC_API_KEY, …), one KEY=VALUE line per provider.
-  "hermes-provider-keys.age".publicKeys = [ system-vapula ] ++ users;
+  # Hermes environment (EnvironmentFile): provider keys, service URLs and
+  # tokens, one KEY=VALUE line each.
+  "hermes.env.age".publicKeys = [ system-vapula ] ++ users;
   # Hermes' Plane credentials (EnvironmentFile), one KEY=VALUE line each. The
   # API token is issued from the Plane UI and scoped to the issuing account.
   "hermes-plane-token.age".publicKeys = [ system-vapula ] ++ users;
