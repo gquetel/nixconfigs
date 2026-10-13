@@ -21,9 +21,9 @@
       },
       "branch": "main",
       "submodules": false,
-      "revision": "c8af0adaf4e1eaf2ef5d64e9aad7838a197d42ad",
+      "revision": "902beca488ccb6090b6fa3235ab0b5ed1ca27ed6",
       "url": null,
-      "hash": "sha256-bJmsOSFL4F2MA5j0oWphndUENsNtVeILLDwxe75kMeM="
+      "hash": "sha256-9+9vqGTVT4PkxLy8kzUBIcet30yx3+MKTUwEAasdBV4="
     },
     "colmena": {
       "type": "GitRelease",
