@@ -37,8 +37,6 @@ in
   "dex-outline-secret.age".publicKeys = [ system-strix ] ++ users;
   # Dex password of the hermes Outline account. Only needed to sign in by hand.
   "hermes-outline-password.age".publicKeys = users;
-  # Outline's Plane plugin (EnvironmentFile): PLANE_API_KEY=<Plane API token>.
-  "outline-plane.env.age".publicKeys = [ system-strix ] ++ users;
   "dex-mlflow-secret.age".publicKeys = [ system-strix ] ++ users;
   "mlflow-session-key.age".publicKeys = [ system-strix ] ++ users;
   "plausible-secret-key-base.age".publicKeys = [ system-strix ] ++ users;
