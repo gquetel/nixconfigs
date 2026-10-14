@@ -79,7 +79,7 @@ in
             treefmt
             typst
             typstyle
-            uv
+            unstable.uv
             vlc
             zoom-us
             # Pin zotero because broken: https://github.com/NixOS/nixpkgs/pull/569006

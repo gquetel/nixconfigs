@@ -52,7 +52,7 @@ let
     ripgrep
     nodejs
     python3
-    uv
+    unstable.uv
   ]);
 
   # Binding to loopback disables Hermes' own auth gate and makes it reject any

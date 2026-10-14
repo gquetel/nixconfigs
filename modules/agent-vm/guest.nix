@@ -251,7 +251,7 @@ in
     semgrep
     tmux
     nixos-container
-    uv
+    unstable.uv
   ]);
 
   # Claude Code keeps its own state and its credentials in ~/.claude. The home
