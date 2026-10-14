@@ -54,6 +54,8 @@ in
               recursive = true;
               force = true;
             };
+            # Personal Claude Code skill, loaded from ~/.claude/skills.
+            ".claude/skills/ponytail".source = "${(import ../../npins).ponytail}/skills/ponytail";
           };
 
         home.packages =
