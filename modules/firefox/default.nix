@@ -3,6 +3,12 @@
   programs.firefox = {
     enable = true;
     policies = {
+      # Let pages read the clipboard with no "Paste" prompt. Needed for Ctrl+V
+      # in the Hermes dashboard terminal. Applies to all sites.
+      Preferences."dom.events.testing.asyncClipboard" = {
+        Value = true;
+        Status = "locked";
+      };
       # Add custom @np aliases for nix packages search and @no for nix options.
       SearchEngines = {
         Add = [
