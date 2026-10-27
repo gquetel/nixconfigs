@@ -18,11 +18,28 @@ let
 
   hermes = llmAgents."hermes-agent";
 
+  # Hindsight memory provider, at the commit Hermes' plugin catalog pins.
+  # `hermes plugins install` fails on the store: it reads a pyproject.toml the
+  # package does not ship.
+  hindsightPlugin =
+    pkgs.fetchFromGitHub {
+      owner = "vectorize-io";
+      repo = "hindsight";
+      rev = "d952b6e655fccab4581ee0722b51c5f103873d12";
+      hash = "sha256-qEjN1JRGLH7iGDkCEEeIG5ciFRpggvMbjjmrQP+ThCo=";
+    }
+    + "/hindsight-integrations/hermes";
+
   # Dependency closure plus Hermes itself, for PYTHONPATH below. The
   # interpreter comes from Hermes' own dependencies because pkgs.python3 is a
   # different minor version.
   hermesPython = (builtins.head hermes.propagatedBuildInputs).pythonModule;
-  hermesPythonEnv = hermesPython.withPackages (_: hermes.propagatedBuildInputs);
+  # The Hindsight memory provider imports this client. Hermes would pip
+  # install it at runtime, which fails on the read-only store.
+  hindsightClient = hermesPython.pkgs.callPackage ../../packages/hindsight-client { };
+  hermesPythonEnv = hermesPython.withPackages (
+    _: hermes.propagatedBuildInputs ++ [ hindsightClient ]
+  );
   hermesPythonPath = lib.concatStringsSep ":" [
     "${hermesPythonEnv}/${hermesPython.sitePackages}"
     "${hermes}/${hermesPython.sitePackages}"
@@ -183,6 +200,13 @@ in
     environment.systemPackages = [ hermes ];
     # So an interactive `hermes gateway ...` takes the same path as the units.
     environment.variables.HERMES_NIXOS_UNIT = "1";
+
+    # Makes the provider available; `memory.provider: hindsight` in
+    # config.yaml activates it, and $HERMES_HOME/hindsight/config.json holds
+    # its server URL, API key and banks.
+    systemd.tmpfiles.rules = [
+      "L+ ${homeDir}/.hermes/plugins/hindsight - - - - ${hindsightPlugin}"
+    ];
 
     systemd.services.hermes = {
       description = "Hermes Agent web dashboard";

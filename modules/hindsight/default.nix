@@ -1,4 +1,9 @@
-{ lib, config, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 # Self-hosted Hindsight (https://hindsight.vectorize.io): shared agent memory
 # for Hermes, Claude Code and Codex.
 #
@@ -32,6 +37,21 @@ let
   # reach an LLM endpoint with a mesh.gq certificate.
   caBundle = "/etc/ssl/certs/ca-certificates.crt";
 
+  # glibc address-selection table that prefers IPv6. The container only has a
+  # ULA IPv6 address, so the default table tries IPv4 first; an endpoint whose
+  # IPv4 does not answer then costs ~130s per connection. Same as the glibc
+  # default, except that fc00::/7 shares the label of ::/0.
+  gaiConf = pkgs.writeText "gai.conf" ''
+    label ::1/128 0
+    label ::/0 1
+    label 2002::/16 2
+    label ::/96 3
+    label ::ffff:0:0/96 4
+    label fec0::/10 5
+    label fc00::/7 1
+    label 2001:0::/32 7
+  '';
+
   containers = {
     hindsight-db = {
       image = images.db;
@@ -62,7 +82,10 @@ let
         REQUESTS_CA_BUNDLE = caBundle;
       };
       environmentFile = [ envFile ];
-      volumes = [ "${caBundle}:${caBundle}:ro" ];
+      volumes = [
+        "${caBundle}:${caBundle}:ro"
+        "${gaiConf}:/etc/gai.conf:ro"
+      ];
       ports = [ "127.0.0.1:${toString cfg.port}:8888" ];
       inherit network;
       extraPodmanArgs = hardening;
