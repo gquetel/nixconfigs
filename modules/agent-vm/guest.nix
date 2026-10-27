@@ -249,6 +249,7 @@ in
     python3
     ripgrep
     semgrep
+    universal-ctags
     tmux
     nixos-container
     unstable.uv
