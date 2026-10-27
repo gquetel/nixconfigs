@@ -30,6 +30,7 @@ in
     ../../modules/mullvad
     ../../modules/hermes
     ../../modules/agent-vm
+    ../../modules/hindsight
     ../../modules/wazuh-agent
 
     "${(import ../../npins).agenix}/modules/age.nix"
@@ -167,6 +168,7 @@ in
 
   hermes.enable = true;
   hermes.plane.enable = true;
+  hindsight.enable = true;
 
   # VM for the agents. Its credentials arrive as two env files: the Plane
   # token still rides on the hermes secret, the agent's own keys have theirs.

@@ -91,6 +91,8 @@ in
             (pkgs.callPackage "${(import ../../npins).agenix}/pkgs/agenix.nix" { })
             llmAgents."claude-code"
             llmAgents.codex
+            # Runs the Hindsight memory hooks of Claude Code and Codex.
+            nodejs
           ];
         programs.kitty = {
           enable = true;

@@ -66,6 +66,11 @@ in
   # The agent VM's own keys (EnvironmentFile): CLAUDE_CODE_OAUTH_TOKEN, one
   # KEY=VALUE line each.
   "agent-secrets.env.age".publicKeys = [ system-vapula ] ++ users;
+  # Hindsight (EnvironmentFile), one KEY=VALUE line each: POSTGRES_PASSWORD,
+  # HINDSIGHT_API_DATABASE_URL (postgresql://hindsight:<pw>@hindsight-db:5432/hindsight),
+  # HINDSIGHT_API_LLM_BASE_URL, HINDSIGHT_API_LLM_MODEL, HINDSIGHT_API_LLM_API_KEY
+  # and HINDSIGHT_API_TENANT_API_KEY, the bearer token clients send.
+  "hindsight.env.age".publicKeys = [ system-vapula ] ++ users;
   # Wazuh enrollment password: authd on garmr and every agent.
   "wazuh-authd.pass.age".publicKeys = servers ++ workstations ++ users;
   # Wazuh server service accounts (garmr): INDEXER_PASSWORD, DASHBOARD_PASSWORD,
