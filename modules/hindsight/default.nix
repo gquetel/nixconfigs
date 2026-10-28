@@ -87,6 +87,10 @@ let
         # HINDSIGHT_API_LLM_MODEL and HINDSIGHT_API_LLM_API_KEY come from the
         # env file.
         HINDSIGHT_API_LLM_PROVIDER = "openai";
+        # The endpoint queues parallel requests: more of them only make each
+        # one wait past the timeout, and each timeout causes a retry.
+        HINDSIGHT_API_LLM_MAX_CONCURRENT = "2";
+        HINDSIGHT_API_LLM_TIMEOUT = "300";
         HINDSIGHT_API_EMBEDDINGS_PROVIDER = "local";
         HINDSIGHT_API_RERANKER_PROVIDER = "local";
         HINDSIGHT_API_TENANT_EXTENSION = "hindsight_api.extensions.builtin.tenant:ApiKeyTenantExtension";
