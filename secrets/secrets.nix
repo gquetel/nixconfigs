@@ -71,6 +71,16 @@ in
   # HINDSIGHT_API_LLM_BASE_URL, HINDSIGHT_API_LLM_MODEL, HINDSIGHT_API_LLM_API_KEY
   # and HINDSIGHT_API_TENANT_API_KEY, the bearer token clients send.
   "hindsight.env.age".publicKeys = [ system-vapula ] ++ users;
+  # Hindsight Control Plane (EnvironmentFile): HINDSIGHT_CP_DATAPLANE_API_KEY,
+  # equal to HINDSIGHT_API_TENANT_API_KEY.
+  "hindsight-cp.env.age".publicKeys = [ system-vapula ] ++ users;
+  # Dex client secret of the oauth2-proxy in front of the Hindsight Control
+  # Plane. Dex reads it as a file; the proxy reads a copy from the env file below.
+  "dex-hindsight-secret.age".publicKeys = [ system-strix ] ++ users;
+  # The proxy's env file (EnvironmentFile), one KEY=VALUE line each:
+  # OAUTH2_PROXY_CLIENT_SECRET, equal to dex-hindsight-secret, and
+  # OAUTH2_PROXY_COOKIE_SECRET.
+  "hindsight-oauth2-proxy.env.age".publicKeys = [ system-vapula ] ++ users;
   # Wazuh enrollment password: authd on garmr and every agent.
   "wazuh-authd.pass.age".publicKeys = servers ++ workstations ++ users;
   # Wazuh server service accounts (garmr): INDEXER_PASSWORD, DASHBOARD_PASSWORD,

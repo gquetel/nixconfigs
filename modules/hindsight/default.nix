@@ -10,7 +10,11 @@
 # Runs rootless, like the Plane module: a dedicated `hindsight` system user
 # owns the API and its pgvector Postgres through home-manager's
 # `services.podman`. The API is published on loopback and the host nginx
-# exposes it to the tailnet only. Clients send `Authorization: Bearer <key>`.
+# exposes it to the tailnet only. API clients send `Authorization: Bearer <key>`.
+#
+# The Control Plane (web UI) holds the API key and has no login of its own, so
+# it is not published. Only an oauth2-proxy (Dex login) on the same podman
+# network can reach it, and only that proxy is published on loopback.
 let
   cfg = config.hindsight;
 
@@ -23,18 +27,27 @@ let
   images = {
     # The full image: local embedding and reranker models are baked in.
     api = "ghcr.io/vectorize-io/hindsight-api:1.1.0@sha256:cdfeb26e92ad33d54a8a7e4cfe6e67b55d619f25ea5f5bba0a3281d701a82b36";
+    ui = "ghcr.io/vectorize-io/hindsight-control-plane:1.1.0@sha256:373f86848649a8dadc9b2d9ecf1d18b4c446162ca7b556fc4152e92ef433e983";
     db = "docker.io/pgvector/pgvector:0.8.1-pg17@sha256:3e8b3adfd27b5707128f60956f62a793c3c9326ea8cfaf0eab7adccb5d700b21";
+    oauth2Proxy = "quay.io/oauth2-proxy/oauth2-proxy:v7.15.5@sha256:8498b0d0ef0a7b29686414000a08aee467f02d0299c9ed1e006a8f33fc017916";
   };
 
   # POSTGRES_PASSWORD, HINDSIGHT_API_DATABASE_URL, the LLM endpoint and the
   # client API key. See secrets/secrets.nix for the expected keys.
   envFile = config.age.secrets."hindsight.env".path;
+  # The API key only, so that the UI does not get the database and LLM
+  # credentials.
+  uiEnvFile = config.age.secrets."hindsight-cp.env".path;
+  # The Dex client secret and the cookie secret of the proxy.
+  proxyEnvFile = config.age.secrets."hindsight-oauth2-proxy.env".path;
+
+  allowedEmails = pkgs.writeText "hindsight-allowed-emails" (lib.concatLines cfg.ui.allowedEmails);
 
   network = [ "${netName}.network" ];
   hardening = [ "--security-opt=no-new-privileges" ];
 
-  # Host CA bundle, which includes the step-ca root, so that the API can
-  # reach an LLM endpoint with a mesh.gq certificate.
+  # Host CA bundle, which includes the step-ca root, so that containers can
+  # reach mesh.gq endpoints: the LLM for the API, Dex for the proxy.
   caBundle = "/etc/ssl/certs/ca-certificates.crt";
 
   # glibc address-selection table that prefers IPv6. The container only has a
@@ -94,6 +107,47 @@ let
         Wants = [ "podman-hindsight-db.service" ];
       };
     };
+
+    hindsight-control-plane = {
+      image = images.ui;
+      environment.HINDSIGHT_CP_DATAPLANE_API_URL = "http://hindsight-api:8888";
+      environmentFile = [ uiEnvFile ];
+      inherit network;
+      extraPodmanArgs = hardening;
+      extraConfig.Unit = {
+        After = [ "podman-hindsight-api.service" ];
+        Wants = [ "podman-hindsight-api.service" ];
+      };
+    };
+
+    hindsight-oauth2-proxy = {
+      image = images.oauth2Proxy;
+      environment = {
+        OAUTH2_PROXY_PROVIDER = "oidc";
+        OAUTH2_PROXY_OIDC_ISSUER_URL = "https://dex.mesh.gq";
+        OAUTH2_PROXY_CLIENT_ID = "hindsight";
+        OAUTH2_PROXY_SCOPE = "openid email profile";
+        OAUTH2_PROXY_REDIRECT_URL = "https://${cfg.ui.host}/oauth2/callback";
+        OAUTH2_PROXY_AUTHENTICATED_EMAILS_FILE = "/etc/oauth2-proxy/emails";
+        OAUTH2_PROXY_HTTP_ADDRESS = "0.0.0.0:4180";
+        OAUTH2_PROXY_UPSTREAMS = "http://hindsight-control-plane:9999";
+        OAUTH2_PROXY_REVERSE_PROXY = "true";
+        OAUTH2_PROXY_SKIP_PROVIDER_BUTTON = "true";
+        SSL_CERT_FILE = caBundle;
+      };
+      environmentFile = [ proxyEnvFile ];
+      volumes = [
+        "${caBundle}:${caBundle}:ro"
+        "${allowedEmails}:/etc/oauth2-proxy/emails:ro"
+      ];
+      ports = [ "127.0.0.1:${toString cfg.ui.port}:4180" ];
+      inherit network;
+      extraPodmanArgs = hardening;
+      extraConfig.Unit = {
+        After = [ "podman-hindsight-control-plane.service" ];
+        Wants = [ "podman-hindsight-control-plane.service" ];
+      };
+    };
   };
 in
 {
@@ -110,6 +164,24 @@ in
       type = types.port;
       default = 8888;
       description = "Loopback port the API container is published on.";
+    };
+
+    ui.host = mkOption {
+      type = types.str;
+      default = "hindsight-ui.mesh.gq";
+      description = "Tailnet-internal hostname serving the Control Plane.";
+    };
+
+    ui.port = mkOption {
+      type = types.port;
+      default = 9999;
+      description = "Loopback port the Control Plane's oauth2-proxy is published on.";
+    };
+
+    ui.allowedEmails = mkOption {
+      type = types.listOf types.str;
+      default = [ "gquetel@mail.foo.gq" ];
+      description = "Dex identities allowed to reach the Control Plane.";
     };
   };
 
@@ -159,8 +231,25 @@ in
       '';
     };
 
+    tailnet.vhosts.${cfg.ui.host} = {
+      recommendedProxySettings = true;
+      proxyPass = "http://127.0.0.1:${toString cfg.ui.port}";
+    };
+
     age.secrets."hindsight.env" = {
       file = ../../secrets/hindsight.env.age;
+      owner = user;
+      group = user;
+    };
+
+    age.secrets."hindsight-cp.env" = {
+      file = ../../secrets/hindsight-cp.env.age;
+      owner = user;
+      group = user;
+    };
+
+    age.secrets."hindsight-oauth2-proxy.env" = {
+      file = ../../secrets/hindsight-oauth2-proxy.env.age;
       owner = user;
       group = user;
     };

@@ -128,6 +128,12 @@
           }
 
           {
+            name = nodes.vapula.config.hindsight.ui.host;
+            type = "A";
+            value = nodes.vapula.config.machine.meta.ipTailscale;
+          }
+
+          {
             name = config.grafana.domain;
             type = "A";
             value = nodes.garmr.config.machine.meta.ipTailscale;

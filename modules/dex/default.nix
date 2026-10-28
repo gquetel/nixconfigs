@@ -35,6 +35,13 @@ in
           secretFile = config.age.secrets.dex-hermes-secret.path;
         }
         {
+          id = "hindsight";
+          name = "Hindsight Client";
+          # Consumed by the oauth2-proxy fronting the Hindsight Control Plane on vapula.
+          redirectURIs = [ "https://hindsight-ui.mesh.gq/oauth2/callback" ];
+          secretFile = config.age.secrets.dex-hindsight-secret.path;
+        }
+        {
           id = "wazuh";
           name = "Wazuh Client";
           redirectURIs = [ "https://wazuh.mesh.gq/auth/openid/login" ];
@@ -73,5 +80,6 @@ in
   # Hermes runs on vapula, not strix, so its module (which normally owns this
   # secret) is never imported here to provide it.
   age.secrets.dex-hermes-secret.file = ../../secrets/dex-hermes-secret.age;
+  age.secrets.dex-hindsight-secret.file = ../../secrets/dex-hindsight-secret.age;
   age.secrets.dex-wazuh-secret.file = ../../secrets/dex-wazuh-secret.age;
 }
