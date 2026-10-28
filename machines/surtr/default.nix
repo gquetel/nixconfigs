@@ -14,7 +14,7 @@
     ../../modules/tailscale
     ../../modules/home-manager
     ../../modules/wazuh-agent
-     ../../modules/languagetool
+    ../../modules/languagetool
     "${(import ../../npins).agenix}/modules/age.nix"
   ];
 
