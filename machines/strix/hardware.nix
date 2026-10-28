@@ -38,11 +38,6 @@
     ];
   };
 
-  fileSystems."/portemer" = {
-    device = "/dev/disk/by-uuid/348c4186-9286-44d0-b584-7ca3c7681f70";
-    fsType = "ext4";
-  };
-
   swapDevices = [ ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
