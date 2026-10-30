@@ -29,6 +29,7 @@ in
     ../../modules/servers
     ../../modules/mullvad
     ../../modules/hermes
+    ../../modules/hda
     ../../modules/agent-vm
     ../../modules/hindsight
     ../../modules/wazuh-agent
@@ -168,6 +169,7 @@ in
 
   hermes.enable = true;
   hermes.plane.enable = true;
+  hda.enable = true;
   hindsight.enable = true;
   # "inference" or "luna".
   hindsight.llm.backend = "luna";
