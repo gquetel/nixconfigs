@@ -169,6 +169,8 @@ in
   hermes.enable = true;
   hermes.plane.enable = true;
   hindsight.enable = true;
+  # "inference" or "luna".
+  hindsight.llm.backend = "luna";
 
   # VM for the agents. Its credentials arrive as two env files: the Plane
   # token still rides on the hermes secret, the agent's own keys have theirs.

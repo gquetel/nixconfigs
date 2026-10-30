@@ -32,9 +32,55 @@ let
     oauth2Proxy = "quay.io/oauth2-proxy/oauth2-proxy:v7.15.5@sha256:8498b0d0ef0a7b29686414000a08aee467f02d0299c9ed1e006a8f33fc017916";
   };
 
-  # POSTGRES_PASSWORD, HINDSIGHT_API_DATABASE_URL, the LLM endpoint and the
-  # client API key. See secrets/secrets.nix for the expected keys.
+  # POSTGRES_PASSWORD, HINDSIGHT_API_DATABASE_URL and the client API key. See
+  # secrets/secrets.nix for the expected keys.
   envFile = config.age.secrets."hindsight.env".path;
+
+  # Codex OAuth credentials of the "luna" backend: $CODEX_HOME/auth.json in
+  # the Codex CLI format. Hindsight refreshes the tokens and writes them back.
+  codexHome = "${home}/codex";
+
+  # First subordinate UID and GID of the hindsight user.
+  subIdStart = 231072;
+  # Host UID of the user of the API image (UID 1000). Rootless podman maps
+  # container UID n to subIdStart + n - 1, so this host UID can read codexHome.
+  apiHostId = toString (subIdStart + 1000 - 1);
+
+  # LLM settings of each backend. `secret` is the agenix env file that holds
+  # HINDSIGHT_API_LLM_API_KEY for that backend, or null if it needs no key.
+  backends = {
+    inference = {
+      secret = "hindsight-inference.env";
+      environment = {
+        HINDSIGHT_API_LLM_PROVIDER = "openai";
+        HINDSIGHT_API_LLM_BASE_URL = "https://inference.luj.fr/v1";
+        HINDSIGHT_API_LLM_MODEL = "deepseek-v4-flash";
+        # The endpoint queues parallel requests: more of them only make each
+        # one wait past the timeout, and each timeout causes a retry.
+        HINDSIGHT_API_LLM_MAX_CONCURRENT = "2";
+        HINDSIGHT_API_LLM_TIMEOUT = "300";
+        # Output is slow, so a reflect needs more than the 300s default. Keep
+        # it below the nginx proxy_read_timeout of the API vhost.
+        HINDSIGHT_API_REFLECT_WALL_TIMEOUT = "540";
+      };
+    };
+    # Billed to the ChatGPT plan of the Codex login in codexHome.
+    luna = {
+      secret = null;
+      volumes = [ "${codexHome}:/codex" ];
+      environment = {
+        HINDSIGHT_API_LLM_PROVIDER = "openai-codex";
+        HINDSIGHT_API_LLM_BASE_URL = "https://chatgpt.com/backend-api";
+        HINDSIGHT_API_LLM_CODEX_HOME = "/codex";
+        HINDSIGHT_API_LLM_MODEL = "gpt-6-luna";
+        HINDSIGHT_API_LLM_REASONING_EFFORT = cfg.llm.reasoningEffort;
+        HINDSIGHT_API_LLM_MAX_CONCURRENT = "4";
+        HINDSIGHT_API_LLM_TIMEOUT = "120";
+      };
+    };
+  };
+  backend = backends.${cfg.llm.backend};
+
   # The API key only, so that the UI does not get the database and LLM
   # credentials.
   uiEnvFile = config.age.secrets."hindsight-cp.env".path;
@@ -83,26 +129,25 @@ let
       image = images.api;
       environment = {
         HINDSIGHT_API_VECTOR_EXTENSION = "pgvector";
-        # Any OpenAI-compatible endpoint. HINDSIGHT_API_LLM_BASE_URL,
-        # HINDSIGHT_API_LLM_MODEL and HINDSIGHT_API_LLM_API_KEY come from the
-        # env file.
-        HINDSIGHT_API_LLM_PROVIDER = "openai";
-        # The endpoint queues parallel requests: more of them only make each
-        # one wait past the timeout, and each timeout causes a retry.
-        HINDSIGHT_API_LLM_MAX_CONCURRENT = "2";
-        HINDSIGHT_API_LLM_TIMEOUT = "300";
         HINDSIGHT_API_EMBEDDINGS_PROVIDER = "local";
         HINDSIGHT_API_RERANKER_PROVIDER = "local";
         HINDSIGHT_API_TENANT_EXTENSION = "hindsight_api.extensions.builtin.tenant:ApiKeyTenantExtension";
         HINDSIGHT_API_WORKER_ID = "vapula";
         SSL_CERT_FILE = caBundle;
         REQUESTS_CA_BUNDLE = caBundle;
-      };
-      environmentFile = [ envFile ];
+      }
+      # The LLM settings of the selected backend. HINDSIGHT_API_LLM_API_KEY
+      # comes from its env file.
+      // backend.environment;
+      environmentFile = [
+        envFile
+      ]
+      ++ lib.optional (backend.secret != null) config.age.secrets.${backend.secret}.path;
       volumes = [
         "${caBundle}:${caBundle}:ro"
         "${gaiConf}:/etc/gai.conf:ro"
-      ];
+      ]
+      ++ backend.volumes or [ ];
       ports = [ "127.0.0.1:${toString cfg.port}:8888" ];
       inherit network;
       extraPodmanArgs = hardening;
@@ -170,6 +215,27 @@ in
       description = "Loopback port the API container is published on.";
     };
 
+    llm.backend = mkOption {
+      type = types.enum [
+        "inference"
+        "luna"
+      ];
+      default = "inference";
+      description = "LLM backend of the API: the vLLM endpoint inference.luj.fr or gpt-6-luna through the Codex login in /var/lib/hindsight/codex.";
+    };
+
+    llm.reasoningEffort = mkOption {
+      type = types.enum [
+        "low"
+        "medium"
+        "high"
+        "xhigh"
+        "max"
+      ];
+      default = "medium";
+      description = "Reasoning effort sent to gpt-6-luna.";
+    };
+
     ui.host = mkOption {
       type = types.str;
       default = "hindsight-ui.mesh.gq";
@@ -189,73 +255,91 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    virtualisation.podman.enable = true;
-    users.groups.${user} = { };
-    users.users.${user} = {
-      isSystemUser = true;
-      group = user;
-      inherit home;
-      createHome = true;
-      linger = true;
-      subUidRanges = [
-        {
-          startUid = 231072;
-          count = 65536;
-        }
-      ];
-      subGidRanges = [
-        {
-          startGid = 231072;
-          count = 65536;
-        }
-      ];
-    };
+  config = lib.mkIf cfg.enable (
+    lib.mkMerge [
+      {
+        virtualisation.podman.enable = true;
+        users.groups.${user} = { };
+        users.users.${user} = {
+          isSystemUser = true;
+          group = user;
+          inherit home;
+          createHome = true;
+          linger = true;
+          subUidRanges = [
+            {
+              startUid = subIdStart;
+              count = 65536;
+            }
+          ];
+          subGidRanges = [
+            {
+              startGid = subIdStart;
+              count = 65536;
+            }
+          ];
+        };
 
-    home-manager.useGlobalPkgs = true;
-    home-manager.useUserPackages = true;
-    home-manager.users.${user} = {
-      home.stateVersion = "25.05";
-      services.podman = {
-        enable = true;
-        # IPv6 egress: the LLM endpoint may answer on IPv6 only.
-        networks.${netName}.extraConfig.Network.IPv6 = true;
-        inherit containers;
-      };
-    };
+        home-manager.useGlobalPkgs = true;
+        home-manager.useUserPackages = true;
+        home-manager.users.${user} = {
+          home.stateVersion = "25.05";
+          services.podman = {
+            enable = true;
+            # IPv6 egress: the LLM endpoint may answer on IPv6 only.
+            networks.${netName}.extraConfig.Network.IPv6 = true;
+            inherit containers;
+          };
+        };
 
-    tailnet.vhosts.${cfg.host} = {
-      recommendedProxySettings = true;
-      proxyPass = "http://127.0.0.1:${toString cfg.port}";
-      extraConfig = ''
-        # Session transcripts are sent whole on retain.
-        client_max_body_size 50m;
-        # Reflect calls wait on the LLM.
-        proxy_read_timeout 10m;
-      '';
-    };
+        tailnet.vhosts.${cfg.host} = {
+          recommendedProxySettings = true;
+          proxyPass = "http://127.0.0.1:${toString cfg.port}";
+          extraConfig = ''
+            # Session transcripts are sent whole on retain.
+            client_max_body_size 50m;
+            # Reflect calls wait on the LLM.
+            proxy_read_timeout 10m;
+          '';
+        };
 
-    tailnet.vhosts.${cfg.ui.host} = {
-      recommendedProxySettings = true;
-      proxyPass = "http://127.0.0.1:${toString cfg.ui.port}";
-    };
+        tailnet.vhosts.${cfg.ui.host} = {
+          recommendedProxySettings = true;
+          proxyPass = "http://127.0.0.1:${toString cfg.ui.port}";
+        };
 
-    age.secrets."hindsight.env" = {
-      file = ../../secrets/hindsight.env.age;
-      owner = user;
-      group = user;
-    };
+        age.secrets."hindsight.env" = {
+          file = ../../secrets/hindsight.env.age;
+          owner = user;
+          group = user;
+        };
 
-    age.secrets."hindsight-cp.env" = {
-      file = ../../secrets/hindsight-cp.env.age;
-      owner = user;
-      group = user;
-    };
+        # Holds the Codex auth.json of the "luna" backend. Hindsight writes the
+        # refreshed tokens to it.
+        systemd.tmpfiles.rules = [ "d ${codexHome} 0700 ${apiHostId} ${apiHostId} -" ];
 
-    age.secrets."hindsight-oauth2-proxy.env" = {
-      file = ../../secrets/hindsight-oauth2-proxy.env.age;
-      owner = user;
-      group = user;
-    };
-  };
+        age.secrets."hindsight-cp.env" = {
+          file = ../../secrets/hindsight-cp.env.age;
+          owner = user;
+          group = user;
+        };
+
+        age.secrets."hindsight-oauth2-proxy.env" = {
+          file = ../../secrets/hindsight-oauth2-proxy.env.age;
+          owner = user;
+          group = user;
+        };
+      }
+
+      # Only the secret of the selected backend is declared, so the other file
+      # does not have to exist.
+      (lib.mkIf (backend.secret != null) {
+        age.secrets.${backend.secret} = {
+          file = ../../secrets/${backend.secret}.age;
+          owner = user;
+          group = user;
+        };
+      })
+    ]
+  );
 }
