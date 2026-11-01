@@ -330,7 +330,9 @@ in
       home.stateVersion = "25.05";
       services.podman = {
         enable = true;
-        networks.${netName} = { };
+        # At boot, waiting for the user namespace can take more than the
+        # default 15s. If the network unit fails, no container starts.
+        networks.${netName}.extraConfig.Service.TimeoutStartSec = 120;
         inherit containers;
       };
     };
