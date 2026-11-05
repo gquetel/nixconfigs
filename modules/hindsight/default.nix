@@ -287,7 +287,12 @@ in
           services.podman = {
             enable = true;
             # IPv6 egress: the LLM endpoint may answer on IPv6 only.
-            networks.${netName}.extraConfig.Network.IPv6 = true;
+            networks.${netName}.extraConfig = {
+              Network.IPv6 = true;
+              # At boot, waiting for the user namespace can take more than the
+              # default 15s. If the network unit fails, no container starts.
+              Service.TimeoutStartSec = 120;
+            };
             inherit containers;
           };
         };
