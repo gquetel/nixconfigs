@@ -98,6 +98,9 @@ in
     firewall.extraCommands = ''
       ip6tables -A nixos-fw -p tcp --dport 443 -s 2a01:cb00:253:ed00::3 -j nixos-fw-accept
       ip6tables -A nixos-fw -p tcp --dport 444 -s 2a01:cb00:253:ed00::3 -j nixos-fw-accept
+      # Jellyfin over plain HTTP for LAN clients. They must not go through the
+      # public hostname, because the Livebox stalls on heavy hairpin NAT traffic.
+      iptables -A nixos-fw -p tcp --dport 8096 -s 192.168.1.0/24 -j nixos-fw-accept
     '';
   };
 
