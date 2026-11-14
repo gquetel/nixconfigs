@@ -79,9 +79,9 @@
       },
       "branch": "main",
       "submodules": false,
-      "revision": "499fb79f92064e92cdb968d12ffeb92d36243b50",
-      "url": "https://github.com/numtide/llm-agents.nix/archive/499fb79f92064e92cdb968d12ffeb92d36243b50.tar.gz",
-      "hash": "sha256-DDsPI44qOjlRdnWbaVlcU5iwUPfadigR4oUrVWq2G0I="
+      "revision": "a4ef5bdd670dc14d115a2f4cd38a2955303254f3",
+      "url": "https://github.com/numtide/llm-agents.nix/archive/a4ef5bdd670dc14d115a2f4cd38a2955303254f3.tar.gz",
+      "hash": "sha256-AIiEQTIvcYJZbIpJUEiZ/y6P2cIL7OVaZjncpv4FlLM="
     },
     "microvm.nix": {
       "type": "Git",
