@@ -52,6 +52,8 @@
 
   networking = {
     hostName = "garmr";
+    # Tailscale reaches the local headscale without the strix SNI proxy.
+    hosts."2a01:cb00:253:ed00::5" = [ "mesh.gquetel.fr" ];
     firewall.allowedTCPPorts = [
       22
       80
