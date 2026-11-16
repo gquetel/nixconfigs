@@ -25,6 +25,19 @@
       "url": null,
       "hash": "sha256-so/cEi+uhbm+wzpF/mqlz0+wPfF8HlUyXhWtGzjR12w="
     },
+    "claude-lights": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "gquetel",
+        "repo": "claude-lights"
+      },
+      "branch": "main",
+      "submodules": false,
+      "revision": "be714f82f5188f2aa1ee4ecb2188c9a138c22876",
+      "url": "https://github.com/gquetel/claude-lights/archive/be714f82f5188f2aa1ee4ecb2188c9a138c22876.tar.gz",
+      "hash": "sha256-8ZCoypB/xPvNGQftkdw0WGtfG/9wmVXprYRO1oKYHCQ="
+    },
     "colmena": {
       "type": "GitRelease",
       "repository": {

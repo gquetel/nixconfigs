@@ -2,6 +2,7 @@
   lib,
   config,
   inputs,
+  pkgs,
   ...
 }:
 
@@ -9,6 +10,8 @@ with lib;
 
 let
   cfg = config.hm;
+  # GNOME Shell extension and Claude Code hook: one top bar light per Claude Code session.
+  claudeLights = pkgs.callPackage "${(import ../../npins).claude-lights}" { };
 in
 {
   options.hm = {
@@ -18,6 +21,11 @@ in
   config = mkIf cfg.enable {
     # use the global pkgs that is configured via the system level nixpkgs options
     home-manager.useGlobalPkgs = true;
+
+    # Claude Code merges these hooks with the hooks in ~/.claude/settings.json,
+    # which Hindsight edits at run time.
+    environment.etc."claude-code/managed-settings.json".source =
+      "${claudeLights}/share/claude-lights/hooks.json";
 
     home-manager.users.gquetel =
       { pkgs, ... }:
@@ -104,6 +112,11 @@ in
             "ctrl+shift+o" = "launch --stdin-source=@last_cmd_output --type=clipboard cat";
           };
         };
+        programs.gnome-shell = {
+          enable = true;
+          extensions = [ { package = claudeLights; } ];
+        };
+
         # https://discourse.nixos.org/t/nixos-options-to-configure-gnome-keyboard-shortcuts/7275/4
         dconf.settings = {
           "org/gnome/settings-daemon/plugins/media-keys" = {
