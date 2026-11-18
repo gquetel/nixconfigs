@@ -181,10 +181,10 @@ in
           # The binary comes from environment.systemPackages; keep only the config.
           package = null;
 
-          settings.git.pagers = [
+          settings.git.diffRenderers = [
             {
               colorArg = "always";
-              pager = "delta --dark --paging=never";
+              command = "delta --dark --paging=never";
             }
           ];
         };
