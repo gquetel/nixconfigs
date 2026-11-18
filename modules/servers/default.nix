@@ -1,4 +1,9 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   adminKeys = builtins.attrValues (import ../../keys.nix);
 in
@@ -58,6 +63,16 @@ in
     # ---------------- Nginx ----------------
     services.nginx = {
       enable = true;
+      # nginx 1.30.7 fixes CVE-2026-123007 and CVE-2026-123633 (HTTP/2) and
+      # CVE-2026-118899 (TLS 1.3 request body). Remove when nixpkgs has
+      # nginxStable 1.30.7 or later.
+      package = pkgs.nginxStable.overrideAttrs rec {
+        version = "1.30.7";
+        src = pkgs.fetchurl {
+          url = "https://nginx.org/download/nginx-${version}.tar.gz";
+          hash = "sha256-JWW1yDcFDpWPcPsPc8SOK8pFQq00n9NW9G+wxyYQvG4=";
+        };
+      };
       logError = "/var/log/nginx/error.log error";
       # Set headers for the proxied server such as X-Forwarded-For.
       # See, code for modified headers:
