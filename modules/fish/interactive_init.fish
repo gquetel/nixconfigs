@@ -39,3 +39,11 @@ set -U fish_color_option
 set -U fish_pager_color_secondary_completion 
 set -U fish_pager_color_secondary_prefix 
 set -g direnv_fish_mode eval_on_arrow
+
+# Open files in the default application. Discard the application output and detach it from the shell.
+function open --description 'Open file in default application'
+    for i in $argv
+        xdg-open $i &>/dev/null &
+        disown
+    end
+end
