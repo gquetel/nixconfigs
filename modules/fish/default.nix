@@ -3,7 +3,10 @@
 {
   programs.fish = {
     enable = true;
-    interactiveShellInit = builtins.readFile ./interactive_init.fish;
+    interactiveShellInit = builtins.readFile ./interactive_init.fish + ''
+      # Make nix-shell and nix develop open fish.
+      nix-your-shell fish | source
+    '';
     promptInit = builtins.readFile ./fish_prompt.fish;
     shellAliases = {
       v6 = "curl api6.ipify.org";
@@ -21,6 +24,8 @@
 
     };
   };
+
+  environment.systemPackages = [ pkgs.nix-your-shell ];
 
   programs.bash = {
     interactiveShellInit = ''
