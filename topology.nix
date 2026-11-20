@@ -17,7 +17,10 @@
   };
 
   nodes.internet = config.lib.topology.mkInternet {
-    connections = config.lib.topology.mkConnection "router" "fiber0";
+    connections = [
+      (config.lib.topology.mkConnection "router" "fiber0")
+      (config.lib.topology.mkConnection "fafnir" "ens18")
+    ];
   };
 
   nodes.router = config.lib.topology.mkRouter "Router" {
@@ -103,6 +106,12 @@
   nodes.vapula = {
     interfaces.tailscale0 = {
       addresses = [ "100.64.0.2" ];
+      network = "tailscale";
+    };
+  };
+  nodes.fafnir = {
+    interfaces.tailscale0 = {
+      addresses = [ "100.64.0.8" ];
       network = "tailscale";
     };
   };
