@@ -7,6 +7,7 @@ let
   system-scylla = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK7rePqrc63RwbDDBA1K6cwfvs43XWnGuwmByure5XBA root@scylla";
   system-charybdis = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICXm/0/TLnyVSnVIfZeMJv++ubX4nMJCTrK92sTYzDHN root@charybdis";
   system-surtr = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDUaxCpfBb94BRWBzicB4DuGLKWSy1GkpBY9vz5x+QzK root@surtr";
+  system-fafnir = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKOPRjYMWMwu6/GYFn/TWgVRXyx8Rnyf6sKa/H4Xo6xE root@fafnir";
 
   inherit (import ../keys.nix) gquetel-scylla gquetel-charybdis gquetel-surtr;
 
@@ -14,6 +15,7 @@ let
     system-strix
     system-garmr
     system-vapula
+    system-fafnir
   ];
   workstations = [
     system-scylla
