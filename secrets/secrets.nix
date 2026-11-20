@@ -42,6 +42,12 @@ in
   "dex-mlflow-secret.age".publicKeys = [ system-strix ] ++ users;
   "mlflow-session-key.age".publicKeys = [ system-strix ] ++ users;
   "plausible-secret-key-base.age".publicKeys = [ system-strix ] ++ users;
+  # Restic repository password of the strix offsite backup.
+  "restic-strix.pwd.age".publicKeys = [ system-strix ] ++ users;
+  # Offsite backup (EnvironmentFile), one KEY=VALUE line each: AWS_ACCESS_KEY_ID
+  # and AWS_SECRET_ACCESS_KEY of Garage key restic-strix, optional
+  # UPTIME_KUMA_PUSH_URL (push URL without query).
+  "restic-strix.env.age".publicKeys = [ system-strix ] ++ users;
 
   # Secrets for garmr machine
   "step-ca.pwd.age".publicKeys = [ system-garmr ] ++ users;

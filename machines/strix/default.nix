@@ -299,6 +299,7 @@ in
   plausible.enable = true;
   mlflow.enable = true;
   uptime-kuma.enable = true;
+  backup.enable = true;
   # Public mTLS ingest so the off-tailnet compute cluster can push runs.
   # Reaches this host via the SNI proxy's default branch; mTLS terminates at
   # the per-host nginx vhost. Client certs are issued by step-ca (ca.mesh.gq).

@@ -8,7 +8,10 @@ let
   adminKeys = builtins.attrValues (import ../../keys.nix);
 in
 {
-  imports = [ ../prometheus-exporters ];
+  imports = [
+    ../prometheus-exporters
+    ../backup
+  ];
 
   options.servers.lanAddresses = lib.mkOption {
     type = lib.types.listOf lib.types.str;

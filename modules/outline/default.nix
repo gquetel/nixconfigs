@@ -40,6 +40,12 @@ in
     proxyPass = "http://localhost:9292";
   };
 
+  # Includes secret_key and utils_secret, generated on first start.
+  backup.paths = [ "/var/lib/outline" ];
+  backup.postgresDatabases = [ "outline" ];
+  # Exports are copies of the database content.
+  backup.exclude = [ "/var/lib/outline/data/uploads/*/*/*-export.*.zip" ];
+
   age.secrets.dex-outline-secret = {
     file = ../../secrets/dex-outline-secret.age;
     owner = "outline";
