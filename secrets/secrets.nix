@@ -45,8 +45,7 @@ in
   # Restic repository password of the strix offsite backup.
   "restic-strix.pwd.age".publicKeys = [ system-strix ] ++ users;
   # Offsite backup (EnvironmentFile), one KEY=VALUE line each: AWS_ACCESS_KEY_ID
-  # and AWS_SECRET_ACCESS_KEY of Garage key restic-strix, optional
-  # UPTIME_KUMA_PUSH_URL (push URL without query).
+  # and AWS_SECRET_ACCESS_KEY of Garage key restic-strix.
   "restic-strix.env.age".publicKeys = [ system-strix ] ++ users;
 
   # Secrets for garmr machine

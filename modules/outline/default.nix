@@ -13,7 +13,6 @@ in
     forceHttps = false; # Break stuff when set to true.
     storage.storageType = "local";
 
-    # oidc is somehow required, i need to host a dex instance on the machine.
     oidcAuthentication = {
       authUrl = "https://${dexUrl}/auth";
       tokenUrl = "https://${dexUrl}/token";
@@ -40,10 +39,10 @@ in
     proxyPass = "http://localhost:9292";
   };
 
-  # Includes secret_key and utils_secret, generated on first start.
+  # We use the backup module, we don't include the exports because it would 
+  # save all created .zip files which is redundant with our saves.
   backup.paths = [ "/var/lib/outline" ];
   backup.postgresDatabases = [ "outline" ];
-  # Exports are copies of the database content.
   backup.exclude = [ "/var/lib/outline/data/uploads/*/*/*-export.*.zip" ];
 
   age.secrets.dex-outline-secret = {

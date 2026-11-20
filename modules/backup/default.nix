@@ -1,3 +1,12 @@
+# Custom backup wrapper: we provide it so that every host gets the same restic
+# job (repository, schedule, retention, check...). Then modules can use this as
+# follows to backup any content using that policy:
+#
+#   backup.paths = [ "/var/lib/outline" ];
+#   backup.exclude = [ "/var/lib/outline/data/uploads/*/*/*-export.*.zip" ];
+#   backup.postgresDatabases = [ "outline" ];
+#
+# and the host turns it on with `backup.enable = true;`.
 {
   config,
   lib,
@@ -21,12 +30,6 @@ let
         > ${dumpDir}/${lib.escapeShellArg db}.dump
     '') cfg.postgresDatabases}
   '';
-
-  # uptime-kuma heartbeat. A missing heartbeat raises the alert.
-  pushHeartbeat = pkgs.writeShellScript "backup-push" ''
-    [ -n "''${UPTIME_KUMA_PUSH_URL:-}" ] || exit 0
-    ${lib.getExe pkgs.curl} -fsS -m 10 --retry 3 -o /dev/null "$UPTIME_KUMA_PUSH_URL?status=up&msg=OK"
-  '';
 in
 {
   options.backup = {
@@ -35,19 +38,19 @@ in
     paths = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ ];
-      description = "Paths to back up. Service modules append their state directories.";
+      description = "Paths to back up. Service modules should provide here their state directories.";
     };
 
     exclude = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ ];
-      description = "Restic exclude patterns. Service modules append their own.";
+      description = "Restic exclude patterns.";
     };
 
     postgresDatabases = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ ];
-      description = "Local PostgreSQL databases dumped before each backup.";
+      description = "Local PostgreSQL databases dumped before each backup, as live data files cannot be copied safely.";
     };
   };
 
@@ -60,16 +63,13 @@ in
     ];
 
     age.secrets."restic-${host}.pwd".file = ../../secrets + "/restic-${host}.pwd.age";
-    # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and optionally UPTIME_KUMA_PUSH_URL.
     age.secrets."restic-${host}.env".file = ../../secrets + "/restic-${host}.env.age";
 
-    # The wrapper `restic-offsite` runs restic against this repository.
     services.restic.backups.offsite = {
       repository = "s3:https://s3.gquetel.fr/restic-${host}";
       passwordFile = config.age.secrets."restic-${host}.pwd".path;
       environmentFile = config.age.secrets."restic-${host}.env".path;
       initialize = true;
-      # Garage has no root_domain: path-style requests, region "garage".
       extraOptions = [
         "s3.bucket-lookup=path"
         "s3.region=garage"
@@ -94,8 +94,6 @@ in
     systemd.services.restic-backups-offsite = {
       requires = lib.optional hasDatabases "postgresql.target";
       after = lib.optional hasDatabases "postgresql.target";
-      # Runs only after backup, prune and check succeed. "-" ignores push failures.
-      serviceConfig.ExecStartPost = "-${pushHeartbeat}";
     };
   };
 }
