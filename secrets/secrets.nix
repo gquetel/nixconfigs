@@ -43,7 +43,12 @@ in
   "mlflow-session-key.age".publicKeys = [ system-strix ] ++ users;
   "plausible-secret-key-base.age".publicKeys = [ system-strix ] ++ users;
   # Restic repository password of the strix offsite backup.
-  "restic-strix.pwd.age".publicKeys = [ system-strix ] ++ users;
+  # Backrest on garmr also opens this repository.
+  "restic-strix.pwd.age".publicKeys = [
+    system-strix
+    system-garmr
+  ]
+  ++ users;
   # Offsite backup (EnvironmentFile), one KEY=VALUE line each: AWS_ACCESS_KEY_ID
   # and AWS_SECRET_ACCESS_KEY of Garage key restic-strix.
   "restic-strix.env.age".publicKeys = [ system-strix ] ++ users;
@@ -52,6 +57,9 @@ in
   "step-ca.pwd.age".publicKeys = [ system-garmr ] ++ users;
   "grafana-secret-key.age".publicKeys = [ system-garmr ] ++ users;
   "plane.env.age".publicKeys = [ system-garmr ] ++ users;
+  # Backrest (EnvironmentFile), one KEY=VALUE line each: AWS_ACCESS_KEY_ID and
+  # AWS_SECRET_ACCESS_KEY of the read-only Garage key backrest.
+  "backrest.env.age".publicKeys = [ system-garmr ] ++ users;
 
   # Secrets for vapula machine
   "mullvad-pvkey.age".publicKeys = [ system-vapula ] ++ users;
@@ -107,4 +115,13 @@ in
     system-garmr
   ]
   ++ users;
+  # Dex client secret of the oauth2-proxy in front of Backrest: Dex on strix,
+  # proxy on garmr.
+  "dex-backrest-secret.age".publicKeys = [
+    system-strix
+    system-garmr
+  ]
+  ++ users;
+  # Seed for the Backrest oauth2-proxy session cookies.
+  "backrest-cookie-secret.age".publicKeys = [ system-garmr ] ++ users;
 }

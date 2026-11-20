@@ -134,6 +134,12 @@
           }
 
           {
+            name = config.backrest.host;
+            type = "A";
+            value = nodes.garmr.config.machine.meta.ipTailscale;
+          }
+
+          {
             name = config.grafana.domain;
             type = "A";
             value = nodes.garmr.config.machine.meta.ipTailscale;

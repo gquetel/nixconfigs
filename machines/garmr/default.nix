@@ -11,6 +11,7 @@
     ../../modules/headscale
     ../../modules/step-ca
     ../../modules/servers
+    ../../modules/backrest
     ../../modules/grafana
     ../../modules/plane
     ../../modules/prometheus
@@ -86,8 +87,10 @@
     prometheus = "prometheus";
     prometheus_node_exporter = "prometheus-node-exporter";
     step-ca = "step-ca";
+    backrest = "backrest";
   };
 
+  backrest.enable = true;
   grafana.enable = true;
   plane.enable = true;
   prometheus.enable = true;

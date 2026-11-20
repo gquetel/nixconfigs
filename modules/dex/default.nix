@@ -47,6 +47,13 @@ in
           redirectURIs = [ "https://wazuh.mesh.gq/auth/openid/login" ];
           secretFile = config.age.secrets.dex-wazuh-secret.path;
         }
+        {
+          id = "backrest";
+          name = "Backrest Client";
+          # Consumed by the oauth2-proxy fronting Backrest on garmr.
+          redirectURIs = [ "https://backups.mesh.gq/oauth2/callback" ];
+          secretFile = config.age.secrets.dex-backrest-secret.path;
+        }
       ];
       staticPasswords = [
         {
@@ -82,4 +89,5 @@ in
   age.secrets.dex-hermes-secret.file = ../../secrets/dex-hermes-secret.age;
   age.secrets.dex-hindsight-secret.file = ../../secrets/dex-hindsight-secret.age;
   age.secrets.dex-wazuh-secret.file = ../../secrets/dex-wazuh-secret.age;
+  age.secrets.dex-backrest-secret.file = ../../secrets/dex-backrest-secret.age;
 }

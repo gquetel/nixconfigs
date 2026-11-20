@@ -39,7 +39,7 @@ in
     proxyPass = "http://localhost:9292";
   };
 
-  # We use the backup module, we don't include the exports because it would 
+  # We use the backup module, we don't include the exports because it would
   # save all created .zip files which is redundant with our saves.
   backup.paths = [ "/var/lib/outline" ];
   backup.postgresDatabases = [ "outline" ];
