@@ -85,6 +85,12 @@ in
   # OAUTH2_PROXY_CLIENT_SECRET, equal to dex-hindsight-secret, and
   # OAUTH2_PROXY_COOKIE_SECRET.
   "hindsight-oauth2-proxy.env.age".publicKeys = [ system-vapula ] ++ users;
+
+  # Secrets for fafnir machine
+  # Garage (EnvironmentFile), one KEY=VALUE line each: GARAGE_RPC_SECRET,
+  # GARAGE_ADMIN_TOKEN.
+  "garage.env.age".publicKeys = [ system-fafnir ] ++ users;
+
   # Wazuh enrollment password: authd on garmr and every agent.
   "wazuh-authd.pass.age".publicKeys = servers ++ workstations ++ users;
   # Wazuh server service accounts (garmr): INDEXER_PASSWORD, DASHBOARD_PASSWORD,

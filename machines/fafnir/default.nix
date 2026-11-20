@@ -8,6 +8,7 @@
     ../../modules/fail2ban
     ../../modules/fish
     ../../modules/servers
+    ../../modules/garage
     ../../modules/tailscale
     ../../modules/wazuh-agent
     "${(import ../../npins).agenix}/modules/age.nix"
@@ -18,6 +19,11 @@
   time.timeZone = "Europe/Paris";
   i18n.defaultLocale = "en_GB.UTF-8";
   console.keyMap = "fr";
+
+  # ---------------- My config  ----------------
+  machine.meta = {
+    ipTailscale = "100.64.0.8";
+  };
 
   # ---------------- Networking ----------------
   networking.hostName = "fafnir";
@@ -37,12 +43,17 @@
   deployment.targetHost = "fafnir";
   deployment.targetUser = "root";
 
-  machine.meta.ipTailscale = "100.64.0.8";
-
   # ---------------- Services ----------------
   services.openssh = {
     enable = true;
     settings.PasswordAuthentication = false;
+  };
+
+  # ---------------- Modules ----------------
+  garage.enable = true;
+  programs.rust-motd.settings.service_status = {
+    garage = "garage";
+    tailscale = "tailscaled";
   };
 
   # This value determines the NixOS release from which the default
