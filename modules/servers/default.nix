@@ -12,11 +12,12 @@ in
 
   options.servers.lanAddresses = lib.mkOption {
     type = lib.types.listOf lib.types.str;
+    default = [ ];
     example = [
       "192.168.1.28/24"
       "2a01:cb00:253:ed00::5/64"
     ];
-    description = "Static addresses, with prefix length, of the wired LAN interface.";
+    description = "Static addresses, with prefix length, of the wired LAN interface. Empty disables the LAN network.";
   };
 
   config = {
@@ -37,7 +38,7 @@ in
     # - https://wiki.nixos.org/wiki/Systemd/networkd
     # - https://man7.org/linux/man-pages/man5/systemd.netdev.5.html For networks configs.
     networking.useNetworkd = true;
-    systemd.network.networks."10-wired" = {
+    systemd.network.networks."10-wired" = lib.mkIf (config.servers.lanAddresses != [ ]) {
       matchConfig.Name = "enp0s31f6";
       addresses = map (a: { Address = a; }) config.servers.lanAddresses;
       dns = [
@@ -102,7 +103,8 @@ in
       defaults.email = "gregor.quetel@gquetel.fr";
     };
 
-    prometheus_exporter = {
+    # Prometheus scrapes the exporters at the Tailscale address.
+    prometheus_exporter = lib.mkIf (config.machine.meta.ipTailscale != null) {
       node = {
         enable = true;
         addr = config.machine.meta.ipTailscale;

@@ -16,7 +16,7 @@
       freeformType = with lib.types; attrsOf str;
 
       options.ipTailscale = lib.mkOption {
-        type = lib.types.str;
+        type = lib.types.nullOr lib.types.str;
         default = null;
       };
     };
