@@ -62,7 +62,7 @@ in
   networking = {
     hostName = "strix";
     # Resolve the headscale hostname to garmr's LAN address. Through public
-    # DNS, Tailscale would connect to the SNI proxy on this host but would fail as 
+    # DNS, Tailscale would connect to the SNI proxy on this host but would fail as
     # nginx is not yet start at this point.
     hosts."2a01:cb00:253:ed00::5" = [ "mesh.gquetel.fr" ];
     firewall.allowedTCPPorts = [

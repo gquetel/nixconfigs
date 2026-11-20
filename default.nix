@@ -63,6 +63,7 @@ rec {
         vapula = import ./machines/vapula;
         charybdis = import ./machines/charybdis;
         surtr = import ./machines/surtr;
+        fafnir = import ./machines/fafnir;
       };
 
   # nix-topology expects a pkgs argument that already have a nix-topology overlay.
