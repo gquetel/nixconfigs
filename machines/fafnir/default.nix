@@ -8,6 +8,9 @@
     ../../modules/fail2ban
     ../../modules/fish
     ../../modules/servers
+    ../../modules/tailscale
+    ../../modules/wazuh-agent
+    "${(import ../../npins).agenix}/modules/age.nix"
   ];
 
   boot.loader.systemd-boot.enable = true;
@@ -31,8 +34,10 @@
   };
 
   # ---------------- Deployment info ----------------
-  deployment.targetHost = "2a01:4f9:3090:2b8c:b5e6:878c:f1c3:8efe";
+  deployment.targetHost = "fafnir";
   deployment.targetUser = "root";
+
+  machine.meta.ipTailscale = "100.64.0.8";
 
   # ---------------- Services ----------------
   services.openssh = {
