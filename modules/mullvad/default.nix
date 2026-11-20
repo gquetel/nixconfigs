@@ -33,7 +33,7 @@ let
     . ${config.age.secrets.mullvad.path}
 
     if [ -z "''${PRIVATE_KEY:-}" ] || [ -z "''${ADDRESS:-}" ]; then
-      echo "mullvad-pvkey.age must define PRIVATE_KEY= and ADDRESS=; see secrets/secrets.nix" >&2
+      echo "mullvad-pvkey.age must define PRIVATE_KEY= and ADDRESS=; see secrets/README.md" >&2
       exit 1
     fi
 

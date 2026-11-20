@@ -46,7 +46,6 @@ in
 
   config = lib.mkIf cfg.enable {
     age.secrets = {
-      # AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY of the read-only Garage key backrest.
       "backrest.env".file = ../../secrets/backrest.env.age;
       dex-backrest-secret.file = ../../secrets/dex-backrest-secret.age;
       backrest-cookie-secret.file = ../../secrets/backrest-cookie-secret.age;

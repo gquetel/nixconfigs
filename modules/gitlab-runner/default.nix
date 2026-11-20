@@ -9,10 +9,9 @@
 {
   #      ------------ GitLab Runner ------------
   # From: https://wiki.nixos.org/wiki/Gitlab_runner
-  # First create a runner instance for a project, the value for both the
-  # CI_SERVER_URL & CI_SERVER_TOKEN will be given. My jobs do not have any tags so i must
+  # First create a runner instance for a project, and put the given URL and
+  # token in secrets/gitlab-runner.env.age. My jobs do not have any tags so i must
   # enable the option "Run untagged jobs" on the runner options in the web interface.
-  # Then, create a .env file with given values.
 
   virtualisation.docker.enable = true;
 
@@ -23,9 +22,6 @@
       # nix store will be readable in runner, might be insecure
       nix = with lib; {
 
-        # File should contain at least these two variables:
-        # `CI_SERVER_URL`
-        # `CI_SERVER_TOKEN`
         authenticationTokenConfigFile = config.age.secrets.gitlab-runner-env.path;
         dockerImage = "alpine";
         dockerVolumes = [

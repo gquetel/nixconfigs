@@ -29,7 +29,6 @@ in
     services.garage = {
       enable = true;
       package = pkgs.garage_2;
-      # Sets GARAGE_RPC_SECRET and GARAGE_ADMIN_TOKEN.
       environmentFile = config.age.secrets."garage.env".path;
       settings = {
         replication_factor = 1;

@@ -32,8 +32,6 @@ let
     oauth2Proxy = "quay.io/oauth2-proxy/oauth2-proxy:v7.15.5@sha256:8498b0d0ef0a7b29686414000a08aee467f02d0299c9ed1e006a8f33fc017916";
   };
 
-  # POSTGRES_PASSWORD, HINDSIGHT_API_DATABASE_URL and the client API key. See
-  # secrets/secrets.nix for the expected keys.
   envFile = config.age.secrets."hindsight.env".path;
 
   # Codex OAuth credentials of the "luna" backend: $CODEX_HOME/auth.json in
@@ -46,8 +44,8 @@ let
   # container UID n to subIdStart + n - 1, so this host UID can read codexHome.
   apiHostId = toString (subIdStart + 1000 - 1);
 
-  # LLM settings of each backend. `secret` is the agenix env file that holds
-  # HINDSIGHT_API_LLM_API_KEY for that backend, or null if it needs no key.
+  # LLM settings of each backend. `secret` is the agenix env file with the API
+  # key of that backend, or null if it needs no key.
   backends = {
     inference = {
       secret = "hindsight-inference.env";
@@ -136,8 +134,8 @@ let
         SSL_CERT_FILE = caBundle;
         REQUESTS_CA_BUNDLE = caBundle;
       }
-      # The LLM settings of the selected backend. HINDSIGHT_API_LLM_API_KEY
-      # comes from its env file.
+      # The LLM settings of the selected backend. Its API key comes from its
+      # env file.
       // backend.environment;
       environmentFile = [
         envFile

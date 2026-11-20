@@ -169,7 +169,7 @@ let
     plane-minio = {
       image = images.minio;
       exec = "server /export --console-address :9090";
-      # MINIO_ROOT_USER / MINIO_ROOT_PASSWORD come from the env file.
+      # Root credentials come from the env file.
       environmentFile = [ envFile ];
       volumes = [ "uploads:/export" ];
       inherit network;
@@ -255,7 +255,7 @@ let
         API_BASE_URL = "http://api:8000";
       }
       // redisEnv;
-      # LIVE_SERVER_SECRET_KEY from the env file.
+      # Secret key from the env file.
       environmentFile = [ envFile ];
       inherit network;
       networkAlias = [ "live" ];

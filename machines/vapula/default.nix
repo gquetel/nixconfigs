@@ -202,8 +202,7 @@ in
 
   # ---------------- age secrets ----------------
 
-  # The agent VM's own keys: CLAUDE_CODE_OAUTH_TOKEN, made with
-  # `claude setup-token` and re-keyed by hand when it expires.
+  # The agent VM's own keys.
   age.secrets.agent-secrets.file = ../../secrets/agent-secrets.env.age;
 
   # This value determines the NixOS release from which the default

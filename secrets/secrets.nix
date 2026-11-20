@@ -29,99 +29,62 @@ let
   ];
 in
 {
-  # List of secrets and the users / systems we authorize to have access to.
-  # The machines using the secrets should be able to decrypt, so as our users.
+  # Recipients of each secret. The content of each file is in README.md.
 
   # Secrets for strix machine
   "gquetel-strix.age".publicKeys = [ system-strix ] ++ users;
   "thesis-artefacts.age".publicKeys = [ system-strix ] ++ users;
   "gitlab-runner.env.age".publicKeys = [ system-strix ] ++ users;
   "dex-outline-secret.age".publicKeys = [ system-strix ] ++ users;
-  # Dex password of the hermes Outline account. Only needed to sign in by hand.
-  "hermes-outline-password.age".publicKeys = users;
   "dex-mlflow-secret.age".publicKeys = [ system-strix ] ++ users;
   "mlflow-session-key.age".publicKeys = [ system-strix ] ++ users;
   "plausible-secret-key-base.age".publicKeys = [ system-strix ] ++ users;
-  # Restic repository password of the strix offsite backup.
-  # Backrest on garmr also opens this repository.
+  "hermes-outline-password.age".publicKeys = users;
   "restic-strix.pwd.age".publicKeys = [
     system-strix
     system-garmr
   ]
   ++ users;
-  # Offsite backup (EnvironmentFile), one KEY=VALUE line each: AWS_ACCESS_KEY_ID
-  # and AWS_SECRET_ACCESS_KEY of Garage key restic-strix.
   "restic-strix.env.age".publicKeys = [ system-strix ] ++ users;
 
   # Secrets for garmr machine
   "step-ca.pwd.age".publicKeys = [ system-garmr ] ++ users;
   "grafana-secret-key.age".publicKeys = [ system-garmr ] ++ users;
   "plane.env.age".publicKeys = [ system-garmr ] ++ users;
-  # Backrest (EnvironmentFile), one KEY=VALUE line each: AWS_ACCESS_KEY_ID and
-  # AWS_SECRET_ACCESS_KEY of the read-only Garage key backrest.
-  "backrest.env.age".publicKeys = [ system-garmr ] ++ users;
-
-  # Secrets for vapula machine
-  "mullvad-pvkey.age".publicKeys = [ system-vapula ] ++ users;
-  # Dex client secret for Hermes' oauth2-proxy. Needed on strix (dex)
-  # and vapula (oauth2-proxy).
-  "dex-hermes-secret.age".publicKeys = [
-    system-strix
-    system-vapula
-  ]
-  ++ users;
-  # Seed for oauth2-proxy's Hermes session cookies.
-  "hermes-cookie-secret.age".publicKeys = [ system-vapula ] ++ users;
-  # Hermes environment (EnvironmentFile): provider keys, service URLs and
-  # tokens, one KEY=VALUE line each.
-  "hermes.env.age".publicKeys = [ system-vapula ] ++ users;
-  # Hermes' Plane credentials (EnvironmentFile), one KEY=VALUE line each. The
-  # API token is issued from the Plane UI and scoped to the issuing account.
-  "hermes-plane-token.age".publicKeys = [ system-vapula ] ++ users;
-  # The agent VM's own keys (EnvironmentFile): CLAUDE_CODE_OAUTH_TOKEN, one
-  # KEY=VALUE line each.
-  "agent-secrets.env.age".publicKeys = [ system-vapula ] ++ users;
-  # Hindsight (EnvironmentFile), one KEY=VALUE line each: POSTGRES_PASSWORD,
-  # HINDSIGHT_API_DATABASE_URL (postgresql://hindsight:<pw>@hindsight-db:5432/hindsight)
-  # and HINDSIGHT_API_TENANT_API_KEY, the bearer token clients send.
-  "hindsight.env.age".publicKeys = [ system-vapula ] ++ users;
-  # Key of the Hindsight "inference" LLM backend (EnvironmentFile):
-  # HINDSIGHT_API_LLM_API_KEY.
-  "hindsight-inference.env.age".publicKeys = [ system-vapula ] ++ users;
-  # Hindsight Control Plane (EnvironmentFile): HINDSIGHT_CP_DATAPLANE_API_KEY,
-  # equal to HINDSIGHT_API_TENANT_API_KEY.
-  "hindsight-cp.env.age".publicKeys = [ system-vapula ] ++ users;
-  # Dex client secret of the oauth2-proxy in front of the Hindsight Control
-  # Plane. Dex reads it as a file; the proxy reads a copy from the env file below.
-  "dex-hindsight-secret.age".publicKeys = [ system-strix ] ++ users;
-  # The proxy's env file (EnvironmentFile), one KEY=VALUE line each:
-  # OAUTH2_PROXY_CLIENT_SECRET, equal to dex-hindsight-secret, and
-  # OAUTH2_PROXY_COOKIE_SECRET.
-  "hindsight-oauth2-proxy.env.age".publicKeys = [ system-vapula ] ++ users;
-
-  # Secrets for fafnir machine
-  # Garage (EnvironmentFile), one KEY=VALUE line each: GARAGE_RPC_SECRET,
-  # GARAGE_ADMIN_TOKEN.
-  "garage.env.age".publicKeys = [ system-fafnir ] ++ users;
-
-  # Wazuh enrollment password: authd on garmr and every agent.
-  "wazuh-authd.pass.age".publicKeys = servers ++ workstations ++ users;
-  # Wazuh server service accounts (garmr): INDEXER_PASSWORD, DASHBOARD_PASSWORD,
-  # API_PASSWORD, one KEY=VALUE line each.
   "wazuh-server.env.age".publicKeys = [ system-garmr ] ++ users;
-  # Dex client secret of the Wazuh dashboard: Dex on strix, dashboard on garmr.
   "dex-wazuh-secret.age".publicKeys = [
     system-strix
     system-garmr
   ]
   ++ users;
-  # Dex client secret of the oauth2-proxy in front of Backrest: Dex on strix,
-  # proxy on garmr.
+  "backrest.env.age".publicKeys = [ system-garmr ] ++ users;
   "dex-backrest-secret.age".publicKeys = [
     system-strix
     system-garmr
   ]
   ++ users;
-  # Seed for the Backrest oauth2-proxy session cookies.
   "backrest-cookie-secret.age".publicKeys = [ system-garmr ] ++ users;
+
+  # Secrets for vapula machine
+  "mullvad-pvkey.age".publicKeys = [ system-vapula ] ++ users;
+  "dex-hermes-secret.age".publicKeys = [
+    system-strix
+    system-vapula
+  ]
+  ++ users;
+  "hermes-cookie-secret.age".publicKeys = [ system-vapula ] ++ users;
+  "hermes.env.age".publicKeys = [ system-vapula ] ++ users;
+  "hermes-plane-token.age".publicKeys = [ system-vapula ] ++ users;
+  "agent-secrets.env.age".publicKeys = [ system-vapula ] ++ users;
+  "hindsight.env.age".publicKeys = [ system-vapula ] ++ users;
+  "hindsight-inference.env.age".publicKeys = [ system-vapula ] ++ users;
+  "hindsight-cp.env.age".publicKeys = [ system-vapula ] ++ users;
+  "dex-hindsight-secret.age".publicKeys = [ system-strix ] ++ users;
+  "hindsight-oauth2-proxy.env.age".publicKeys = [ system-vapula ] ++ users;
+
+  # Secrets for fafnir machine
+  "garage.env.age".publicKeys = [ system-fafnir ] ++ users;
+
+  # Secrets for all machines
+  "wazuh-authd.pass.age".publicKeys = servers ++ workstations ++ users;
 }

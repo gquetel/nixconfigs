@@ -181,9 +181,8 @@ in
       type = types.nullOr types.path;
       default = "${config.age.secrets.hermes-env.path}";
       description = ''
-        Environment file for Hermes: provider keys (ANTHROPIC_API_KEY, …),
-        service URLs and tokens (OUTLINE_API_KEY, …),
-        one KEY=VALUE line each. Set to null to disable; keys can also be
+        Environment file for Hermes: provider keys, service URLs and tokens.
+        Set to null to disable; keys can also be
         entered in the dashboard, which stores them under $HOME/.hermes.
       '';
     };
